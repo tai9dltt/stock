@@ -3,9 +3,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', '@pinia/nuxt'],
 
-  css: ['~/assets/css/ag-grid-custom.css'],
+  css: [
+    '~/assets/css/ag-grid-custom.css',
+    '~/assets/css/main.css'
+  ],
 
   runtimeConfig: {
     // Server-only config (not exposed to client)

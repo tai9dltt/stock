@@ -1,20 +1,41 @@
 <script setup lang="ts">
 // Props
 const props = defineProps<{
-  pe2022?: number;
-  pe2023?: number;
+  peAssumptions?: Record<string, number>;
+  forecastYears?: string[];
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:pe2022', value: number): void;
-  (e: 'update:pe2023', value: number): void;
+  (e: 'update:peAssumptions', value: Record<string, number>): void;
 }>();
 
-const pe2022 = ref(props.pe2022 || 15);
-const pe2023 = ref(props.pe2023 || 15);
+// Local copy of P/E assumptions
+const localPE = ref<Record<string, number>>({ ...props.peAssumptions });
 
-watch(pe2022, (val) => emit('update:pe2022', val));
-watch(pe2023, (val) => emit('update:pe2023', val));
+// Watch for changes and emit
+watch(
+  localPE,
+  (val) => {
+    emit('update:peAssumptions', val);
+  },
+  { deep: true },
+);
+
+// Watch for forecast years changes
+watch(
+  () => props.forecastYears,
+  (years) => {
+    if (!years) return;
+
+    // Initialize missing years with default value
+    years.forEach((year) => {
+      if (localPE.value[year] === undefined) {
+        localPE.value[year] = 15;
+      }
+    });
+  },
+  { immediate: true, deep: true },
+);
 </script>
 
 <template>
@@ -27,11 +48,11 @@ watch(pe2023, (val) => emit('update:pe2023', val));
     </div>
 
     <div class="pe-inputs">
-      <div class="pe-input-group">
-        <label for="pe-2022">P/E giả định 2022:</label>
+      <div v-for="year in forecastYears" :key="year" class="pe-input-group">
+        <label :for="`pe-${year}`">P/E giả định {{ year }}:</label>
         <UInput
-          id="pe-2022"
-          v-model.number="pe2022"
+          :id="`pe-${year}`"
+          v-model.number="localPE[year]"
           type="number"
           :min="1"
           :max="100"
@@ -41,18 +62,15 @@ watch(pe2023, (val) => emit('update:pe2023', val));
         />
       </div>
 
-      <div class="pe-input-group">
-        <label for="pe-2023">P/E giả định 2023:</label>
-        <UInput
-          id="pe-2023"
-          v-model.number="pe2023"
-          type="number"
-          :min="1"
-          :max="100"
-          :step="0.5"
-          size="sm"
-          class="w-24"
-        />
+      <div
+        v-if="!forecastYears || forecastYears.length === 0"
+        class="no-forecast"
+      >
+        <UIcon name="i-lucide-info" class="mr-2" />
+        <span
+          >Chưa có năm dự phóng. Thêm năm trong Table 1 để nhập P/E giả
+          định.</span
+        >
       </div>
     </div>
 
@@ -90,6 +108,7 @@ watch(pe2023, (val) => emit('update:pe2023', val));
   background: var(--ui-bg-elevated);
   border-radius: 0.5rem;
   border: 1px solid var(--ui-border);
+  flex-wrap: wrap;
 }
 
 .pe-input-group {
@@ -102,6 +121,15 @@ watch(pe2023, (val) => emit('update:pe2023', val));
   font-weight: 500;
   font-size: 0.875rem;
   white-space: nowrap;
+}
+
+.no-forecast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ui-text-muted);
+  font-style: italic;
 }
 
 .pe-note {

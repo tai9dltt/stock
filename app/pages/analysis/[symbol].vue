@@ -20,20 +20,56 @@ interface TradingNoteInstance extends ComponentPublicInstance {
 // Refs
 const outstandingShares = ref(2666873613);
 const currentPrice = ref(14000);
-const pe2022 = ref(15);
-const pe2023 = ref(15);
+
+// Local input state (decoupled from grid updates)
+const localOutstandingShares = ref(2666873613);
+const localCurrentPrice = ref(14000);
+
+const peAssumptions = ref<Record<string, number>>({});
 const annualData = ref<Record<string, any>>({});
 const quarterlyData = ref<Record<string, any>>({});
+
+// Track manual edits separately from crawled data
+const manualQuarterlyEdits = ref<Record<string, any>>({});
+const manualAnnualEdits = ref<Record<string, any>>({});
+const forecastYears = ref<string[]>([]);
+const forecastQuarters = ref<string[]>([]);
+
 const currentNoteHtml = ref('');
-const isLoading = ref(false);
+
 const isCloning = ref(false);
-const isSaving = ref(false);
+const loadingStore = useLoadingStore();
 
 // Component refs
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
 
 // Toast
 const toast = useToast();
+
+// Formatted inputs with thousand separators (bound to local state)
+const formattedOutstandingShares = computed({
+  get: () => {
+    if (!localOutstandingShares.value) return '';
+    return new Intl.NumberFormat('vi-VN').format(localOutstandingShares.value);
+  },
+  set: (val: string) => {
+    // Remove all non-digit characters
+    const numericValue = val.replace(/\D/g, '');
+    localOutstandingShares.value = numericValue ? parseInt(numericValue) : 0;
+  },
+});
+
+const formattedCurrentPrice = computed({
+  get: () => {
+    if (!localCurrentPrice.value) return '';
+    return new Intl.NumberFormat('vi-VN').format(localCurrentPrice.value);
+  },
+  set: (val: string) => {
+    // Remove all non-digit characters
+    const numericValue = val.replace(/\D/g, '');
+    localCurrentPrice.value = numericValue ? parseInt(numericValue) : 0;
+  },
+});
 
 // Smart update - check DB and fetch only new data from Vietstock
 const smartUpdate = async () => {
@@ -93,6 +129,84 @@ const smartUpdate = async () => {
   }
 };
 
+// Refresh data from Vietstock (manual crawl)
+const refreshData = async () => {
+  if (!stockSymbol.value) {
+    toast.add({
+      title: 'Lỗi',
+      description: 'Không có mã cổ phiếu',
+      color: 'error',
+    });
+    return;
+  }
+
+  loadingStore.show('Đang cập nhật dữ liệu từ Vietstock...');
+
+  try {
+    // Crawl quarterly data
+    const quarterlyResponse = await $fetch('/api/stock/crawl', {
+      method: 'POST',
+      body: {
+        symbol: stockSymbol.value,
+        pages: 4,
+      },
+    });
+
+    // Crawl yearly data (fetch 2 pages = 8 years to get historical data)
+    const yearlyResponse = await $fetch('/api/stock/crawl-yearly', {
+      method: 'POST',
+      body: {
+        symbol: stockSymbol.value,
+        pages: 2,
+      },
+    });
+
+    if (quarterlyResponse.success && yearlyResponse.success) {
+      const qData = (quarterlyResponse as any).data;
+      const yData = (yearlyResponse as any).data;
+
+      toast.add({
+        title: 'Đã cập nhật',
+        description: `Crawled ${qData?.periodsProcessed || 0} quarters, ${yData?.periodsProcessed || 0} years`,
+        color: 'success',
+      });
+
+      // Reload data from DB
+      await loadAnalysis();
+    } else {
+      toast.add({
+        title: 'Lỗi',
+        description: 'Không thể crawl dữ liệu từ Vietstock',
+        color: 'error',
+      });
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Lỗi không xác định';
+    toast.add({
+      title: 'Lỗi crawl',
+      description: message,
+      color: 'error',
+    });
+  } finally {
+    loadingStore.hide();
+  }
+};
+
+// Apply current input values to grids (without loading from DB)
+const applyInputValues = () => {
+  // Commit local values to main state
+  // This triggers the reactivity in the grids
+  outstandingShares.value = localOutstandingShares.value;
+  currentPrice.value = localCurrentPrice.value;
+
+  toast.add({
+    title: 'Đã áp dụng',
+    description: 'Kịch bản đã được tải với giá trị hiện tại',
+    color: 'success',
+  });
+};
+
 // Auto-load on page mount
 onMounted(() => {
   console.log('=== MOUNTED ===');
@@ -118,6 +232,21 @@ watch(stockSymbol, (newSymbol) => {
   }
 });
 
+// Initialize P/E assumptions for forecast years
+watch(
+  forecastYears,
+  (years) => {
+    if (!years || years.length === 0) return;
+
+    years.forEach((year) => {
+      if (peAssumptions.value[year] === undefined) {
+        peAssumptions.value[year] = 15; // default P/E
+      }
+    });
+  },
+  { immediate: true, deep: true },
+);
+
 // Load saved analysis
 const loadAnalysis = async () => {
   console.log('=== loadAnalysis START ===');
@@ -132,7 +261,7 @@ const loadAnalysis = async () => {
     return;
   }
 
-  isLoading.value = true;
+  loadingStore.show('Đang tải dữ liệu...');
 
   try {
     const response = await $fetch<{
@@ -144,72 +273,181 @@ const loadAnalysis = async () => {
     });
 
     console.log('API Response:', response);
-    console.log('response.success:', response.success);
-    console.log('response.data:', response.data);
 
     if (response.success && response.data) {
       const data = response.data;
 
-      // Populate quarterly data if exists
-      if (data.quarterly_data) {
-        console.log('Setting data from quarterly_data:', data.quarterly_data);
+      // Process periods for forecast status
+      if (data.periods) {
+        const fYears = new Set<string>();
+        const fQuarters = new Set<string>();
 
-        // Extract nested quarterlyData structure for the grid
-        if (data.quarterly_data.quarterlyData) {
-          quarterlyData.value = data.quarterly_data.quarterlyData;
-        }
-
-        // Extract other fields
-        if (data.quarterly_data.currentPrice) {
-          currentPrice.value = data.quarterly_data.currentPrice;
-        }
-        if (data.quarterly_data.outstandingShares) {
-          outstandingShares.value = data.quarterly_data.outstandingShares;
-        }
-        if (data.quarterly_data.pe2022) {
-          pe2022.value = data.quarterly_data.pe2022;
-        }
-        if (data.quarterly_data.pe2023) {
-          pe2023.value = data.quarterly_data.pe2023;
-        }
-        if (data.quarterly_data.annualData) {
-          annualData.value = data.quarterly_data.annualData;
-        }
-
-        console.log('quarterlyData.value after set:', quarterlyData.value);
-      } else {
-        console.log('No quarterly_data in response');
-      }
-
-      // Populate trading note data if exists
-      if (data.note_html) {
-        currentNoteHtml.value = data.note_html;
-      }
-
-      // Set trading values in the trading note component
-      if (
-        tradingNoteRef.value &&
-        (data.entry_price || data.target_price || data.stop_loss)
-      ) {
-        tradingNoteRef.value.setValues({
-          entryPrice: data.entry_price ? Number(data.entry_price) : null,
-          targetPrice: data.target_price ? Number(data.target_price) : null,
-          stopLoss: data.stop_loss ? Number(data.stop_loss) : null,
+        data.periods.forEach((p: any) => {
+          if (p.is_forecast) {
+            if (p.source === 'year' || p.quarter === 0) {
+              fYears.add(p.year.toString());
+            } else {
+              fQuarters.add(`${p.year}_Q${p.quarter}`);
+            }
+          }
         });
+        forecastYears.value = Array.from(fYears);
+        forecastQuarters.value = Array.from(fQuarters);
+      }
+
+      // 1. Load from trading snapshot first (as defaults)
+      if (data.tradingSnapshot) {
+        if (data.tradingSnapshot.outstandingShares) {
+          outstandingShares.value = data.tradingSnapshot.outstandingShares;
+          localOutstandingShares.value = data.tradingSnapshot.outstandingShares;
+        }
+        if (data.tradingSnapshot.lastPrice) {
+          currentPrice.value = data.tradingSnapshot.lastPrice;
+          localCurrentPrice.value = data.tradingSnapshot.lastPrice;
+        }
+      }
+
+      // 2. Load saved manual data (if available) - this will override tradingSnapshot
+      if (data.analysis && data.analysis.quarterlyData) {
+        const savedData = data.analysis.quarterlyData;
+        console.log('Loaded saved data:', savedData);
+
+        if (savedData.quarterlyData) {
+          quarterlyData.value = savedData.quarterlyData;
+        }
+        if (savedData.annualData) {
+          annualData.value = savedData.annualData;
+        }
+        if (savedData.peAssumptions) {
+          peAssumptions.value = savedData.peAssumptions;
+        }
+        // Override with saved shares/price if they exist
+        if (savedData.outstandingShares) {
+          outstandingShares.value = savedData.outstandingShares;
+          localOutstandingShares.value = savedData.outstandingShares;
+        }
+        if (savedData.currentPrice) {
+          currentPrice.value = savedData.currentPrice;
+          localCurrentPrice.value = savedData.currentPrice;
+        }
+      }
+
+      // 2. Overlay crawled quarterly data (metrics)
+      // This ensures official data overrides manual input for overlapping periods
+      if (data.metrics && Object.keys(data.metrics).length > 0) {
+        const metricToIndicator: Record<string, string> = {
+          REVENUE_NET: 'netRevenue',
+          GROSS_PROFIT: 'grossProfit',
+          OPERATING_PROFIT: 'operatingProfit',
+          NET_PROFIT: 'netProfit',
+          PROFIT_AFTER_TAX: 'netProfit',
+          EPS_TTM: 'eps',
+          PE: 'pe',
+          ROS: 'netMargin',
+          ROE: 'roe',
+          ROA: 'roa',
+          TOTAL_ASSETS: 'totalAssets',
+          CURRENT_ASSETS: 'currentAssets',
+          TOTAL_LIABILITIES: 'totalLiabilities',
+          SHORT_TERM_LIABILITIES: 'shortTermLiabilities',
+          EQUITY: 'equity',
+          BVPS: 'bvps',
+        };
+
+        for (const [metricCode, periodValues] of Object.entries(data.metrics)) {
+          const indicatorKey = metricToIndicator[metricCode];
+          if (!indicatorKey) continue;
+
+          // Ensure indicator object exists
+          if (!quarterlyData.value[indicatorKey!]) {
+            quarterlyData.value[indicatorKey!] = {};
+          }
+
+          for (const [periodKey, value] of Object.entries(
+            periodValues as Record<string, string>,
+          )) {
+            const parts = periodKey.split('_');
+            if (parts.length < 2) continue;
+            const [year, quarter] = parts;
+
+            // Ensure year object exists
+            if (!quarterlyData.value[indicatorKey!][year]) {
+              quarterlyData.value[indicatorKey!][year] = {};
+            }
+
+            // OVERWRITE with crawled value
+            quarterlyData.value[indicatorKey!][year][quarter] = parseFloat(
+              value as string,
+            );
+          }
+        }
+        // Trigger reactivity
+        quarterlyData.value = { ...quarterlyData.value };
+      }
+
+      // 3. Overlay crawled annual data (yearlyMetrics)
+      if (data.yearlyMetrics && Object.keys(data.yearlyMetrics).length > 0) {
+        const metricToIndicator: Record<string, string> = {
+          REVENUE_NET: 'netRevenue',
+          GROSS_PROFIT: 'grossProfit',
+          OPERATING_PROFIT: 'operatingProfit',
+          NET_PROFIT: 'netProfit',
+          PROFIT_AFTER_TAX: 'netProfit',
+          EPS_TTM: 'eps',
+          PE: 'pe',
+          ROS: 'ros',
+          ROE: 'roe',
+          ROA: 'roa',
+        };
+
+        for (const [metricCode, yearValues] of Object.entries(
+          data.yearlyMetrics,
+        )) {
+          const indicatorKey = metricToIndicator[metricCode];
+          if (!indicatorKey) continue;
+
+          // Ensure indicator object exists
+          if (!annualData.value[indicatorKey]) {
+            annualData.value[indicatorKey] = {};
+          }
+
+          for (const [year, value] of Object.entries(
+            yearValues as Record<string, string>,
+          )) {
+            // OVERWRITE with crawled value
+            annualData.value[indicatorKey][year] = parseFloat(value);
+          }
+        }
+        // Trigger reactivity
+        annualData.value = { ...annualData.value };
+      }
+
+      // Populate trading note data from analysis
+      if (data.analysis) {
+        if (data.analysis.noteHtml) {
+          currentNoteHtml.value = data.analysis.noteHtml;
+        }
+
+        if (tradingNoteRef.value) {
+          tradingNoteRef.value.setValues({
+            entryPrice: data.analysis.entryPrice,
+            targetPrice: data.analysis.targetPrice,
+            stopLoss: data.analysis.stopLoss,
+          });
+        }
       }
 
       toast.add({
-        title: 'Đã tải',
-        description: `Đã tải kịch bản cho ${stockSymbol.value.toUpperCase()}`,
+        title: 'Đã tải dữ liệu',
+        description: `${data.periods?.length || 0} periods loaded`,
         color: 'success',
       });
-    } else {
+    } else if (response.message) {
+      // Company not found - offer to crawl
       toast.add({
-        title: 'Thông báo',
-        description:
-          response.message ||
-          `Không tìm thấy kịch bản cho ${stockSymbol.value.toUpperCase()}`,
-        color: 'info',
+        title: 'Chưa có dữ liệu',
+        description: response.message,
+        color: 'warning',
       });
     }
   } catch (error) {
@@ -221,7 +459,7 @@ const loadAnalysis = async () => {
       color: 'error',
     });
   } finally {
-    isLoading.value = false;
+    loadingStore.hide();
   }
 };
 
@@ -241,7 +479,7 @@ const saveAnalysis = async (tradingData: {
     return;
   }
 
-  isSaving.value = true;
+  loadingStore.show('Đang lưu dữ liệu...');
 
   try {
     await $fetch('/api/stock/save', {
@@ -251,8 +489,7 @@ const saveAnalysis = async (tradingData: {
         quarterlyData: {
           annualData: annualData.value,
           quarterlyData: quarterlyData.value,
-          pe2022: pe2022.value,
-          pe2023: pe2023.value,
+          peAssumptions: peAssumptions.value,
           outstandingShares: outstandingShares.value,
           currentPrice: currentPrice.value,
         },
@@ -277,9 +514,64 @@ const saveAnalysis = async (tradingData: {
       color: 'error',
     });
   } finally {
-    isSaving.value = false;
+    loadingStore.hide();
   }
 };
+
+// Watch annualData for year changes and sync to quarterlyData
+watch(
+  annualData,
+  (newAnnualData) => {
+    if (!newAnnualData || Object.keys(newAnnualData).length === 0) return;
+
+    // Extract years from annualData
+    const annualYears = new Set<string>();
+    for (const indicatorData of Object.values(newAnnualData)) {
+      if (indicatorData && typeof indicatorData === 'object') {
+        Object.keys(indicatorData).forEach((year) => annualYears.add(year));
+      }
+    }
+
+    // Extract years from quarterlyData
+    const quarterlyYears = new Set<string>();
+    for (const indicatorData of Object.values(quarterlyData.value)) {
+      if (indicatorData && typeof indicatorData === 'object') {
+        Object.keys(indicatorData).forEach((year) => quarterlyYears.add(year));
+      }
+    }
+
+    // Find years in annual but not in quarterly
+    const yearsToAdd = Array.from(annualYears).filter(
+      (year) => !quarterlyYears.has(year),
+    );
+
+    if (yearsToAdd.length > 0) {
+      console.log('Syncing years to quarterlyData:', yearsToAdd);
+
+      // Add missing years to quarterlyData
+      for (const year of yearsToAdd) {
+        // For each indicator in quarterlyData, add the year with empty quarters
+        for (const indicatorKey of Object.keys(quarterlyData.value)) {
+          if (!quarterlyData.value[indicatorKey]) {
+            quarterlyData.value[indicatorKey] = {};
+          }
+          if (!quarterlyData.value[indicatorKey][year]) {
+            quarterlyData.value[indicatorKey][year] = {
+              Q1: null,
+              Q2: null,
+              Q3: null,
+              Q4: null,
+            };
+          }
+        }
+      }
+
+      // Trigger reactivity
+      quarterlyData.value = { ...quarterlyData.value };
+    }
+  },
+  { deep: true },
+);
 
 // Page meta
 useHead({
@@ -305,8 +597,12 @@ useHead({
             <span class="breadcrumb-current">{{ stockSymbol || '...' }}</span>
           </nav>
 
-          <h1 class="page-title">{{ stockSymbol }}</h1>
-          <p class="page-subtitle">Tầm soát theo Excel - 3 Tables riêng biệt</p>
+          <div class="flex items-center gap-3 mt-2">
+            <h1 class="page-title">{{ stockSymbol }}</h1>
+            <UBadge size="lg" color="primary" variant="subtle">
+              Live Data
+            </UBadge>
+          </div>
         </div>
         <UColorModeButton size="lg" />
       </div>
@@ -315,236 +611,166 @@ useHead({
     <!-- Main Content -->
     <main class="page-content">
       <!-- Stock Input Section -->
-      <section class="input-section">
-        <div class="stock-inputs">
-          <div class="input-row">
-            <div class="input-field">
-              <label for="outstanding-shares">Số lượng CP lưu hành</label>
-              <UInput
-                id="outstanding-shares"
-                v-model.number="outstandingShares"
-                type="number"
-                size="lg"
-              />
-            </div>
-
-            <div class="input-field">
-              <label for="current-price">Giá CP hiện tại (đồng)</label>
-              <UInput
-                id="current-price"
-                v-model.number="currentPrice"
-                type="number"
-                size="lg"
-              />
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-primary/10">
+                <UIcon name="i-lucide-settings" class="text-xl text-primary" />
+              </div>
+              <div>
+                <h2 class="text-lg font-semibold">Thông số cơ bản</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Cấu hình thông tin cổ phiếu
+                </p>
+              </div>
             </div>
           </div>
+        </template>
 
-          <div class="action-buttons">
+        <div class="space-y-6">
+          <!-- Input Fields -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <UFormGroup
+              label="Số lượng CP lưu hành"
+              name="outstandingShares"
+              help="Tổng số cổ phiếu đang lưu hành trên thị trường"
+            >
+              <UInput
+                v-model="formattedOutstandingShares"
+                type="text"
+                size="lg"
+                placeholder="2,666,873,613"
+              >
+                <template #leading>
+                  <UIcon name="i-lucide-hash" class="text-gray-400" />
+                </template>
+              </UInput>
+            </UFormGroup>
+
+            <UFormGroup
+              label="Giá CP hiện tại"
+              name="currentPrice"
+              help="Giá cổ phiếu hiện tại (VNĐ)"
+            >
+              <UInput
+                v-model="formattedCurrentPrice"
+                type="text"
+                size="lg"
+                placeholder="14,000"
+              >
+                <template #leading>
+                  <UIcon name="i-lucide-dollar-sign" class="text-gray-400" />
+                </template>
+                <template #trailing>
+                  <span class="text-xs text-gray-500">VNĐ</span>
+                </template>
+              </UInput>
+            </UFormGroup>
+          </div>
+
+          <UDivider />
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap gap-3">
             <UButton
-              :loading="isLoading"
+              :loading="loadingStore.isLoading"
               color="neutral"
               variant="outline"
-              icon="i-lucide-folder-open"
+              size="lg"
               @click="loadAnalysis"
             >
+              <template #leading>
+                <UIcon name="i-lucide-database" />
+              </template>
+              Load từ DB
+            </UButton>
+
+            <UButton
+              color="neutral"
+              variant="solid"
+              size="lg"
+              @click="applyInputValues"
+            >
+              <template #leading>
+                <UIcon name="i-lucide-play" />
+              </template>
               Tải kịch bản
+            </UButton>
+
+            <UButton
+              :loading="loadingStore.isLoading"
+              color="primary"
+              variant="solid"
+              size="lg"
+              @click="refreshData"
+            >
+              <template #leading>
+                <UIcon name="i-lucide-refresh-cw" />
+              </template>
+              Refresh Data từ Vietstock
             </UButton>
           </div>
         </div>
-      </section>
+      </UCard>
 
       <!-- Table 1: Annual Summary -->
-      <section class="grid-section">
+      <UCard class="mb-6">
         <AnalysisAnnualSummaryGrid
           :outstanding-shares="outstandingShares"
           :quarterly-data="quarterlyData"
           :annual-data="annualData"
+          :forecast-years="forecastYears"
           @update:data="annualData = $event"
         />
-      </section>
+      </UCard>
 
       <!-- Table 2: Quarterly Details -->
-      <section class="grid-section">
+      <UCard class="mb-6">
         <AnalysisQuarterlyDetailsGrid
           :data="quarterlyData"
           :outstanding-shares="outstandingShares"
           :current-price="currentPrice"
+          :forecast-quarters="forecastQuarters"
           @update:data="quarterlyData = $event"
         />
-      </section>
+      </UCard>
 
       <!-- Table 3: P/E Assumptions -->
-      <section class="grid-section">
+      <UCard class="mb-6">
         <AnalysisPEAssumptions
-          v-model:pe2022="pe2022"
-          v-model:pe2023="pe2023"
+          v-model:peAssumptions="peAssumptions"
+          :forecast-years="forecastYears"
         />
-      </section>
+      </UCard>
 
       <!-- Trading Plan Section -->
-      <section class="trading-section">
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-primary/10">
+                <UIcon
+                  name="i-lucide-notebook-pen"
+                  class="text-xl text-primary"
+                />
+              </div>
+              <div>
+                <h2 class="text-lg font-semibold">Kế hoạch giao dịch</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Ghi chú và chiến lược đầu tư
+                </p>
+              </div>
+            </div>
+          </div>
+        </template>
+
         <AnalysisTradingNote
           ref="tradingNoteRef"
           :note-html="currentNoteHtml"
           @save="saveAnalysis"
         />
-      </section>
+      </UCard>
     </main>
-
-    <!-- Loading Overlay -->
-    <div v-if="isSaving" class="saving-overlay">
-      <div class="saving-content">
-        <UIcon name="i-lucide-loader-2" class="animate-spin text-4xl" />
-        <span>Đang lưu...</span>
-      </div>
-    </div>
   </div>
 </template>
-
-<style scoped>
-.analysis-page {
-  min-height: 100vh;
-  background: var(--ui-bg);
-}
-
-.page-header {
-  background: var(--ui-bg-elevated);
-  border-bottom: 1px solid var(--ui-border);
-  padding: 1.5rem 2rem;
-}
-
-.header-content {
-  max-width: 1600px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-}
-
-.breadcrumb-link {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  color: var(--ui-text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.breadcrumb-link:hover {
-  color: var(--ui-primary);
-}
-
-.breadcrumb-separator {
-  font-size: 1rem;
-  opacity: 0.5;
-}
-
-.breadcrumb-current {
-  font-weight: 600;
-  color: var(--ui-text);
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--ui-text);
-  margin: 0;
-}
-
-.page-subtitle {
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  margin: 0.25rem 0 0 0;
-}
-
-.page-content {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.input-section {
-  background: var(--ui-bg-elevated);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--ui-border);
-}
-
-.stock-inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.input-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.input-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.input-field label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--ui-text-muted);
-}
-
-.input-field :deep(input) {
-  text-transform: uppercase;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
-}
-
-.grid-section,
-.trading-section {
-  background: var(--ui-bg-elevated);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--ui-border);
-}
-
-.saving-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.saving-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  color: white;
-  font-size: 1.25rem;
-}
-</style>

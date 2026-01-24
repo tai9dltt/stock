@@ -22,6 +22,7 @@ const props = defineProps<{
   outstandingShares?: number;
   quarterlyData?: Record<string, any>; // Data from Table 2
   annualData?: Record<string, any>; // Annual data from Vietstock
+  forecastYears?: string[];
 }>();
 
 const emit = defineEmits<{
@@ -33,6 +34,7 @@ const colorMode = useColorMode();
 
 // Indicators for annual summary
 const indicators = [
+  // ... (indicators list, no change)
   {
     key: 'netRevenue',
     name: 'Doanh thu thuần',
@@ -92,9 +94,15 @@ const indicators = [
 const years = ref<string[]>([]);
 const historicalYears = computed(() => {
   const currentYear = new Date().getFullYear();
+  if (props.forecastYears && props.forecastYears.length > 0) {
+    return years.value.filter((y) => !props.forecastYears!.includes(y));
+  }
   return years.value.filter((y) => parseInt(y) < currentYear);
 });
 const forecastYears = computed(() => {
+  if (props.forecastYears && props.forecastYears.length > 0) {
+    return years.value.filter((y) => props.forecastYears!.includes(y));
+  }
   const currentYear = new Date().getFullYear();
   return years.value.filter((y) => parseInt(y) >= currentYear);
 });
@@ -147,6 +155,13 @@ const initializeData = () => {
   });
 
   recalculateAll();
+};
+
+// Grid API
+const gridApi = ref<any>(null);
+
+const onGridReady = (params: any) => {
+  gridApi.value = params.api;
 };
 
 // Update annual data from quarterly data (auto-sum quarters)
@@ -227,6 +242,286 @@ const updateFromQuarterlyData = () => {
   isPopulating = false;
 };
 
+// Sum quarters to annual (lightweight version that doesn't reinitialize)
+const sumQuartersToAnnual = () => {
+  if (!props.quarterlyData) return;
+
+  console.log('Summing quarters to annual...');
+
+  // Map quarterly keys to annual indicator keys
+  const quarterlyToAnnualMap: Record<string, string> = {
+    netRevenue: 'netRevenue',
+    grossProfit: 'grossProfit',
+    operatingProfit: 'operatingProfit',
+    netProfit: 'netProfit',
+  };
+
+  for (const [qKey, aKey] of Object.entries(quarterlyToAnnualMap)) {
+    const quarterlyDataForIndicator = props.quarterlyData[qKey];
+    if (!quarterlyDataForIndicator) continue;
+
+    const annualRow = rowData.value.find((r) => r.indicatorKey === aKey);
+    if (!annualRow) continue;
+
+    // Sum quarters for each year
+    for (const year of years.value) {
+      const yearData = quarterlyDataForIndicator[year];
+      if (!yearData) continue;
+
+      const yearKey = getYearKey(year);
+      let yearTotal = 0;
+      let hasData = false;
+
+      let quarterCount = 0;
+      for (const quarter of ['Q1', 'Q2', 'Q3', 'Q4']) {
+        const qValue = yearData[quarter];
+        if (qValue !== null && qValue !== undefined) {
+          yearTotal += Number(qValue);
+          quarterCount++;
+          hasData = true;
+        }
+      }
+
+      // ONLY sum if all 4 quarters have data
+      if (hasData && quarterCount === 4) {
+        (annualRow as any)[yearKey] = yearTotal;
+        console.log(`Summed ${aKey} for ${year}: ${yearTotal}`);
+      } else {
+        (annualRow as any)[yearKey] = null;
+      }
+    }
+  }
+
+  recalculateAll();
+};
+
+// Helper: Get all years from both annual and quarterly data
+const getAllYears = (): string[] => {
+  const allYears = new Set<string>();
+
+  // Years from annualData
+  if (props.annualData) {
+    for (const ind of indicators) {
+      if (props.annualData[ind.key]) {
+        Object.keys(props.annualData[ind.key]).forEach((y) => allYears.add(y));
+      }
+    }
+  }
+
+  // Years from quarterlyData
+  if (props.quarterlyData) {
+    const quarterlyKeys = [
+      'netRevenue',
+      'grossProfit',
+      'operatingProfit',
+      'netProfit',
+    ];
+    for (const key of quarterlyKeys) {
+      if (props.quarterlyData[key]) {
+        Object.keys(props.quarterlyData[key]).forEach((y) => allYears.add(y));
+      }
+    }
+  }
+
+  return Array.from(allYears).sort();
+};
+
+// Helper: Check if a year has yearly crawl data
+const hasYearlyData = (year: string): boolean => {
+  if (!props.annualData) return false;
+
+  // Check if any base indicator has data for this year
+  const baseIndicators = [
+    'netRevenue',
+    'grossProfit',
+    'operatingProfit',
+    'netProfit',
+  ];
+  for (const key of baseIndicators) {
+    const value = props.annualData[key]?.[year];
+    if (value !== null && value !== undefined) {
+      return true;
+    }
+  }
+  return false;
+};
+
+// Smart merge: Prioritize yearly data for past years, quarterly sum for current/future
+const mergeAnnualAndQuarterlyData = () => {
+  console.log('=== Merging annual and quarterly data ===');
+  isPopulating = true;
+
+  // Get all years from both sources
+  years.value = getAllYears();
+
+  if (years.value.length === 0) {
+    console.log('No years found in data');
+    isPopulating = false;
+    return;
+  }
+
+  console.log('All years:', years.value);
+
+  // Get current year for comparison
+  const currentYear = new Date().getFullYear();
+  console.log('Current year:', currentYear);
+
+  // Reinitialize grid with all years
+  initializeData();
+  columnDefs.value = generateColumnDefs();
+
+  // Map quarterly keys to annual keys
+  const quarterlyToAnnualMap: Record<string, string> = {
+    netRevenue: 'netRevenue',
+    grossProfit: 'grossProfit',
+    operatingProfit: 'operatingProfit',
+    netProfit: 'netProfit',
+  };
+
+  // Helper: Check if year has incomplete quarterly data
+  const hasIncompleteQuarters = (year: string): boolean => {
+    if (!props.quarterlyData) return false;
+
+    // Check any base indicator for missing quarters
+    for (const qKey of Object.keys(quarterlyToAnnualMap)) {
+      const yearData = props.quarterlyData[qKey]?.[year];
+      if (yearData) {
+        // Count how many quarters have data
+        let quarterCount = 0;
+        for (const quarter of ['Q1', 'Q2', 'Q3', 'Q4']) {
+          if (yearData[quarter] !== null && yearData[quarter] !== undefined) {
+            quarterCount++;
+          }
+        }
+        // If has some data but not all 4 quarters, it's incomplete
+        if (quarterCount > 0 && quarterCount < 4) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // For each indicator
+  for (const ind of indicators) {
+    const row = rowData.value.find((r) => r.indicatorKey === ind.key);
+    if (!row) continue;
+
+    // For each year
+    for (const year of years.value) {
+      const yearKey = getYearKey(year);
+      const yearNum = parseInt(year);
+
+      // Check if this is a base indicator that can be summed from quarterly
+      const quarterlyKey = Object.keys(quarterlyToAnnualMap).find(
+        (k) => quarterlyToAnnualMap[k] === ind.key,
+      );
+
+      // Priority logic:
+      // 1. For current year or future years: ALWAYS sum from quarterly (to allow forecast)
+      // 2. For years with incomplete quarters: ALWAYS sum from quarterly
+      // 3. For past complete years: Use yearly data if available, otherwise sum from quarterly
+
+      const isIncomplete = hasIncompleteQuarters(year);
+
+      if (yearNum >= currentYear || isIncomplete) {
+        // Current/future year OR incomplete year: Always sum from quarterly
+        if (quarterlyKey && props.quarterlyData?.[quarterlyKey]?.[year]) {
+          const yearData = props.quarterlyData[quarterlyKey][year];
+          let yearTotal = 0;
+          let hasData = false;
+
+          let quarterCount = 0;
+
+          for (const quarter of ['Q1', 'Q2', 'Q3', 'Q4']) {
+            const qValue = yearData[quarter];
+            if (qValue !== null && qValue !== undefined) {
+              yearTotal += Number(qValue);
+              quarterCount++;
+              hasData = true;
+            }
+          }
+
+          // ONLY sum if all 4 quarters have data
+          if (hasData && quarterCount === 4) {
+            row[yearKey] = yearTotal;
+            const reason =
+              yearNum >= currentYear
+                ? 'current/future year'
+                : 'incomplete year';
+            console.log(
+              `→ Summed from quarterly for ${ind.key} ${year}: ${yearTotal} (${reason})`,
+            );
+            continue;
+          }
+        }
+      } else {
+        // Past year: Prefer yearly data if available
+        if (
+          hasYearlyData(year) &&
+          props.annualData?.[ind.key]?.[year] !== undefined
+        ) {
+          const value = props.annualData[ind.key][year];
+          if (value !== null && value !== undefined) {
+            row[yearKey] = Number(value);
+            console.log(
+              `✓ Using yearly data for ${ind.key} ${year}: ${value} (past complete year)`,
+            );
+            continue;
+          }
+        }
+
+        // Fallback: Sum from quarterly if yearly not available
+        if (quarterlyKey && props.quarterlyData?.[quarterlyKey]?.[year]) {
+          const yearData = props.quarterlyData[quarterlyKey][year];
+          let yearTotal = 0;
+          let hasData = false;
+
+          let quarterCount = 0;
+
+          for (const quarter of ['Q1', 'Q2', 'Q3', 'Q4']) {
+            const qValue = yearData[quarter];
+            if (qValue !== null && qValue !== undefined) {
+              yearTotal += Number(qValue);
+              quarterCount++;
+              hasData = true;
+            }
+          }
+
+          // ONLY sum if all 4 quarters have data
+          if (hasData && quarterCount === 4) {
+            row[yearKey] = yearTotal;
+            console.log(
+              `→ Summed from quarterly for ${ind.key} ${year}: ${yearTotal} (past year, no yearly data)`,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  // Populate ratio indicators from annual data (they can't be summed from quarterly)
+  const ratioIndicators = ['eps', 'pe', 'ros', 'roe', 'roa'];
+  for (const ratioKey of ratioIndicators) {
+    const row = rowData.value.find((r) => r.indicatorKey === ratioKey);
+    if (!row || !props.annualData?.[ratioKey]) continue;
+
+    for (const year of years.value) {
+      const yearKey = getYearKey(year);
+      const value = props.annualData[ratioKey][year];
+
+      if (value !== null && value !== undefined) {
+        row[yearKey] = Number(value);
+        console.log();
+      }
+    }
+  }
+
+  recalculateAll();
+  isPopulating = false;
+  console.log('=== Merge complete ===');
+};
+
 // Populate from annual data (directly from Vietstock API)
 const populateFromAnnualData = () => {
   if (!props.annualData) return;
@@ -246,10 +541,6 @@ const populateFromAnnualData = () => {
 
   if (dataYears.size > 0) {
     years.value = Array.from(dataYears).sort();
-    console.log(
-      'Extracted years from annual data:',
-      JSON.stringify(years.value),
-    );
 
     // Reinitialize grid with new years
     initializeData();
@@ -340,11 +631,6 @@ const recalculateAll = () => {
       grossMarginRow[yearKey] = calculateMargin(revenue, grossProfit);
     }
 
-    // Calculate EPS
-    if (epsRow) {
-      epsRow[yearKey] = calculateEPS(profit);
-    }
-
     // Calculate growth
     const yearIndex = years.value.indexOf(year);
     if (yearIndex > 0) {
@@ -365,6 +651,15 @@ const recalculateAll = () => {
   }
 
   emitData();
+
+  // Force Vue to detect change by creating new array reference
+  rowData.value = [...rowData.value];
+
+  // Force grid refresh
+  if (gridApi.value) {
+    gridApi.value.refreshCells({ force: true });
+    gridApi.value.redrawRows();
+  }
 };
 
 // Emit data
@@ -384,6 +679,62 @@ const emitData = () => {
   }
   emit('update:data', data);
 };
+
+// Add a new year
+const addYear = () => {
+  // Calculate next year (max year + 1)
+  const lastYear = years.value[years.value.length - 1];
+  const nextYear = lastYear
+    ? String(parseInt(lastYear) + 1)
+    : String(new Date().getFullYear());
+
+  // Add to years array
+  years.value.push(nextYear);
+  years.value.sort();
+
+  // Add new year column to all rows
+  const yearKey = getYearKey(nextYear);
+  for (const row of rowData.value) {
+    (row as any)[yearKey] = null;
+  }
+
+  // Regenerate column definitions
+  columnDefs.value = generateColumnDefs();
+
+  // Recalculate all formulas
+  recalculateAll();
+
+  console.log(`Added year ${nextYear} to annual grid`);
+};
+
+// Remove a year
+const removeYear = (year: string) => {
+  const index = years.value.indexOf(year);
+  if (index === -1) return;
+
+  // Remove from years array
+  years.value.splice(index, 1);
+
+  // Remove year column from all rows
+  const yearKey = getYearKey(year);
+  for (const row of rowData.value) {
+    delete (row as any)[yearKey];
+  }
+
+  // Regenerate column definitions
+  columnDefs.value = generateColumnDefs();
+
+  // Recalculate all formulas
+  recalculateAll();
+
+  console.log(`Removed year ${year} from annual grid`);
+};
+
+// Expose functions for parent component if needed
+defineExpose({
+  addYear,
+  removeYear,
+});
 
 // Value setter
 const valueSetter = (params: ValueSetterParams<AnnualDataRow>): boolean => {
@@ -439,10 +790,18 @@ const getCellClass = (params: CellClassParams): string => {
 // Number formatter
 const numberFormatter = (params: { value: number | null }) => {
   if (params.value === null || params.value === undefined) return '-';
-  return new Intl.NumberFormat('vi-VN', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 0,
-  }).format(params.value);
+  return new Intl.NumberFormat('vi-VN').format(params.value);
+};
+
+// Growth percentage formatter (integer only with % suffix)
+const growthFormatter = (params: { value: number | null }) => {
+  if (params.value === null || params.value === undefined) return '-';
+  return (
+    new Intl.NumberFormat('vi-VN', {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    }).format(params.value) + '%'
+  );
 };
 
 // Generate column definitions dynamically
@@ -464,14 +823,32 @@ const generateColumnDefs = (): ColDef<AnnualDataRow>[] => {
     cols.push({
       headerName: isForecast ? `${year} (F)` : year,
       field: yearKey,
-      width: 110,
+      width: 150,
       editable: (p) => {
         const ind = indicators.find((i) => i.key === p.data?.indicatorKey);
         return ind?.editable || false;
       },
       valueSetter,
       cellClass: getCellClass,
-      valueFormatter: numberFormatter,
+      valueFormatter: (p) => {
+        // Use integer formatter for growth, margin, and ratio percentage rows
+        const percentageRows = [
+          'revenueGrowth',
+          'profitGrowth',
+          'netProfitMargin',
+          'grossMargin',
+          'ros',
+          'roe',
+          'roa',
+        ];
+        if (
+          p.data?.indicatorKey &&
+          percentageRows.includes(p.data.indicatorKey)
+        ) {
+          return growthFormatter(p);
+        }
+        return numberFormatter(p);
+      },
     });
   }
 
@@ -493,28 +870,29 @@ watch(
   (val) => {
     if (val) {
       outstandingShares.value = val;
+
+      // Update the row data with new global value
+      const sharesRow = rowData.value.find(
+        (r) => r.indicatorKey === 'outstandingShares',
+      );
+      if (sharesRow) {
+        for (const year of years.value) {
+          const yearKey = getYearKey(year);
+          (sharesRow as any)[yearKey] = val;
+        }
+      }
+
       recalculateAll();
     }
   },
 );
 
-// Watch for quarterly data changes - auto-update annual totals
+// Watch for data changes - smart merge annual and quarterly
+// Priority: yearly crawl data > quarterly sum
 watch(
-  () => props.quarterlyData,
+  [() => props.annualData, () => props.quarterlyData],
   () => {
-    // Only update from quarterly if no annual data available
-    if (!props.annualData || Object.keys(props.annualData).length === 0) {
-      updateFromQuarterlyData();
-    }
-  },
-  { deep: true },
-);
-
-// Watch for annual data changes - use Vietstock annual data directly
-watch(
-  () => props.annualData,
-  () => {
-    populateFromAnnualData();
+    mergeAnnualAndQuarterlyData();
   },
   { deep: true, immediate: true },
 );
@@ -540,10 +918,21 @@ const gridTheme = computed(() =>
 <template>
   <div class="annual-grid">
     <div class="grid-header">
-      <h3 class="grid-title">
-        <UIcon name="i-lucide-calendar" class="mr-2" />
-        {{ titleText }}
-      </h3>
+      <div class="header-row">
+        <h3 class="grid-title">
+          <UIcon name="i-lucide-calendar" class="mr-2" />
+          {{ titleText }}
+        </h3>
+        <UButton
+          color="primary"
+          variant="soft"
+          size="sm"
+          icon="i-lucide-plus"
+          @click="addYear"
+        >
+          Add Year
+        </UButton>
+      </div>
     </div>
 
     <div :class="gridTheme" class="grid-wrapper">
@@ -555,6 +944,7 @@ const gridTheme = computed(() =>
           dom-layout="autoHeight"
           :suppress-row-click-selection="true"
           :enable-cell-text-selection="true"
+          @grid-ready="onGridReady"
         />
       </ClientOnly>
     </div>
@@ -587,6 +977,13 @@ const gridTheme = computed(() =>
 
 .grid-header {
   margin-bottom: 1rem;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .grid-title {

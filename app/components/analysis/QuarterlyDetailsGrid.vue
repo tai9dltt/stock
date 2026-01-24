@@ -23,6 +23,7 @@ const props = defineProps<{
   outstandingShares?: number;
   currentPrice?: number;
   data?: Record<string, any>; // External data to populate grid
+  forecastQuarters?: string[]; // ['2024_Q1', '2024_Q2']
 }>();
 
 const emit = defineEmits<{
@@ -31,6 +32,7 @@ const emit = defineEmits<{
 
 const colorMode = useColorMode();
 
+// ... (indicators list, no change)
 // Indicators
 const indicators = [
   {
@@ -60,7 +62,7 @@ const indicators = [
   {
     key: 'outstandingShares',
     name: 'KL CP lưu hành',
-    editable: false,
+    editable: true, // Allow editing to forecast share changes
     calculated: false,
   },
   {
@@ -92,8 +94,8 @@ const indicators = [
   {
     key: 'profitGrowth',
     name: 'TT LNST (%)',
-    editable: false,
-    calculated: true,
+    editable: true, // Allow editing growth to forecast
+    calculated: false, // Growth can be manually set
   },
 ];
 
@@ -119,7 +121,17 @@ let isPopulating = false;
 
 const getQuarterKey = (year: string, quarter: string) => `${year}_${quarter}`;
 
-const isForecast = (year: string) => forecastYears.value.includes(year);
+const isForecast = (year: string, quarter?: string) => {
+  if (props.forecastQuarters && props.forecastQuarters.length > 0) {
+    if (quarter) {
+      return props.forecastQuarters.includes(`${year}_${quarter}`);
+    }
+    // If checking year, consider forecast if any quarter is forecast?
+    // Or prefer using quarter check in UI.
+    return props.forecastQuarters.some((fq) => fq.startsWith(`${year}_`));
+  }
+  return forecastYears.value.includes(year);
+};
 
 const initializeData = () => {
   rowData.value = indicators.map((ind) => {
@@ -144,23 +156,6 @@ const initializeData = () => {
   });
 
   recalculateAll();
-};
-
-const getPreviousQuarterKey = (
-  year: string,
-  quarter: string,
-): string | null => {
-  const qIndex = quarters.indexOf(quarter);
-  if (qIndex > 0) {
-    return getQuarterKey(year, quarters[qIndex - 1]);
-  }
-
-  const yIndex = years.value.indexOf(year);
-  if (yIndex > 0) {
-    return getQuarterKey(years.value[yIndex - 1], 'Q4');
-  }
-
-  return null;
 };
 
 const recalculateAll = () => {
@@ -203,44 +198,102 @@ const recalculateAll = () => {
         grossMarginRow[key] = (grossProfit / revenue) * 100;
       }
 
-      // Quarterly EPS
-      if (qepsRow && profit && outstandingShares.value) {
-        const eps = (profit * 1000000000) / outstandingShares.value;
-        qepsRow[key] = eps;
-        yearCumulativeEPS += eps;
+      // Quarterly EPS: (Net Profit in millions / Outstanding Shares) × 10^6
+      // Use per-quarter outstanding shares if available, otherwise use global value
+      if (qepsRow && profit) {
+        const sharesRow = rowData.value.find(
+          (r) => r.indicatorKey === 'outstandingShares',
+        );
+        const quarterShares = sharesRow?.[key] as number | null;
+        const shares = quarterShares || outstandingShares.value;
+
+        if (shares) {
+          const eps = (profit * 1000000) / shares;
+          qepsRow[key] = eps;
+        }
       }
 
-      // Cumulative EPS
-      if (cepsRow) {
-        cepsRow[key] = yearCumulativeEPS;
-      }
+      // Cumulative EPS (TTM - Trailing 12 Months): sum of last 4 quarters
+      if (cepsRow && qepsRow) {
+        let ttmEPS = 0;
 
-      // P/E
-      if (peRow && yearCumulativeEPS && currentPrice.value) {
-        peRow[key] = currentPrice.value / yearCumulativeEPS;
-      }
+        // Get current quarter index
+        const currentQIdx = quarters.indexOf(quarter);
 
-      // Growth rates
-      const prevKey = getPreviousQuarterKey(year, quarter);
-      if (prevKey) {
-        if (revGrowthRow && revenueRow) {
-          const prevRevenue = revenueRow[prevKey] as number | null;
-          if (revenue && prevRevenue) {
-            revGrowthRow[key] = ((revenue - prevRevenue) / prevRevenue) * 100;
+        // Collect last 4 quarters including current
+        const last4Quarters: string[] = [];
+
+        for (let i = 0; i < 4; i++) {
+          const qIdx = currentQIdx - i;
+
+          if (qIdx >= 0) {
+            // Same year, previous quarters
+            last4Quarters.push(getQuarterKey(year, quarters[qIdx]!));
+          } else {
+            // Previous year, wrap around
+            const prevYearNum = parseInt(year) - 1;
+            const prevYearStr = prevYearNum.toString();
+            const prevQIdx = 4 + qIdx; // e.g., if qIdx = -1, prevQIdx = 3 (Q4)
+            if (prevQIdx >= 0 && prevQIdx < 4) {
+              last4Quarters.push(
+                getQuarterKey(prevYearStr, quarters[prevQIdx]!),
+              );
+            }
           }
         }
 
-        if (profitGrowthRow && profitRow) {
-          const prevProfit = profitRow[prevKey] as number | null;
-          if (profit && prevProfit) {
-            profitGrowthRow[key] = ((profit - prevProfit) / prevProfit) * 100;
+        // Sum EPS from last 4 quarters
+        for (const qKey of last4Quarters) {
+          const qEPS = qepsRow[qKey] as number | null;
+          if (qEPS !== null && qEPS !== undefined) {
+            ttmEPS += qEPS;
           }
+        }
+
+        cepsRow[key] = ttmEPS;
+      }
+
+      // P/E based on TTM EPS
+      if (peRow && cepsRow && currentPrice.value) {
+        const ttmEPS = cepsRow[key] as number | null;
+        if (ttmEPS && ttmEPS > 0) {
+          peRow[key] = currentPrice.value / ttmEPS;
+        }
+      }
+
+      // Growth rates - YoY (same quarter from previous year)
+      const currentYear = parseInt(year);
+      const prevYear = (currentYear - 1).toString();
+      const prevYearKey = `${prevYear}_${quarter}`;
+
+      if (revGrowthRow && revenueRow) {
+        const prevYearRevenue = revenueRow[prevYearKey] as number | null;
+        if (revenue && prevYearRevenue) {
+          revGrowthRow[key] =
+            ((revenue - prevYearRevenue) / prevYearRevenue) * 100;
+        }
+      }
+
+      if (profitGrowthRow && profitRow) {
+        const prevYearProfit = profitRow[prevYearKey] as number | null;
+        if (profit && prevYearProfit) {
+          profitGrowthRow[key] =
+            ((profit - prevYearProfit) / prevYearProfit) * 100;
         }
       }
     }
   }
 
   emitData();
+
+  // Force Vue to detect change by creating new array reference
+  rowData.value = [...rowData.value];
+
+  // Force grid refresh
+  if (gridApi.value) {
+    gridApi.value.refreshCells({ force: true });
+    gridApi.value.redrawRows();
+  }
 };
 
 const emitData = () => {
@@ -249,7 +302,8 @@ const emitData = () => {
 
   const data: Record<string, any> = {};
   for (const ind of indicators) {
-    if (!ind.calculated && ind.key !== 'outstandingShares') {
+    // Emit all non-calculated indicators including outstandingShares
+    if (!ind.calculated) {
       data[ind.key] = {};
       for (const year of years.value) {
         data[ind.key][year] = {};
@@ -279,6 +333,45 @@ const valueSetter = (params: ValueSetterParams<QuarterlyDataRow>): boolean => {
       : Number(params.newValue);
   if (newValue !== null && isNaN(newValue)) return false;
 
+  // Special handling for profit growth - apply YoY growth to all base metrics
+  if (row.indicatorKey === 'profitGrowth' && newValue !== null) {
+    const parts = field.split('_');
+    const year = parts[0];
+    const quarter = parts.length > 1 ? parts[1] : undefined;
+
+    if (year && quarter) {
+      // Get same quarter from previous year (YoY comparison)
+      const currentYear = parseInt(year);
+      const prevYear = (currentYear - 1).toString();
+      const prevYearKey = `${prevYear}_${quarter}`;
+
+      // Apply growth rate to all base metrics (revenue, gross profit, operating profit, net profit)
+      const baseMetrics = [
+        'netRevenue',
+        'grossProfit',
+        'operatingProfit',
+        'netProfit',
+      ];
+
+      for (const metricKey of baseMetrics) {
+        const metricRow = rowData.value.find(
+          (r) => r.indicatorKey === metricKey,
+        );
+        if (metricRow) {
+          const prevYearValue = metricRow[prevYearKey] as number | null;
+          if (prevYearValue !== null && prevYearValue !== undefined) {
+            // Apply YoY growth: current = previous_year_same_quarter * (1 + growth/100)
+            const calculatedValue = prevYearValue * (1 + newValue / 100);
+            (metricRow as any)[field] = calculatedValue;
+            console.log(
+              `YoY ${metricKey}: ${prevYearValue} × (1 + ${newValue}%) = ${calculatedValue.toFixed(0)}`,
+            );
+          }
+        }
+      }
+    }
+  }
+
   (row as any)[field] = newValue;
   recalculateAll();
 
@@ -297,10 +390,14 @@ const getCellClass = (params: CellClassParams): string => {
 
   const classes = ['cell-number'];
 
-  if (year && historicalYears.value.includes(year)) {
-    classes.push('cell-historical');
-  } else if (year && forecastYears.value.includes(year)) {
-    classes.push('cell-forecast');
+  if (year) {
+    // Extract quarter from field if possible: YYYY_QX
+    const quarter = parts.length > 1 ? parts[1] : undefined;
+    if (isForecast(year, quarter)) {
+      classes.push('cell-forecast');
+    } else if (historicalYears.value.includes(year)) {
+      classes.push('cell-historical');
+    }
   }
 
   if (row.isCalculated) {
@@ -312,15 +409,28 @@ const getCellClass = (params: CellClassParams): string => {
     }
   }
 
+  // Add border right for Q4 to separate years
+  if (parts.length > 1 && parts[1] === 'Q4') {
+    classes.push('cell-year-end');
+  }
+
   return classes.join(' ');
 };
 
 const numberFormatter = (params: { value: number | null }) => {
   if (params.value === null || params.value === undefined) return '-';
-  return new Intl.NumberFormat('vi-VN', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 0,
-  }).format(params.value);
+  return new Intl.NumberFormat('vi-VN').format(params.value);
+};
+
+// Growth percentage formatter (integer only with % suffix)
+const growthFormatter = (params: { value: number | null }) => {
+  if (params.value === null || params.value === undefined) return '-';
+  return (
+    new Intl.NumberFormat('vi-VN', {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    }).format(params.value) + '%'
+  );
 };
 
 const generateColumnDefs = (): (
@@ -334,6 +444,7 @@ const generateColumnDefs = (): (
       pinned: 'left',
       width: 160,
       cellClass: 'cell-indicator',
+      headerClass: 'header-center',
     },
   ];
 
@@ -343,18 +454,37 @@ const generateColumnDefs = (): (
 
     for (const quarter of quarters) {
       const key = getQuarterKey(year, quarter);
+      const isColForecast = isForecast(year, quarter);
+
+      // Determine header class for year separation and centering
+      const headerClasses = ['header-center'];
+      if (quarter === 'Q4') {
+        headerClasses.push('header-year-end');
+      }
 
       yearCols.push({
-        headerName: forecast ? `${quarter} (F)` : quarter,
+        headerName: isColForecast ? `${quarter} (F)` : quarter,
         field: key,
-        width: 100,
+        width: 130,
         editable: (p) => {
           const ind = indicators.find((i) => i.key === p.data?.indicatorKey);
           return ind?.editable || false;
         },
         valueSetter,
         cellClass: getCellClass,
-        valueFormatter: numberFormatter,
+        headerClass: headerClasses.join(' '),
+        valueFormatter: (p) => {
+          // Use integer formatter for growth and margin rows
+          if (
+            p.data?.indicatorKey === 'revenueGrowth' ||
+            p.data?.indicatorKey === 'profitGrowth' ||
+            p.data?.indicatorKey === 'netProfitMargin' ||
+            p.data?.indicatorKey === 'grossMargin'
+          ) {
+            return growthFormatter(p);
+          }
+          return numberFormatter(p);
+        },
       });
     }
 
@@ -362,6 +492,7 @@ const generateColumnDefs = (): (
       headerName: year,
       children: yearCols,
       marryChildren: true,
+      headerClass: 'header-center',
     });
   }
 
@@ -373,17 +504,78 @@ const columnDefs =
     generateColumnDefs(),
   );
 
+const getPreviousQuarterKey = (
+  year: string,
+  quarter: string,
+): string | null => {
+  const qIndex = quarters.indexOf(quarter);
+  if (qIndex > 0) {
+    return getQuarterKey(year, quarters[qIndex - 1]!);
+  }
+
+  const yIndex = years.value.indexOf(year);
+  if (yIndex > 0) {
+    const prevYear = years.value[yIndex - 1];
+    if (prevYear) {
+      return getQuarterKey(prevYear, 'Q4');
+    }
+  }
+
+  return null;
+};
+
 const defaultColDef = ref<ColDef>({
   sortable: false,
   filter: false,
   resizable: true,
 });
 
+// Grid API
+const gridApi = ref<any>(null);
+
+const onGridReady = (params: any) => {
+  gridApi.value = params.api;
+  scrollToEnd();
+};
+
+const scrollToEnd = () => {
+  if (gridApi.value && years.value.length > 0) {
+    // Find the last column key
+    const lastYear = years.value[years.value.length - 1];
+    if (!lastYear) return;
+
+    const lastQuarter = 'Q4'; // Or find the actual last quarter if data is partial
+    const key = getQuarterKey(lastYear, lastQuarter);
+
+    // Check if column exists, if not try Q3, Q2...
+    // Actually, columns are generated for all Q1-Q4 for each year in years.value
+    // So Q4 of last year should exist as a column definition
+
+    setTimeout(() => {
+      gridApi.value.ensureColumnVisible(key);
+    }, 100);
+  }
+};
+
 watch(
   () => props.outstandingShares,
   (val) => {
     if (val) {
       outstandingShares.value = val;
+
+      // Update the row data with new global value
+      const sharesRow = rowData.value.find(
+        (r) => r.indicatorKey === 'outstandingShares',
+      );
+      if (sharesRow) {
+        for (const year of years.value) {
+          for (const quarter of quarters) {
+            const key = getQuarterKey(year, quarter);
+            (sharesRow as any)[key] = val;
+          }
+        }
+      }
+
       recalculateAll();
     }
   },
@@ -424,6 +616,11 @@ const populateFromExternalData = (externalData: Record<string, any>) => {
     // Regenerate column definitions
     columnDefs.value = generateColumnDefs();
     console.log('Regenerated columns for years:', JSON.stringify(years.value));
+
+    // Scroll to end after data update
+    nextTick(() => {
+      scrollToEnd();
+    });
   }
 
   // Update each indicator row with data from external source
@@ -495,6 +692,7 @@ const gridTheme = computed(() =>
           :suppress-row-click-selection="true"
           :enable-cell-text-selection="true"
           :group-header-height="40"
+          @grid-ready="onGridReady"
         />
       </ClientOnly>
     </div>
@@ -573,6 +771,23 @@ const gridTheme = computed(() =>
 .grid-wrapper :deep(.cell-calculated) {
   font-style: italic;
   color: var(--ui-text-muted);
+}
+
+/* Year separation border */
+.grid-wrapper :deep(.cell-year-end),
+.grid-wrapper :deep(.header-year-end) {
+  border-right: 2px solid var(--ui-border-accent, #cbd5e1) !important;
+}
+
+/* Center headers */
+.grid-wrapper :deep(.header-center .ag-header-cell-label),
+.grid-wrapper :deep(.header-center .ag-header-group-cell-label) {
+  justify-content: center;
+}
+
+/* Dark mode specific for border */
+:deep(.dark) .grid-wrapper .cell-year-end {
+  border-right: 2px solid #475569 !important;
 }
 
 .grid-legend {

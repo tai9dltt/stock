@@ -3,5 +3,6 @@
     <NuxtRouteAnnouncer />
     <NuxtPage />
     <UNotifications />
+    <GlobalLoading />
   </UApp>
 </template>
