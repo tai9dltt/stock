@@ -5,7 +5,14 @@ interface QuarterlyDataResponse {
   data?: {
     quarters: Record<string, Record<string, Record<string, number>>>
     annual: Record<string, Record<string, number>>
-    outstandingShares?: number
+    tradingInfo?: {
+      lastPrice?: number
+      outstandingShares?: number
+      listedShares?: number
+      min52W?: number
+      max52W?: number
+      vol52W?: number
+    }
   }
   error?: string
 }
@@ -37,6 +44,9 @@ const indicatorMap: Record<string, string> = {
   'ROS': 'ros',
   'ROEA': 'roe',
   'ROAA': 'roa',
+
+  // Shares
+  'Số CP lưu hành': 'outstandingShares',
 }
 
 // Create empty result structure
@@ -64,6 +74,9 @@ function createEmptyResult(): Record<string, Record<string, Record<string, numbe
     ros: {},
     roe: {},
     roa: {},
+
+    // Shares
+    outstandingShares: {},
   }
 }
 
@@ -154,6 +167,56 @@ async function fetchVietstockAnnualData(code: string, cookie: string, token: str
   }
 }
 
+// Helper to call Vietstock API for trading info
+async function fetchVietstockTradingInfo(code: string, cookie: string, token: string) {
+  try {
+    const bodyParams: Record<string, string> = {
+      code: code,
+      s: '0',
+      t: ''
+    }
+
+    if (token) {
+      bodyParams['__RequestVerificationToken'] = token
+    }
+
+    const response = await fetch('https://finance.vietstock.vn/company/tradinginfo', {
+      method: 'POST',
+      headers: {
+        'Accept': '*/*',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Cookie': cookie,
+        'Referer': `https://finance.vietstock.vn/${code}`
+      },
+      body: new URLSearchParams(bodyParams).toString()
+    })
+
+    if (!response.ok) {
+      console.warn(`Failed to fetch trading info for ${code}`)
+      return null
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching trading info:', error)
+    return null
+  }
+}
+
+// Parse trading info response
+function parseTradingInfo(rawData: any) {
+  if (!rawData) return undefined
+
+  return {
+    lastPrice: rawData.LastPrice,
+    outstandingShares: rawData.KLCPLH,
+    listedShares: rawData.KLCPNY,
+    min52W: rawData.Min52W,
+    max52W: rawData.Max52W,
+    vol52W: rawData.Vol52W
+  }
+}
+
 // Parse all indicator sections from API response
 function parseAllIndicators(rawData: any): any[] {
   const [, indicators] = rawData
@@ -235,6 +298,7 @@ function parseVietstockAnnualData(rawData: any): Record<string, Record<string, n
     ros: {},
     roe: {},
     roa: {},
+    outstandingShares: {},
   }
 
   if (!rawData || !Array.isArray(rawData) || rawData.length < 2) {
@@ -289,10 +353,11 @@ export default defineEventHandler(async (event: H3Event): Promise<QuarterlyDataR
   }
 
   try {
-    // Fetch both quarterly and annual data in parallel
-    const [quarterlyPagesData, annualRawData] = await Promise.all([
+    // Fetch quarterly, annual, and trading data in parallel
+    const [quarterlyPagesData, annualRawData, tradingRawData] = await Promise.all([
       fetchVietstockQuarterlyData(code.toUpperCase(), cookie, token),
-      fetchVietstockAnnualData(code.toUpperCase(), cookie, token)
+      fetchVietstockAnnualData(code.toUpperCase(), cookie, token),
+      fetchVietstockTradingInfo(code.toUpperCase(), cookie, token)
     ])
 
     // Parse quarterly data
@@ -307,14 +372,15 @@ export default defineEventHandler(async (event: H3Event): Promise<QuarterlyDataR
       parsedAnnual = parseVietstockAnnualData(annualRawData)
     }
 
-    console.log('Parsed quarterly years:', Object.keys(parsedQuarterly.netRevenue || {}))
-    console.log('Parsed annual years:', Object.keys(parsedAnnual.netRevenue || {}))
+    // Parse trading info
+    const parsedTradingInfo = parseTradingInfo(tradingRawData)
 
     return {
       success: true,
       data: {
         quarters: parsedQuarterly,
-        annual: parsedAnnual
+        annual: parsedAnnual,
+        tradingInfo: parsedTradingInfo
       }
     }
   } catch (error) {
