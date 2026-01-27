@@ -9,6 +9,14 @@ import {
   getCellAddr,
   setDivisionFormula,
 } from '~/utils/spreadjs';
+import {
+  getStockData,
+  fetchTradingInfo,
+  smartUpdateStock,
+  crawlQuarterlyData,
+  crawlYearlyData,
+  saveStockAnalysis,
+} from '~/services';
 
 // Dynamically import SpreadJS components and CSS to avoid SSR issues
 const GcSpreadSheets = defineAsyncComponent(() =>
@@ -32,6 +40,12 @@ interface TradingNoteInstance extends ComponentPublicInstance {
     targetPrice?: number | null;
     stopLoss?: number | null;
   }) => void;
+  getTradingData: () => {
+    noteHtml: string;
+    entryPrice: number | null;
+    targetPrice: number | null;
+    stopLoss: number | null;
+  };
 }
 
 // Refs
@@ -39,7 +53,15 @@ const outstandingShares = ref(0);
 const currentPrice = ref(0);
 const min52W = ref(0);
 const max52W = ref(0);
+const revenueGrowth = ref(0);
+const grossMargin = ref(0);
+const netProfitGrowth = ref(0);
 const tradingDate = ref<string>('');
+const peValuationStartRow = ref(0); // Will be set in initWorkbook for access in saveAnalysis
+const sharesRowPosition = ref(0); // Row position for Q_ROW_SHARES
+const quarterlyColsInfo = ref<
+  Array<{ year: string; quarter: string; col: number }>
+>([]); // Quarterly columns info for save
 
 const peAssumptions = ref<Record<string, number>>({});
 const annualData = ref<Record<string, any>>({});
@@ -134,28 +156,25 @@ const updateSpreadSheet = () => {
   };
 
   // --- SECTION 0: TITLE & INFO ---
-  // Row 1 (0-indexed): Title
-  setCell(1, 2, 'TẦM SOÁT CỔ PHIẾU', {
+  // Row 0 (0-indexed): Title
+  sheet.setRowHeight(0, 50);
+  setCell(0, 2, 'TẦM SOÁT CỔ PHIẾU', {
     bold: true,
     color: '#0000FF',
     align: 'center',
   });
-  setCell(1, 6, stockSymbol.value, {
+  setCell(0, 0, stockSymbol.value, {
     bold: true,
     color: '#FF0000',
     align: 'center',
+    border: { all: true },
   });
-  setCell(1, 7, 'NGÀY', { bold: true });
-  setCell(1, 8, new Date(), { format: 'dd/mm/yyyy' });
+  setCell(0, 4, 'NGÀY', { bold: true });
+  setCell(0, 5, new Date(), { format: 'dd/mm/yyyy' });
 
-  // Row 4: Company Name
-  setCell(4, 0, 'Tổng Công ty (Placeholder Name)', { bold: true, size: 12 });
-  setCell(4, 7, 'LN dự kiến:', { bold: true });
-  setCell(4, 9, 'Đơn vị tính: 10^6', { bold: true, color: 'blue' });
-
-  // --- SECTION 0.5: GROWTH ASSUMPTIONS INPUT TABLE (Starting at K7) ---
+  // --- SECTION 0.5: GROWTH ASSUMPTIONS INPUT TABLE (Starting at K4) ---
   const INPUT_COL = 10; // Column K (0-indexed: K = 10)
-  const INPUT_ROW_START = 6; // Row 7 (0-indexed: 7 = 6)
+  const INPUT_ROW_START = 3;
 
   // Set column width for input area
   sheet.setColumnWidth(INPUT_COL, 180);
@@ -163,7 +182,10 @@ const updateSpreadSheet = () => {
   sheet.setColumnWidth(INPUT_COL + 2, 120); // For values
 
   // Header - merge 3 columns
-  setCell(INPUT_ROW_START, INPUT_COL, `Ngày: ${tradingDate.value}`, {
+  const formattedTradingDate = tradingDate.value
+    ? tradingDate.value.split('-').reverse().join('/')
+    : '';
+  setCell(INPUT_ROW_START, INPUT_COL, `Ngày: ${formattedTradingDate}`, {
     bold: true,
     align: 'left',
     bg: '#D9E1F2',
@@ -256,7 +278,7 @@ const updateSpreadSheet = () => {
       new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin),
       { all: true },
     );
-  setCell(INPUT_ROW_START + 5, INPUT_COL + 2, 0, {
+  setCell(INPUT_ROW_START + 5, INPUT_COL + 2, revenueGrowth.value || 0, {
     format: '0.00%',
     border: true,
     bg: '#FFF2CC',
@@ -275,7 +297,7 @@ const updateSpreadSheet = () => {
       new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin),
       { all: true },
     );
-  setCell(INPUT_ROW_START + 6, INPUT_COL + 2, 0, {
+  setCell(INPUT_ROW_START + 6, INPUT_COL + 2, grossMargin.value || 0, {
     format: '0.00%',
     border: true,
     bg: '#FFF2CC',
@@ -294,7 +316,7 @@ const updateSpreadSheet = () => {
       new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin),
       { all: true },
     );
-  setCell(INPUT_ROW_START + 7, INPUT_COL + 2, 0, {
+  setCell(INPUT_ROW_START + 7, INPUT_COL + 2, netProfitGrowth.value || 0, {
     format: '0.00%',
     border: true,
     bg: '#FFF2CC',
@@ -315,15 +337,16 @@ const updateSpreadSheet = () => {
     sheet.getRange(INPUT_ROW_START + 7, INPUT_COL + 2, 1, 1),
   );
 
-  // --- SECTION 1: ANNUAL DATA (Rows 6-14 in Excel -> Index 6-14) ---
-  const startRowAnnual = 6;
+  // --- SECTION 1: ANNUAL SUMMARY ---
+  const startRowAnnual = 3; // Shifted up from 6
 
   // Header Row
   sheet.setRowHeight(startRowAnnual, 60);
-  setCell(startRowAnnual, 0, 'Niên độ\nThông tin + chỉ số', {
+  setCell(startRowAnnual, 0, 'Chỉ số', {
     bold: true,
     align: 'center',
     border: true,
+    bg: '#cffc03',
   });
   // Merge years from data with forecastYears
   const years = Object.keys(annualData.value['netRevenue'] || {}).sort();
@@ -424,8 +447,14 @@ const updateSpreadSheet = () => {
   setCell(ROW_ROS, 0, 'ROS (%)', { border: true });
   setCell(ROW_ROE, 0, 'ROE (%)', { border: true });
   setCell(ROW_ROA, 0, 'ROA (%)', { border: true });
-  setCell(ROW_REV_GROWTH, 0, 'TT tăng trưởng DT', { border: true });
-  setCell(ROW_PROFIT_GROWTH, 0, 'TT tăng trưởng LNST', { border: true });
+  setCell(ROW_REV_GROWTH, 0, 'TT tăng trưởng DT', {
+    border: true,
+    color: '#e02926',
+  });
+  setCell(ROW_PROFIT_GROWTH, 0, 'TT tăng trưởng LNST', {
+    border: true,
+    color: '#e02926',
+  });
 
   // Fill Data
   sortedYears.forEach((year) => {
@@ -586,13 +615,14 @@ const updateSpreadSheet = () => {
   const startRowQuarter = ROW_PROFIT_GROWTH + 4;
 
   // Headers
-  sheet.setRowHeight(startRowQuarter, 0); // Year header height (reduced slightly as it is merged vertically? No, it's 1 row).
+  sheet.setRowHeight(startRowQuarter, 30); // Show Year header row
   sheet.setRowHeight(startRowQuarter + 1, 50); // Sub-header (Q1... date...) height
 
-  setCell(startRowQuarter, 0, 'Niên độ\nThông tin + chỉ số', {
+  setCell(startRowQuarter, 0, 'Niên độ \nChỉ số', {
     bold: true,
     align: 'center',
     border: true,
+    bg: '#cffc03',
   });
   sheet.addSpan(startRowQuarter, 0, 2, 1); // Merge row 17-18 for this cell (Col 0)
   sheet.getCell(startRowQuarter, 0).wordWrap(true);
@@ -730,6 +760,13 @@ const updateSpreadSheet = () => {
     });
   });
 
+  // Store quarterly columns info for access in saveAnalysis
+  quarterlyColsInfo.value = quarterlyCols.map((q) => ({
+    year: q.year,
+    quarter: q.quarter,
+    col: q.col,
+  }));
+
   // Data Rows Constants
   const Q_ROW_REVENUE = startRowQuarter + 2;
   const Q_ROW_GROSS_PROFIT = startRowQuarter + 3;
@@ -737,6 +774,7 @@ const updateSpreadSheet = () => {
   const Q_ROW_GROSS_MARGIN = startRowQuarter + 5;
   const Q_ROW_NET_PROFIT = startRowQuarter + 6;
   const Q_ROW_SHARES = startRowQuarter + 7;
+  sharesRowPosition.value = Q_ROW_SHARES; // Store for access in saveAnalysis
   const Q_ROW_NET_MARGIN = startRowQuarter + 8;
   const Q_ROW_EPS = startRowQuarter + 9;
   const Q_ROW_EPS_TTM = startRowQuarter + 10;
@@ -751,6 +789,7 @@ const updateSpreadSheet = () => {
   setCell(Q_ROW_GROSS_MARGIN, 0, 'Biên lợi nhuận gộp', { border: true });
   setCell(Q_ROW_NET_PROFIT, 0, 'LNST công ty mẹ', {
     border: true,
+    color: '#e02926',
   });
   setCell(Q_ROW_SHARES, 0, 'KL CP lưu hành', { border: true });
   setCell(Q_ROW_NET_MARGIN, 0, 'Biên lợi nhuận ròng', { border: true });
@@ -759,8 +798,12 @@ const updateSpreadSheet = () => {
   setCell(Q_ROW_PE, 0, 'P/E', { border: true });
   setCell(Q_ROW_REV_GROWTH, 0, 'TT DT (%)', {
     border: true,
+    color: '#e02926',
   });
-  setCell(Q_ROW_PROFIT_GROWTH, 0, 'TT LNST (%)', { border: true });
+  setCell(Q_ROW_PROFIT_GROWTH, 0, 'TT LNST (%)', {
+    border: true,
+    color: '#e02926',
+  });
 
   // Fill Data
   quarterlyCols.forEach(({ year, quarter, col, isForecast }) => {
@@ -769,8 +812,13 @@ const updateSpreadSheet = () => {
     const operating = quarterlyData.value['operatingProfit']?.[year]?.[quarter];
     const profit = quarterlyData.value['netProfit']?.[year]?.[quarter];
 
-    // Use logic to get shares or default
-    const shares = outstandingShares.value; // Simplification, ideally per quarter
+    // Use logic to get shares per quarter from quarterlyData, or default to global outstandingShares
+    const savedShares =
+      quarterlyData.value['outstandingShares']?.[year]?.[quarter];
+    const shares =
+      savedShares !== undefined && savedShares !== null
+        ? Number(savedShares)
+        : outstandingShares.value;
 
     // Revenue: Use formula for forecast quarters (YoY growth)
     if (isForecast) {
@@ -853,6 +901,8 @@ const updateSpreadSheet = () => {
     applyBorder(GC, sheet, Q_ROW_NET_PROFIT, col);
 
     setCell(Q_ROW_SHARES, col, shares, { format: '#,##0', border: true });
+    // Unlock shares cell for per-quarter editing
+    sheet.getCell(Q_ROW_SHARES, col).locked(false);
 
     // Formulas - Always create formulas for calculated fields
     // Gross Margin = Gross Profit / Revenue
@@ -990,6 +1040,17 @@ const updateSpreadSheet = () => {
     }
   });
 
+  // Apply double bottom border to the last row of the quarterly table (Row 37)
+  sheet
+    .getRange(Q_ROW_PROFIT_GROWTH, 0, 1, currentQCol)
+    .setBorder(
+      new GC.Spread.Sheets.LineBorder(
+        'black',
+        GC.Spread.Sheets.LineStyle.double,
+      ),
+      { bottom: true },
+    );
+
   // --- UPDATE ANNUAL YEARS WITH QUARTERLY SUMS ---
   // For years that have quarterly data, add formulas to Annual table
   // Get unique years from quarterlyCols that have 4 quarters
@@ -1066,7 +1127,8 @@ const updateSpreadSheet = () => {
   });
 
   // --- SECTION 3: VALUATION TABLE ---
-  const ROW_VALUATION_START = startRowQuarter + 20; // Ensure enough gap
+  const ROW_VALUATION_START = startRowQuarter + 16; // Reduced gap by 4 rows
+  peValuationStartRow.value = ROW_VALUATION_START; // Store for access in saveAnalysis
 
   // 1. Get Previous Year P/E (as Default)
   // Usually Last Full Year. Current is 2026, so 2025 (Forecast).
@@ -1088,8 +1150,88 @@ const updateSpreadSheet = () => {
   defaultPE = parseFloat(String(defaultPE));
   if (isNaN(defaultPE)) defaultPE = 10;
 
-  // Scenarios
-  const peScenarios = [9, defaultPE, 8, 7, 6, 5, 4];
+  // Scenarios - use saved values if available, otherwise generate from actual PE data
+  const savedPeValues = (peAssumptions.value as any)?.values;
+  let peScenarios: number[];
+
+  if (Array.isArray(savedPeValues) && savedPeValues.length > 0) {
+    peScenarios = savedPeValues;
+  } else {
+    // Generate default PE scenarios from actual data:
+    // - Last 3 historical quarters (sorted by year/quarter desc)
+    // - Next 3 forecast quarters (sorted by year/quarter asc)
+
+    const historicalQuarters = quarterlyCols
+      .filter((q) => !q.isForecast)
+      .sort((a, b) => {
+        // Sort descending by year, then quarter
+        const yearDiff = parseInt(b.year) - parseInt(a.year);
+        if (yearDiff !== 0) return yearDiff;
+        return (
+          parseInt(b.quarter.replace('Q', '')) -
+          parseInt(a.quarter.replace('Q', ''))
+        );
+      })
+      .slice(0, 3); // Get last 3 historical quarters
+
+    const forecastQuartersList = quarterlyCols
+      .filter((q) => q.isForecast)
+      .sort((a, b) => {
+        // Sort ascending by year, then quarter
+        const yearDiff = parseInt(a.year) - parseInt(b.year);
+        if (yearDiff !== 0) return yearDiff;
+        return (
+          parseInt(a.quarter.replace('Q', '')) -
+          parseInt(b.quarter.replace('Q', ''))
+        );
+      })
+      .slice(0, 3); // Get next 3 forecast quarters
+
+    // Get PE values from quarterlyData
+    const peValues: number[] = [];
+
+    // Add historical PE values (reverse to show oldest first)
+    historicalQuarters.reverse().forEach((q) => {
+      const pe = quarterlyData.value['pe']?.[q.year]?.[q.quarter];
+      if (
+        pe !== undefined &&
+        pe !== null &&
+        !isNaN(Number(pe)) &&
+        Number(pe) > 0
+      ) {
+        peValues.push(Math.round(Number(pe) * 100) / 100);
+      }
+    });
+
+    // Add forecast PE values - read from spreadsheet cells (Q_ROW_PE row)
+    // The PE formulas have been set earlier, so we can get the calculated values
+    const Q_ROW_PE = startRowQuarter + 11;
+    forecastQuartersList.forEach((q) => {
+      // Read PE value from the spreadsheet cell
+      const peVal = sheet.getValue(Q_ROW_PE, q.col);
+      if (
+        peVal !== undefined &&
+        peVal !== null &&
+        !isNaN(Number(peVal)) &&
+        Number(peVal) > 0
+      ) {
+        peValues.push(Math.round(Number(peVal) * 100) / 100);
+      } else {
+        // Fallback to defaultPE if cell value is not available
+        peValues.push(defaultPE);
+      }
+    });
+
+    // If we don't have enough values, fill with defaults
+    if (peValues.length < 6) {
+      const defaults = [9, 11, 12, 13, 14, 5, 4];
+      while (peValues.length < 7) {
+        peValues.push(defaults[peValues.length] || 10);
+      }
+    }
+
+    peScenarios = peValues;
+  }
   const totalValuationRows = 10;
 
   // Headers: Years (Replacing "Định giá VND (dong)")
@@ -1178,10 +1320,18 @@ const updateSpreadSheet = () => {
     sheet.setRowHeight(ROW_VALUATION_START + 1, 50);
   });
 
+  setCell(ROW_VALUATION_START, 0, 'Niên độ:', {
+    bold: true,
+    border: true,
+    align: 'center',
+    bg: '#cffc03',
+  });
   // Row Headers (Giả sử P/E)
   setCell(ROW_VALUATION_START + 1, 0, 'Giả sử P/E:', {
     bold: true,
     border: true,
+    align: 'center',
+    bg: '#cffc03',
   });
 
   // Data Rows
@@ -1213,11 +1363,6 @@ const updateSpreadSheet = () => {
 
     // Fill Formulas across columns
     quarterlyCols.forEach(({ col }) => {
-      // Price = P/E (Col 0) * EPS TTM (Col)
-      // EPS TTM is at `Q_ROW_EPS_TTM`.
-      // Formula: `A{currentRow} * {EPS_TTM_Cell}`
-      // Use absolute reference for Col 0 ($A...)
-
       const peAddr = `$A${currentRow + 1}`; // A34... (1-based for Formula?)
       // Wait, rangeToFormula returns A1 notation.
       // Getting A column address for this row.
@@ -1232,9 +1377,12 @@ const updateSpreadSheet = () => {
       sheet.setFormula(
         currentRow,
         col,
-        `IF(ISNUMBER(${peAddr}), ${peAddr} * ${epsAddr}, "")`,
+        `IF(ISNUMBER(${peAddr})*ISNUMBER(${epsAddr}), ${peAddr} * ${epsAddr}, "-")`,
       );
       sheet.setFormatter(currentRow, col, '#,##0');
+      sheet
+        .getCell(currentRow, col)
+        .hAlign(GC.Spread.Sheets.HorizontalAlign.right);
 
       // Apply border
       sheet
@@ -1276,7 +1424,7 @@ const updateSpreadSheet = () => {
   });
 
   sheet.autoFitColumn(0); // Fit Col 0 (restore this too if needed, or just keep layout logic)
-  sheet.setColumnWidth(0, 340);
+  sheet.setColumnWidth(0, 150);
 
   // Set column count based on maximum usage
   const maxCol = Math.max(
@@ -1357,10 +1505,7 @@ const smartUpdate = async () => {
   }
   isCloning.value = true;
   try {
-    const response = await $fetch<any>('/api/stock/smart-update', {
-      method: 'POST',
-      body: { symbol: stockSymbol.value },
-    });
+    const response = await smartUpdateStock(stockSymbol.value);
     if (response.success && response.data) {
       quarterlyData.value = response.data.quarters;
       if (response.data.annual) annualData.value = response.data.annual;
@@ -1401,14 +1546,8 @@ const refreshData = async () => {
   }
   loadingStore.show('Đang cập nhật dữ liệu từ Vietstock...');
   try {
-    const quarterlyResponse = await $fetch<any>('/api/stock/crawl', {
-      method: 'POST',
-      body: { symbol: stockSymbol.value, pages: 4 },
-    });
-    const yearlyResponse = await $fetch<any>('/api/stock/crawl-yearly', {
-      method: 'POST',
-      body: { symbol: stockSymbol.value, pages: 2 },
-    });
+    const quarterlyResponse = await crawlQuarterlyData(stockSymbol.value, 4);
+    const yearlyResponse = await crawlYearlyData(stockSymbol.value, 2);
 
     if (quarterlyResponse.success && yearlyResponse.success) {
       toast.add({
@@ -1440,9 +1579,7 @@ const loadAnalysis = async () => {
   if (!stockSymbol.value) return;
   loadingStore.show('Đang tải dữ liệu...');
   try {
-    const response = await $fetch<any>('/api/stock/get', {
-      query: { symbol: stockSymbol.value },
-    });
+    const response = await getStockData(stockSymbol.value);
     if (response.success && response.data) {
       const data = response.data;
 
@@ -1475,13 +1612,7 @@ const loadAnalysis = async () => {
 
       // Fetch latest trading info from Vietstock
       try {
-        const tradingInfoResponse = await $fetch<any>(
-          '/api/stock/fetch-vietstock',
-          {
-            method: 'POST',
-            body: { code: stockSymbol.value },
-          },
-        );
+        const tradingInfoResponse = await fetchTradingInfo(stockSymbol.value);
 
         if (
           tradingInfoResponse.success &&
@@ -1522,11 +1653,26 @@ const loadAnalysis = async () => {
         if (savedData.annualData) annualData.value = savedData.annualData;
         if (savedData.peAssumptions)
           peAssumptions.value = savedData.peAssumptions;
-        if (savedData.outstandingShares) {
+        if (savedData.outstandingShares && !outstandingShares.value) {
           outstandingShares.value = savedData.outstandingShares;
         }
-        if (savedData.currentPrice) {
+        if (savedData.currentPrice && !currentPrice.value) {
           currentPrice.value = savedData.currentPrice;
+        }
+        if (savedData.max52W && !max52W.value) {
+          max52W.value = savedData.max52W;
+        }
+        if (savedData.min52W && !min52W.value) {
+          min52W.value = savedData.min52W;
+        }
+        if (savedData.revenueGrowth !== undefined) {
+          revenueGrowth.value = savedData.revenueGrowth;
+        }
+        if (savedData.grossMargin !== undefined) {
+          grossMargin.value = savedData.grossMargin;
+        }
+        if (savedData.netProfitGrowth !== undefined) {
+          netProfitGrowth.value = savedData.netProfitGrowth;
         }
       }
 
@@ -1656,25 +1802,110 @@ const saveAnalysis = async (tradingData: {
     return;
   }
 
+  // Sync input cell values from spreadsheet to refs before save
+  if (spreadInstance.value) {
+    const sheet = spreadInstance.value.getActiveSheet();
+    const INPUT_ROW_START = 6;
+    const INPUT_COL = 10;
+    const VALUE_COL = INPUT_COL + 2; // Column 12
+
+    // Read cell values and update refs
+    const priceVal = sheet.getValue(INPUT_ROW_START + 1, VALUE_COL);
+    if (priceVal !== null && priceVal !== undefined) {
+      currentPrice.value = Number(priceVal) || 0;
+    }
+
+    const sharesVal = sheet.getValue(INPUT_ROW_START + 2, VALUE_COL);
+    if (sharesVal !== null && sharesVal !== undefined) {
+      outstandingShares.value = Number(sharesVal) || 0;
+    }
+
+    const max52WVal = sheet.getValue(INPUT_ROW_START + 3, VALUE_COL);
+    if (max52WVal !== null && max52WVal !== undefined) {
+      max52W.value = Number(max52WVal) || 0;
+    }
+
+    const min52WVal = sheet.getValue(INPUT_ROW_START + 4, VALUE_COL);
+    if (min52WVal !== null && min52WVal !== undefined) {
+      min52W.value = Number(min52WVal) || 0;
+    }
+
+    const revenueGrowthVal = sheet.getValue(INPUT_ROW_START + 5, VALUE_COL);
+    if (revenueGrowthVal !== null && revenueGrowthVal !== undefined) {
+      revenueGrowth.value = Number(revenueGrowthVal) || 0;
+    }
+
+    const grossMarginVal = sheet.getValue(INPUT_ROW_START + 6, VALUE_COL);
+    if (grossMarginVal !== null && grossMarginVal !== undefined) {
+      grossMargin.value = Number(grossMarginVal) || 0;
+    }
+
+    const netProfitGrowthVal = sheet.getValue(INPUT_ROW_START + 7, VALUE_COL);
+    if (netProfitGrowthVal !== null && netProfitGrowthVal !== undefined) {
+      netProfitGrowth.value = Number(netProfitGrowthVal) || 0;
+    }
+
+    // Read PE assumption values from valuation table (column 0, rows starting from peValuationStartRow + 2)
+    if (peValuationStartRow.value > 0) {
+      const peValues: number[] = [];
+      const PE_ROW_START = peValuationStartRow.value + 2;
+      const TOTAL_PE_ROWS = 10;
+
+      for (let r = 0; r < TOTAL_PE_ROWS; r++) {
+        const peVal = sheet.getValue(PE_ROW_START + r, 0);
+        if (peVal !== null && peVal !== undefined && !isNaN(Number(peVal))) {
+          peValues.push(Number(peVal));
+        }
+      }
+
+      // Store as array in peAssumptions
+      peAssumptions.value = { values: peValues } as any;
+    }
+
+    // Read outstanding shares per quarter from spreadsheet cells
+    if (sharesRowPosition.value > 0 && quarterlyColsInfo.value.length > 0) {
+      const sharesPerQuarter: Record<string, Record<string, number>> = {};
+
+      quarterlyColsInfo.value.forEach(({ year, quarter, col }) => {
+        const sharesVal = sheet.getValue(sharesRowPosition.value, col);
+        if (
+          sharesVal !== null &&
+          sharesVal !== undefined &&
+          !isNaN(Number(sharesVal))
+        ) {
+          if (!sharesPerQuarter[year]) {
+            sharesPerQuarter[year] = {};
+          }
+          sharesPerQuarter[year][quarter] = Number(sharesVal);
+        }
+      });
+
+      // Store in quarterlyData
+      quarterlyData.value['outstandingShares'] = sharesPerQuarter;
+    }
+  }
+
   loadingStore.show('Đang lưu dữ liệu...');
 
   try {
-    await $fetch('/api/stock/save', {
-      method: 'POST',
-      body: {
-        symbol: stockSymbol.value,
-        quarterlyData: {
-          annualData: annualData.value,
-          quarterlyData: quarterlyData.value,
-          peAssumptions: peAssumptions.value,
-          outstandingShares: outstandingShares.value,
-          currentPrice: currentPrice.value,
-        },
-        entryPrice: tradingData.entryPrice,
-        targetPrice: tradingData.targetPrice,
-        stopLoss: tradingData.stopLoss,
-        noteHtml: tradingData.noteHtml,
+    await saveStockAnalysis({
+      symbol: stockSymbol.value,
+      quarterlyData: {
+        annualData: annualData.value,
+        quarterlyData: quarterlyData.value,
+        peAssumptions: peAssumptions.value,
+        outstandingShares: outstandingShares.value,
+        currentPrice: currentPrice.value,
+        max52W: max52W.value,
+        min52W: min52W.value,
+        revenueGrowth: revenueGrowth.value,
+        grossMargin: grossMargin.value,
+        netProfitGrowth: netProfitGrowth.value,
       },
+      entryPrice: tradingData.entryPrice,
+      targetPrice: tradingData.targetPrice,
+      stopLoss: tradingData.stopLoss,
+      noteHtml: tradingData.noteHtml,
     });
 
     toast.add({
@@ -1692,6 +1923,13 @@ const saveAnalysis = async (tradingData: {
     });
   } finally {
     loadingStore.hide();
+  }
+};
+
+const handleGlobalSave = () => {
+  if (tradingNoteRef.value) {
+    const tradingData = tradingNoteRef.value.getTradingData();
+    saveAnalysis(tradingData);
   }
 };
 
@@ -1778,43 +2016,16 @@ useHead({
           >
             <NuxtLink to="/analysis">Phân tích</NuxtLink>
             <span>/</span>
-            <span class="font-bold text-gray-900 dark:text-gray-100">{{
-              stockSymbol
-            }}</span>
-          </nav>
-          <h1 class="text-3xl font-bold flex items-center gap-2">
-            {{ stockSymbol }}
             <span
-              class="text-sm font-normal bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
-              >SpreadJS View</span
+              class="text-2xl font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
+              >{{ stockSymbol }}</span
             >
-          </h1>
+          </nav>
         </div>
       </div>
     </header>
 
     <main class="page-content space-y-6">
-      <!-- Action Buttons -->
-      <UCard>
-        <div class="flex gap-2">
-          <UButton
-            color="primary"
-            variant="soft"
-            size="sm"
-            icon="i-lucide-plus"
-            @click="addYear"
-          >
-            Add Year
-          </UButton>
-          <UButton
-            @click="refreshData"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-refresh-cw"
-          />
-        </div>
-      </UCard>
-
       <!-- SpreadJS Area -->
       <UCard class="p-0 overflow-hidden">
         <ClientOnly>
@@ -1833,10 +2044,49 @@ useHead({
         <AnalysisTradingNote
           ref="tradingNoteRef"
           :note-html="currentNoteHtml"
-          @save="saveAnalysis"
         />
       </UCard>
     </main>
+
+    <!-- Fixed Bottom Bar -->
+    <div
+      class="fixed bottom-0 left-0 right-0 z-100 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4 shadow-lg flex justify-center"
+    >
+      <div class="w-full flex justify-between px-3">
+        <div class="flex gap-2">
+          <UButton
+            @click="refreshData"
+            color="primary"
+            variant="soft"
+            size="md"
+            class="cursor-pointer"
+            icon="i-lucide-arrow-down-to-line"
+          >
+            Crawl
+          </UButton>
+          <UButton
+            color="primary"
+            variant="soft"
+            size="md"
+            class="cursor-pointer"
+            icon="i-lucide-plus"
+            @click="addYear"
+          >
+            Add Year
+          </UButton>
+        </div>
+
+        <UButton
+          color="primary"
+          size="md"
+          icon="i-lucide-save"
+          class="save-btn-floating"
+          @click="handleGlobalSave"
+        >
+          Save
+        </UButton>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1845,5 +2095,18 @@ useHead({
 .spread-host {
   width: 100%;
   height: 100%;
+}
+
+.analysis-page {
+  padding-bottom: 100px; /* Space for fixed bar */
+}
+
+.save-btn-floating {
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+  transition: transform 0.2s ease;
+}
+
+.save-btn-floating:hover {
+  transform: translateY(-2px);
 }
 </style>

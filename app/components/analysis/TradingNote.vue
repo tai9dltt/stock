@@ -27,7 +27,7 @@ const stopLoss = ref<number | null>(null);
 
 // Tiptap editor
 const editor = useEditor({
-  content: props.noteHtml || '<p>Nhập ghi chú phân tích...</p>',
+  content: props.noteHtml || '',
   extensions: [
     StarterKit.configure({
       heading: {
@@ -99,8 +99,18 @@ const setValues = (data: {
   if (data.stopLoss !== undefined) stopLoss.value = data.stopLoss;
 };
 
+// Get values for global save
+const getTradingData = () => {
+  return {
+    noteHtml: editor.value?.getHTML() || '',
+    entryPrice: entryPrice.value,
+    targetPrice: targetPrice.value,
+    stopLoss: stopLoss.value,
+  };
+};
+
 // Expose methods
-defineExpose({ setValues });
+defineExpose({ setValues, getTradingData });
 
 // Cleanup
 onBeforeUnmount(() => {
@@ -249,11 +259,6 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Save Button -->
-    <div class="save-section">
-      <UButton size="lg" icon="i-lucide-save" @click="handleSave">
-        Lưu kịch bản
-      </UButton>
-    </div>
   </div>
 </template>
 
@@ -394,10 +399,5 @@ onBeforeUnmount(() => {
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: 0.75rem;
-}
-
-.save-section {
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

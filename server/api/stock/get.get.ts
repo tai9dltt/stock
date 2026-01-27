@@ -129,12 +129,15 @@ export default defineEventHandler(async (event) => {
       [company.id]
     )
 
-    const parseJSON = (jsonString: string | null) => {
-      if (!jsonString) return null
+    const parseJSON = (jsonData: string | object | null) => {
+      if (!jsonData) return null
+      // If MySQL driver already parsed JSON (when column type is JSON), return as-is
+      if (typeof jsonData === 'object') return jsonData
+      // Otherwise parse the string
       try {
-        return JSON.parse(jsonString)
+        return JSON.parse(jsonData)
       } catch (e) {
-        console.error('Failed to parse JSON:', jsonString, e)
+        console.error('Failed to parse JSON:', jsonData, e)
         return null
       }
     }
