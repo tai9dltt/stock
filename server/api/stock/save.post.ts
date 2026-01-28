@@ -1,4 +1,6 @@
-import { query, queryOne } from '../../utils/db'
+import type { PoolConnection } from 'mysql2/promise';
+import { transaction } from '../../utils/db';
+
 
 interface QuarterlyAnalysisData {
   years: string[]
@@ -52,94 +54,96 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const symbol = body.symbol.toUpperCase()
+    const symbol = body.symbol.toUpperCase();
 
-    // Get company ID first
-    const company = await queryOne<{ id: number; symbol: string }>(
-      'SELECT id, symbol FROM companies WHERE UPPER(symbol) = UPPER(?)',
-      [symbol]
-    )
+    const result = await transaction(async (connection) => {
+      // Get company ID first
+      const [companies] = await connection.query<any[]>(
+        'SELECT id, symbol FROM companies WHERE UPPER(symbol) = UPPER(?)',
+        [symbol]
+      );
 
-    if (!company) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: `Company ${symbol} not found. Please crawl data first.`
-      })
-    }
-
-    // Check if record exists using company_id
-    const existing = await queryOne<StockAnalysis>(
-      'SELECT * FROM stock_analysis WHERE company_id = ?',
-      [company.id]
-    )
-
-    let result: StockAnalysis
-
-    // Prepare data to save - prefer new format, fallback to old
-    const dataToSave = body.manualEdits
-      ? {
-        manualEdits: body.manualEdits,
-        pe2022: body.pe2022,
-        pe2023: body.pe2023,
-        outstandingShares: body.outstandingShares,
-        currentPrice: body.currentPrice,
+      if (!companies || companies.length === 0) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: `Company ${symbol} not found. Please crawl data first.`,
+        });
       }
-      : body.quarterlyData
 
-    if (existing) {
-      // Update existing record
-      await query(
-        `UPDATE stock_analysis
-         SET quarterly_data = ?, entry_price = ?,
-             target_price = ?, stop_loss = ?, note_html = ?
-         WHERE company_id = ?`,
-        [
-          dataToSave ? JSON.stringify(dataToSave) : null,
-          body.entryPrice ?? null,
-          body.targetPrice ?? null,
-          body.stopLoss ?? null,
-          body.noteHtml ?? null,
-          company.id
-        ]
-      )
+      const company = companies[0];
 
-      result = (await queryOne<StockAnalysis>(
+      // Check if record exists using company_id
+      const [existingRows] = await connection.query<any[]>(
         'SELECT * FROM stock_analysis WHERE company_id = ?',
         [company.id]
-      ))!
-    } else {
-      // Insert new record
-      await query(
-        `INSERT INTO stock_analysis
-         (company_id, symbol, quarterly_data, entry_price, target_price, stop_loss, note_html)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          company.id,
-          symbol,
-          dataToSave ? JSON.stringify(dataToSave) : null,
-          body.entryPrice ?? null,
-          body.targetPrice ?? null,
-          body.stopLoss ?? null,
-          body.noteHtml ?? null
-        ]
-      )
+      );
 
-      result = (await queryOne<StockAnalysis>(
+      const existing = existingRows?.[0];
+
+      // Prepare data to save - prefer new format, fallback to old
+      const dataToSave = body.manualEdits
+        ? {
+          manualEdits: body.manualEdits,
+          pe2022: body.pe2022,
+          pe2023: body.pe2023,
+          outstandingShares: body.outstandingShares,
+          currentPrice: body.currentPrice,
+        }
+        : body.quarterlyData;
+
+      if (existing) {
+        // Update existing record
+        await connection.query(
+          `UPDATE stock_analysis
+           SET quarterly_data = ?, entry_price = ?,
+               target_price = ?, stop_loss = ?, note_html = ?
+           WHERE company_id = ?`,
+          [
+            dataToSave ? JSON.stringify(dataToSave) : null,
+            body.entryPrice ?? null,
+            body.targetPrice ?? null,
+            body.stopLoss ?? null,
+            body.noteHtml ?? null,
+            company.id,
+          ]
+        );
+      } else {
+        // Insert new record
+        await connection.query(
+          `INSERT INTO stock_analysis
+           (company_id, symbol, quarterly_data, entry_price, target_price, stop_loss, note_html)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            company.id,
+            symbol,
+            dataToSave ? JSON.stringify(dataToSave) : null,
+            body.entryPrice ?? null,
+            body.targetPrice ?? null,
+            body.stopLoss ?? null,
+            body.noteHtml ?? null,
+          ]
+        );
+      }
+
+      // Sync forecast periods to DB
+      if (body.manualEdits) {
+        await ensureForecastPeriods(connection, company.id, symbol, body.manualEdits);
+      }
+
+      // Fetch final result
+      const [resultRows] = await connection.query<any[]>(
         'SELECT * FROM stock_analysis WHERE company_id = ?',
         [company.id]
-      ))!
-    }
+      );
 
-    // Sync forecast periods to DB
-    if (body.manualEdits) {
-      await ensureForecastPeriods(company.id, symbol, body.manualEdits)
-    }
+      return resultRows[0] as StockAnalysis;
+    });
 
     return {
       success: true,
       data: result,
-      message: `Stock analysis for ${symbol} saved successfully`
-    }
+      message: `Stock analysis for ${symbol} saved successfully`,
+    };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     throw createError({
@@ -152,7 +156,12 @@ export default defineEventHandler(async (event) => {
 /**
  * Ensure forecast periods exist for manual edits
  */
-async function ensureForecastPeriods(companyId: number, symbol: string, manualEdits: any) {
+async function ensureForecastPeriods(
+  connection: PoolConnection,
+  companyId: number,
+  symbol: string,
+  manualEdits: any
+) {
   const currentYear = new Date().getFullYear()
   const years = new Set<number>()
 
@@ -180,7 +189,7 @@ async function ensureForecastPeriods(companyId: number, symbol: string, manualEd
   for (const year of years) {
     if (isNaN(year) || year < currentYear) continue
 
-    await query(
+    await connection.query(
       `INSERT INTO periods (company_id, symbol, year, quarter, period_begin, period_end, source, is_forecast)
        VALUES (?, ?, ?, 0, ?, ?, 'year', ?)
        ON DUPLICATE KEY UPDATE is_forecast = VALUES(is_forecast)`,
@@ -190,9 +199,9 @@ async function ensureForecastPeriods(companyId: number, symbol: string, manualEd
         year,
         `${year}-01-01`,
         `${year}-12-31`,
-        true // is_forecast = true
+        true, // is_forecast = true
       ]
-    )
+    );
   }
 }
 

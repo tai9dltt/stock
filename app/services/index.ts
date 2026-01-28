@@ -11,6 +11,23 @@ export async function getStockData(symbol: string): Promise<StockDataResponse> {
   });
 }
 
+export interface StockSummary {
+  id: number;
+  symbol: string;
+  created_at: string;
+  updated_at: string;
+  entry_price: string | null;
+  target_price: string | null;
+  stop_loss: string | null;
+}
+
+/**
+ * Fetch list of all stock analyses
+ */
+export async function getStockList(): Promise<{ success: boolean; data: StockSummary[] }> {
+  return await $fetch<{ success: boolean; data: StockSummary[] }>('/api/stock/list');
+}
+
 /**
  * Fetch trading information from Vietstock
  */
@@ -58,5 +75,14 @@ export async function saveStockAnalysis(payload: SaveAnalysisPayload): Promise<{
   return await $fetch('/api/stock/save', {
     method: 'POST',
     body: payload,
+  });
+}
+
+/**
+ * Delete stock analysis data
+ */
+export async function deleteStockAnalysis(symbol: string): Promise<{ success: boolean; message: string }> {
+  return await $fetch(`/api/stock/delete?symbol=${symbol}`, {
+    method: 'DELETE',
   });
 }

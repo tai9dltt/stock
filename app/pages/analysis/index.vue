@@ -1,27 +1,19 @@
 <script setup lang="ts">
-interface StockSummary {
-  id: number;
-  symbol: string;
-  created_at: string;
-  updated_at: string;
-  entry_price: string | null;
-  target_price: string | null;
-  stop_loss: string | null;
-}
+import type { StockSummary } from '~/services';
+import { getStockList, deleteStockAnalysis } from '~/services';
 
 const stocks = ref<StockSummary[]>([]);
-const isLoading = ref(false);
+const isLoading = ref(true);
 const searchQuery = ref('');
 const toast = useToast();
+const loadingStore = useLoadingStore();
 
 // Load stock list
 const loadStocks = async () => {
   isLoading.value = true;
+  loadingStore.show('Đang tải danh sách cổ phiếu...');
   try {
-    const response = await $fetch<{
-      success: boolean;
-      data: StockSummary[];
-    }>('/api/stock/list');
+    const response = await getStockList();
 
     if (response.success) {
       stocks.value = response.data;
@@ -34,6 +26,7 @@ const loadStocks = async () => {
     });
   } finally {
     isLoading.value = false;
+    loadingStore.hide();
   }
 };
 
@@ -66,18 +59,54 @@ const viewStock = (symbol: string) => {
   navigateTo(`/analysis/${symbol}`);
 };
 
-// New analysis modal
-const showNewModal = ref(false);
+// New analysis
 const newSymbol = ref('');
-
 const createNewAnalysis = () => {
   if (!newSymbol.value) return;
   navigateTo(`/analysis/${newSymbol.value.toUpperCase()}`);
-  showNewModal.value = false;
-  newSymbol.value = '';
 };
 
-onMounted(() => {
+// Delete analysis
+const showDeleteModal = ref(false);
+const stockToDelete = ref<string | null>(null);
+
+const confirmDelete = (symbol: string) => {
+  stockToDelete.value = symbol;
+  showDeleteModal.value = true;
+};
+
+const handleDelete = async () => {
+  if (!stockToDelete.value) return;
+
+  loadingStore.show(`Đang xóa ${stockToDelete.value}...`);
+  try {
+    const response = await deleteStockAnalysis(stockToDelete.value);
+
+    if (response.success) {
+      toast.add({
+        title: 'Thành công',
+        description: response.message,
+        color: 'success',
+      });
+
+      // Refresh list
+      await loadStocks();
+    }
+  } catch (error: any) {
+    toast.add({
+      title: 'Lỗi',
+      description: error.data?.message || 'Không thể xóa phân tích',
+      color: 'error',
+    });
+  } finally {
+    loadingStore.hide();
+    showDeleteModal.value = false;
+    stockToDelete.value = null;
+  }
+};
+
+onMounted(async () => {
+  await nextTick();
   loadStocks();
 });
 
@@ -87,41 +116,49 @@ useHead({
 </script>
 
 <template>
-  <div class="stock-list-page">
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
+  <div class="max-w-7xl mx-auto p-8">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-8 gap-8">
+      <div class="flex-1">
+        <h1
+          class="flex items-center text-3xl font-bold text-gray-900 dark:text-white mb-2"
+        >
           <UIcon name="i-lucide-trending-up" class="mr-3" />
           Danh sách phân tích cổ phiếu
         </h1>
-        <p class="page-subtitle">
-          Quản lý và xem các kịch bản phân tích đã lưu
-        </p>
       </div>
-
-      <UButton
-        icon="i-lucide-plus-circle"
-        size="lg"
-        color="primary"
-        @click="showNewModal = true"
-      >
-        Phân tích mới
-      </UButton>
+      <div class="flex gap-2">
+        <UInput
+          id="new-symbol"
+          v-model="newSymbol"
+          size="lg"
+          placeholder="VD: PVD, VCB, HPG..."
+          class="uppercase w-48"
+          @keyup.enter="createNewAnalysis"
+        />
+        <UButton
+          icon="i-lucide-arrow-right"
+          size="lg"
+          :disabled="!newSymbol"
+          @click="createNewAnalysis"
+        >
+          Đi đến
+        </UButton>
+      </div>
     </div>
 
     <!-- Search -->
-    <div class="search-section">
+    <div class="mb-8 max-w-md">
       <UInput
         v-model="searchQuery"
         icon="i-lucide-search"
         size="lg"
         placeholder="Tìm kiếm mã cổ phiếu..."
-        :ui="{ icon: { trailing: { pointer: '' } } }"
       >
         <template #trailing>
           <UButton
             v-show="searchQuery !== ''"
-            color="gray"
+            color="neutral"
             variant="link"
             icon="i-lucide-x"
             :padded="false"
@@ -131,15 +168,13 @@ useHead({
       </UInput>
     </div>
 
-    <!-- Stock List -->
-    <div v-if="isLoading" class="loading-state">
-      <UIcon name="i-lucide-loader-2" class="animate-spin" />
-      <p>Đang tải danh sách...</p>
-    </div>
-
-    <div v-else-if="filteredStocks.length === 0" class="empty-state">
-      <UIcon name="i-lucide-inbox" class="empty-icon" />
-      <h3>
+    <!-- Empty State -->
+    <div
+      v-if="!isLoading && filteredStocks.length === 0"
+      class="flex flex-col items-center justify-center py-16 text-center text-gray-500 dark:text-gray-400"
+    >
+      <UIcon name="i-lucide-inbox" class="text-6xl mb-4 opacity-50" />
+      <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
         {{ searchQuery ? 'Không tìm thấy kết quả' : 'Chưa có phân tích nào' }}
       </h3>
       <p>
@@ -149,250 +184,125 @@ useHead({
             : 'Bắt đầu bằng cách tạo phân tích mới'
         }}
       </p>
-      <UButton
-        v-if="!searchQuery"
-        icon="i-lucide-plus-circle"
-        size="lg"
-        class="mt-4"
-        @click="showNewModal = true"
-      >
-        Tạo phân tích đầu tiên
-      </UButton>
     </div>
 
-    <div v-else class="stock-table">
-      <table>
-        <thead>
+    <!-- Stock Table -->
+    <div
+      v-else
+      class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden"
+    >
+      <table class="w-full">
+        <thead
+          class="bg-gray-50 dark:bg-gray-800 border-b-2 border-gray-200 dark:border-gray-700"
+        >
           <tr>
-            <th>Mã CP</th>
-            <th>Cập nhật</th>
-            <th class="text-right">Giá vào</th>
-            <th class="text-right">Mục tiêu</th>
-            <th class="text-right">Cắt lỗ</th>
-            <th class="text-center">Thao tác</th>
+            <th
+              class="px-4 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
+              Mã CP
+            </th>
+            <th
+              class="px-4 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
+              Cập nhật
+            </th>
+            <th
+              class="px-4 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
+              Giá vào
+            </th>
+            <th
+              class="px-4 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
+              Mục tiêu
+            </th>
+            <th
+              class="px-4 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            >
+              Cắt lỗ
+            </th>
+            <th
+              class="px-4 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            ></th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="stock in filteredStocks"
             :key="stock.id"
-            class="stock-row"
+            class="border-b border-gray-200 dark:border-gray-700 last:border-b-0 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
             @click="viewStock(stock.symbol)"
           >
-            <td>
-              <span class="symbol">{{ stock.symbol }}</span>
+            <td class="px-4 py-4">
+              <span class="font-bold text-sm text-primary-500 cursor-pointer">{{
+                stock.symbol
+              }}</span>
             </td>
-            <td class="date-cell">{{ formatDate(stock.updated_at) }}</td>
-            <td class="price-cell text-right">
+            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+              {{ formatDate(stock.updated_at) }}
+            </td>
+            <td class="px-4 py-4 text-right font-mono font-medium">
               {{ formatPrice(stock.entry_price) }}
             </td>
-            <td class="price-cell text-right">
+            <td class="px-4 py-4 text-right font-mono font-medium">
               {{ formatPrice(stock.target_price) }}
             </td>
-            <td class="price-cell text-right">
+            <td class="px-4 py-4 text-right font-mono font-medium">
               {{ formatPrice(stock.stop_loss) }}
             </td>
-            <td class="text-center">
+            <td class="px-4 py-4 text-center">
               <UButton
                 icon="i-lucide-eye"
-                size="sm"
+                size="md"
                 color="primary"
+                class="cursor-pointer"
                 variant="ghost"
                 @click.stop="viewStock(stock.symbol)"
               >
                 Xem
               </UButton>
+              <UButton
+                icon="i-lucide-trash-2"
+                size="md"
+                color="error"
+                variant="ghost"
+                @click.stop="confirmDelete(stock.symbol)"
+              />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- New Analysis Modal -->
-    <UModal v-model="showNewModal">
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold">Tạo phân tích mới</h3>
-            <UButton
-              color="gray"
-              variant="ghost"
-              icon="i-lucide-x"
-              @click="showNewModal = false"
-            />
-          </div>
-        </template>
-
-        <div class="modal-content">
-          <label for="new-symbol" class="block font-medium mb-2"
-            >Mã cổ phiếu</label
+    <UModal v-model:open="showDeleteModal" title="Xác nhận xóa">
+      <template #footer>
+        <div class="flex justify-end gap-4 w-full">
+          <UButton
+            color="neutral"
+            variant="outline"
+            class="cursor-pointer"
+            @click="showDeleteModal = false"
           >
-          <UInput
-            id="new-symbol"
-            v-model="newSymbol"
-            size="lg"
-            placeholder="VD: PVD, VCB, HPG..."
-            class="uppercase"
-            @keyup.enter="createNewAnalysis"
-          />
+            Hủy
+          </UButton>
+          <UButton
+            class="cursor-pointer"
+            icon="i-lucide-trash-2"
+            color="error"
+            @click="handleDelete"
+          >
+            Xóa
+          </UButton>
         </div>
+      </template>
 
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton color="gray" variant="ghost" @click="showNewModal = false">
-              Hủy
-            </UButton>
-            <UButton
-              icon="i-lucide-arrow-right"
-              :disabled="!newSymbol"
-              @click="createNewAnalysis"
-            >
-              Tiếp tục
-            </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #body>
+        <p class="text-gray-700 dark:text-gray-300">
+          Bạn có chắc chắn muốn xóa phân tích cho mã
+          <strong>{{ stockToDelete }}</strong
+          >?
+        </p>
+      </template>
     </UModal>
   </div>
 </template>
-
-<style scoped>
-.stock-list-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  gap: 2rem;
-}
-
-.header-content {
-  flex: 1;
-}
-
-.page-title {
-  display: flex;
-  align-items: center;
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--ui-text);
-  margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-  color: var(--ui-text-muted);
-  font-size: 1rem;
-}
-
-.search-section {
-  margin-bottom: 2rem;
-  max-width: 500px;
-}
-
-.loading-state,
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: var(--ui-text-muted);
-}
-
-.loading-state svg {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.empty-state h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--ui-text);
-  margin-bottom: 0.5rem;
-}
-
-.stock-table {
-  background: var(--ui-bg);
-  border: 1px solid var(--ui-border);
-  border-radius: 0.75rem;
-  overflow: hidden;
-}
-
-.stock-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.stock-table thead {
-  background: var(--ui-bg-elevated);
-  border-bottom: 2px solid var(--ui-border);
-}
-
-.stock-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--ui-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.stock-row {
-  border-bottom: 1px solid var(--ui-border);
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.stock-row:hover {
-  background: var(--ui-bg-elevated);
-}
-
-.stock-row:last-child {
-  border-bottom: none;
-}
-
-.stock-row td {
-  padding: 1rem;
-}
-
-.symbol {
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: var(--ui-primary);
-}
-
-.date-cell {
-  color: var(--ui-text-muted);
-  font-size: 0.875rem;
-}
-
-.price-cell {
-  font-family: 'Courier New', monospace;
-  font-weight: 500;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.modal-content {
-  padding: 1rem 0;
-}
-</style>

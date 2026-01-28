@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
+import ImageResize from 'tiptap-extension-resize-image';
 
 // Props
 const props = defineProps<{
@@ -34,11 +35,35 @@ const editor = useEditor({
         levels: [2, 3],
       },
     }),
+    ImageResize.configure({
+      inline: true,
+      allowBase64: true,
+    }),
   ],
   editorProps: {
     attributes: {
       class:
         'prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[200px] p-4',
+    },
+    handlePaste: (view, event) => {
+      const items = event.clipboardData?.items;
+      if (items) {
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const base64 = e.target?.result as string;
+                editor.value?.chain().focus().setImage({ src: base64 }).run();
+              };
+              reader.readAsDataURL(file);
+              return true; // Prevent default paste
+            }
+          }
+        }
+      }
+      return false; // Continue with default paste for non-images
     },
   },
 });
@@ -250,6 +275,13 @@ onBeforeUnmount(() => {
           icon="i-lucide-heading-3"
           @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
         />
+        <div class="toolbar-separator" />
+        <UButton
+          variant="ghost"
+          size="xs"
+          icon="i-lucide-image"
+          title="Paste ảnh (Ctrl+V) hoặc kéo thả"
+        />
       </div>
 
       <!-- Editor Content -->
@@ -371,11 +403,14 @@ onBeforeUnmount(() => {
   border: 1px solid var(--ui-border);
   border-radius: 0.5rem;
   background: var(--ui-bg);
-  overflow: hidden;
+  overflow: auto;
+  resize: vertical;
+  min-height: 350px;
+  max-height: 80vh;
 }
 
 .editor-wrapper :deep(.ProseMirror) {
-  min-height: 200px;
+  min-height: 230px;
   padding: 1rem;
   outline: none;
 }
@@ -399,5 +434,30 @@ onBeforeUnmount(() => {
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: 0.75rem;
+}
+
+.editor-wrapper :deep(.ProseMirror img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 0.75rem 0;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.editor-wrapper :deep(.ProseMirror img:hover) {
+  opacity: 0.9;
+}
+
+.editor-wrapper :deep(.ProseMirror img.ProseMirror-selectednode) {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--ui-border);
+  margin: 0 0.25rem;
 }
 </style>

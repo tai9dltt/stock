@@ -32,7 +32,6 @@ CREATE TABLE united_types (
 -- 🏢 companies
 CREATE TABLE companies (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  vietstock_id BIGINT UNIQUE,  -- CompanyID from Vietstock
   symbol VARCHAR(20) NOT NULL,
   name VARCHAR(255),
   exchange VARCHAR(20),
@@ -61,7 +60,7 @@ CREATE TABLE periods (
   INDEX idx_company_year (company_id, year),
   INDEX idx_symbol_year (symbol, year),
 
-  FOREIGN KEY (company_id) REFERENCES companies(id),
+  FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
   FOREIGN KEY (audited_status_code) REFERENCES audited_status(code),
   FOREIGN KEY (united_code) REFERENCES united_types(code)
 );
@@ -82,7 +81,7 @@ INSERT INTO report_components (code, name, name_en, ordering) VALUES
 ('ratios', 'Chỉ số tài chính', 'Financial Ratios', 3),
 ('plan', 'Kế hoạch', 'Planning', 4);
 
--- 📊 metrics
+-- metrics
 CREATE TABLE metrics (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   code VARCHAR(50) NOT NULL UNIQUE,  -- REVENUE_NET, NET_PROFIT, EPS_TTM...
@@ -143,7 +142,7 @@ INSERT INTO metrics (code, component_id, name, name_en, unit, display_order) VAL
 ('OUTSTANDING_SHARES', 4, 'Số CP lưu hành', 'Outstanding Shares', 'shares', 10),
 ('LISTED_SHARES', 4, 'Số CP niêm yết', 'Listed Shares', 'shares', 11);
 
--- 📈 metric_values
+-- metric_values
 CREATE TABLE metric_values (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
@@ -162,9 +161,9 @@ CREATE TABLE metric_values (
   INDEX idx_symbol_metric (symbol, metric_id),
   INDEX idx_company_metric (company_id, metric_id),
 
-  FOREIGN KEY (company_id) REFERENCES companies(id),
+  FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
   FOREIGN KEY (metric_id) REFERENCES metrics(id),
-  FOREIGN KEY (period_id) REFERENCES periods(id)
+  FOREIGN KEY (period_id) REFERENCES periods(id) ON DELETE CASCADE
 );
 
 -- 📉 trading_snapshots
@@ -241,7 +240,7 @@ CREATE TABLE trading_snapshots (
   INDEX idx_company_time (company_id, trading_date),
   INDEX idx_symbol_time (symbol, trading_date),
 
-  FOREIGN KEY (company_id) REFERENCES companies(id)
+  FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
 
 -- 📝 stock_analysis (User's analysis data)
@@ -254,7 +253,7 @@ CREATE TABLE stock_analysis (
   quarterly_data JSON,
   target_price DECIMAL(15,2),
   stop_loss DECIMAL(15,2),
-  note_html TEXT,
+  note_html MEDIUMTEXT,
   pe_assumptions JSON,
 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

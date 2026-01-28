@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@pinia/nuxt'],
 
   css: [
-    '~/assets/css/ag-grid-custom.css',
     '~/assets/css/main.css'
   ],
 

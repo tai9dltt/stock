@@ -21,9 +21,6 @@ const loadingStore = useLoadingStore();
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ loadingStore.message }}
         </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          Vui lòng đợi trong giây lát...
-        </p>
       </div>
     </div>
   </div>
