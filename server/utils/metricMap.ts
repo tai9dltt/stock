@@ -68,6 +68,15 @@ export const METRIC_MAP: Record<string, string> = {
   'Tỷ lệ cổ tức bằng cổ phiếu (%VĐL) kế hoạch': 'PLAN_DIVIDEND_STOCK',
   'Tỷ lệ cổ tức (%) kế hoạch': 'PLAN_DIVIDEND_TOTAL',
 
+  // ===== BANK-SPECIFIC METRICS =====
+  'Thu nhập lãi thuần': 'NET_INTEREST_INCOME',
+  'Chi phí hoạt động': 'OPERATING_EXPENSES',
+  'Tổng TNTT': 'TOTAL_OPERATING_INCOME',
+  'Tổng thu nhập từ hoạt động': 'TOTAL_OPERATING_INCOME',
+  'Tổng LNST': 'TOTAL_NET_PROFIT',
+  'LNST của CĐ Ngân hàng mẹ': 'NET_PROFIT',
+  'Lợi nhuận sau thuế của cổ đông ngân hàng mẹ': 'NET_PROFIT',
+
   // ===== SHARES =====
   'Số lượng cổ phiếu lưu hành': 'OUTSTANDING_SHARES',
   'KLCPLH': 'OUTSTANDING_SHARES',

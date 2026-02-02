@@ -3,7 +3,11 @@ import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
 import type { QuarterlyColumnInfo } from '~/types/spreadJsTypes';
-import { INPUT_AREA, VALUATION_TABLE } from '~/constants/spreadJsConstants';
+import {
+  INPUT_AREA,
+  VALUATION_TABLE,
+  isBankStock,
+} from '~/constants/spreadJsConstants';
 import {
   buildTitleSection,
   buildInputSection,
@@ -13,6 +17,12 @@ import {
   buildValuationTable,
   applyFinalStyling,
 } from '~/composables/useSpreadJSBuilder';
+import {
+  buildBankTitleSection,
+  buildBankInputSection,
+  buildBankAnnualTable,
+  buildBankQuarterlyTable,
+} from '~/composables/useBank';
 import {
   processForecasts,
   overlayQuarterlyMetrics,
@@ -125,50 +135,92 @@ const updateSpreadSheet = () => {
 
   const ctx = { GC, spread, sheet };
 
-  // Build sections
-  buildTitleSection(ctx, stockSymbol.value);
+  // Detect if this is a bank stock
+  const isBank = isBankStock(annualData.value, quarterlyData.value);
+  console.log(`Stock type: ${isBank ? 'Bank' : 'Industrial'}`);
 
-  const inputRefs = buildInputSection(ctx, {
-    tradingDate: tradingDate.value,
-    currentPrice: currentPrice.value,
-    outstandingShares: outstandingShares.value,
-    max52W: max52W.value,
-    min52W: min52W.value,
-    revenueGrowth: revenueGrowth.value,
-    grossMargin: grossMargin.value,
-    netProfitGrowth: netProfitGrowth.value,
-  });
+  // Build sections - use bank or regular builder based on stock type
+  if (isBank) {
+    buildBankTitleSection(ctx, stockSymbol.value);
+  } else {
+    buildTitleSection(ctx, stockSymbol.value);
+  }
+
+  const inputRefs = isBank
+    ? buildBankInputSection(ctx, {
+        tradingDate: tradingDate.value,
+        currentPrice: currentPrice.value,
+        outstandingShares: outstandingShares.value,
+        max52W: max52W.value,
+        min52W: min52W.value,
+        revenueGrowth: revenueGrowth.value,
+        grossMargin: grossMargin.value,
+        netProfitGrowth: netProfitGrowth.value,
+      })
+    : buildInputSection(ctx, {
+        tradingDate: tradingDate.value,
+        currentPrice: currentPrice.value,
+        outstandingShares: outstandingShares.value,
+        max52W: max52W.value,
+        min52W: min52W.value,
+        revenueGrowth: revenueGrowth.value,
+        grossMargin: grossMargin.value,
+        netProfitGrowth: netProfitGrowth.value,
+      });
 
   const {
     colMap: annualColMap,
     rows: annualRows,
     sortedYears,
-  } = buildAnnualTable(
-    ctx,
-    {
-      annualData: annualData.value,
-      quarterlyData: quarterlyData.value,
-      forecastYears: forecastYears.value,
-    },
-    inputRefs,
-  );
+  } = isBank
+    ? buildBankAnnualTable(
+        ctx,
+        {
+          annualData: annualData.value,
+          quarterlyData: quarterlyData.value,
+          forecastYears: forecastYears.value,
+        },
+        inputRefs,
+      )
+    : buildAnnualTable(
+        ctx,
+        {
+          annualData: annualData.value,
+          quarterlyData: quarterlyData.value,
+          forecastYears: forecastYears.value,
+        },
+        inputRefs,
+      );
 
   const {
     cols: quarterlyCols,
     rows: quarterlyRows,
     currentCol,
-  } = buildQuarterlyTable(
-    ctx,
-    {
-      annualData: annualData.value,
-      quarterlyData: quarterlyData.value,
-      forecastYears: forecastYears.value,
-      forecastQuarters: forecastQuarters.value,
-      outstandingShares: outstandingShares.value,
-    },
-    inputRefs,
-    annualRows,
-  );
+  } = isBank
+    ? buildBankQuarterlyTable(
+        ctx,
+        {
+          annualData: annualData.value,
+          quarterlyData: quarterlyData.value,
+          forecastYears: forecastYears.value,
+          forecastQuarters: forecastQuarters.value,
+          outstandingShares: outstandingShares.value,
+        },
+        inputRefs,
+        annualRows,
+      )
+    : buildQuarterlyTable(
+        ctx,
+        {
+          annualData: annualData.value,
+          quarterlyData: quarterlyData.value,
+          forecastYears: forecastYears.value,
+          forecastQuarters: forecastQuarters.value,
+          outstandingShares: outstandingShares.value,
+        },
+        inputRefs,
+        annualRows,
+      );
 
   // Store positions for save
   sharesRowPosition.value = quarterlyRows.shares;
@@ -214,7 +266,10 @@ const updateSpreadSheet = () => {
   const maxCol = Math.max(
     INPUT_AREA.COL + 3,
     currentCol + 1,
-    Object.values(annualColMap).reduce((a, b) => Math.max(a, b), 0) + 1,
+    (Object.values(annualColMap) as number[]).reduce(
+      (a, b) => Math.max(a, b),
+      0,
+    ) + 1,
     30,
   );
 

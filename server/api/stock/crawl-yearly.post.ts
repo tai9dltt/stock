@@ -241,10 +241,8 @@ async function processYearlyData(companyId: number, symbol: string, mergedData: 
       const periodsCount = mergedData.periods.length;
 
       for (let i = 0; i < periodsCount && i < 4; i++) {
-        const periodIndex = periodsCount - 1 - i;
-        if (periodIndex < 0) continue;
-
-        const period = mergedData.periods[periodIndex];
+        // Fix: Both periods and values seem to be DESC (Value1 is Newest)
+        const period = mergedData.periods[i];
         const value = metric[`Value${i + 1}`];
 
         if (value === null || value === undefined) continue;

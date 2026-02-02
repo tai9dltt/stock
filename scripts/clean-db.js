@@ -84,6 +84,12 @@ async function cleanDatabase() {
       ('PROFIT_AFTER_TAX', 1, 'LNST thu nhập DN', 'Profit After Tax', 'VND', 6),
       ('NET_PROFIT', 1, 'LNST của CĐ cty mẹ', 'Net Profit (Parent)', 'VND', 7),
 
+      -- Bank-Specific Income Statement
+      ('NET_INTEREST_INCOME', 1, 'Thu nhập lãi thuần', 'Net Interest Income', 'VND', 20),
+      ('OPERATING_EXPENSES', 1, 'Chi phí hoạt động', 'Operating Expenses', 'VND', 21),
+      ('TOTAL_OPERATING_INCOME', 1, 'Tổng TNTT', 'Total Operating Income', 'VND', 22),
+      ('TOTAL_NET_PROFIT', 1, 'Tổng LNST', 'Total Net Profit', 'VND', 23),
+
       -- Balance Sheet
       ('TOTAL_ASSETS', 2, 'Tổng tài sản', 'Total Assets', 'VND', 1),
       ('CURRENT_ASSETS', 2, 'Tài sản ngắn hạn', 'Current Assets', 'VND', 2),
@@ -119,7 +125,7 @@ async function cleanDatabase() {
       ('OUTSTANDING_SHARES', 4, 'Số CP lưu hành', 'Outstanding Shares', 'shares', 10),
       ('LISTED_SHARES', 4, 'Số CP niêm yết', 'Listed Shares', 'shares', 11)
     `)
-    console.log('  ✓ metrics (31 rows)')
+    console.log('  ✓ metrics (35 rows)')
 
     // Show summary
     const [companies] = await connection.query('SELECT COUNT(*) as count FROM companies')

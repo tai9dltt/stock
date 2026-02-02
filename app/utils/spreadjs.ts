@@ -210,6 +210,9 @@ export function setCell(
     size?: number
   } = {}
 ): void {
+  // Clear any existing formula to ensure the value is set correctly
+  // Only clear if we are setting a value, otherwise formula might be intended
+  sheet.setFormula(r, c, null);
   sheet.setValue(r, c, value)
 
   if (style.bold) {

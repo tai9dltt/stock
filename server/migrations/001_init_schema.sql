@@ -138,6 +138,12 @@ INSERT INTO metrics (code, component_id, name, name_en, unit, display_order) VAL
 ('PLAN_DIVIDEND_STOCK', 4, 'Cổ tức cổ phiếu', 'Stock Dividend', '%', 5),
 ('PLAN_DIVIDEND_TOTAL', 4, 'Tổng cổ tức', 'Total Dividend', '%', 6),
 
+-- Bank-specific metrics (component_id = 1)
+('NET_INTEREST_INCOME', 1, 'Thu nhập lãi thuần', 'Net Interest Income', 'VND', 20),
+('OPERATING_EXPENSES', 1, 'Chi phí hoạt động', 'Operating Expenses', 'VND', 21),
+('TOTAL_OPERATING_INCOME', 1, 'Tổng TNTT', 'Total Operating Income', 'VND', 22),
+('TOTAL_NET_PROFIT', 1, 'Tổng LNST', 'Total Net Profit After Tax', 'VND', 23),
+
 -- Shares (component_id = 4)
 ('OUTSTANDING_SHARES', 4, 'Số CP lưu hành', 'Outstanding Shares', 'shares', 10),
 ('LISTED_SHARES', 4, 'Số CP niêm yết', 'Listed Shares', 'shares', 11);

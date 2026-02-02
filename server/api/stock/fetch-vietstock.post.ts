@@ -19,7 +19,7 @@ interface QuarterlyDataResponse {
 
 // Map Vietstock indicator names to our keys
 const indicatorMap: Record<string, string> = {
-  // Income Statement
+  // Income Statement (Industrial)
   'Doanh thu thuần': 'netRevenue',
   'Lợi nhuận gộp': 'grossProfit',
   'LN thuần từ HĐKD': 'operatingProfit',
@@ -27,6 +27,15 @@ const indicatorMap: Record<string, string> = {
   'LNST thu nhập DN': 'enterpriseNetProfit',
   'LNST của CĐ cty mẹ': 'netProfit',
   'LNST của CĐ cty mẹ ': 'netProfit', // with space
+
+  // Bank-specific Income Statement
+  'Thu nhập lãi thuần': 'netInterestIncome',
+  'Chi phí hoạt động': 'operatingExpenses',
+  'Tổng TNTT': 'totalOperatingIncome',
+  'Tổng thu nhập từ hoạt động': 'totalOperatingIncome',
+  'Tổng LNST': 'totalNetProfit',
+  'LNST của CĐ Ngân hàng mẹ': 'netProfit',
+  'Lợi nhuận sau thuế của cổ đông ngân hàng mẹ': 'netProfit',
 
   // Balance Sheet
   'Tài sản ngắn hạn': 'currentAssets',
@@ -39,11 +48,17 @@ const indicatorMap: Record<string, string> = {
 
   // Financial Ratios
   'EPS 4 quý': 'eps',
+  'EPS cơ bản': 'eps', // Annual usually provides basic EPS
+  'EPS': 'eps',
   'BVPS cơ bản': 'bvps',
+  'BVPS': 'bvps',
   'P/E cơ bản': 'pe',
+  'P/E': 'pe',
   'ROS': 'ros',
   'ROEA': 'roe',
+  'ROE': 'roe',
   'ROAA': 'roa',
+  'ROA': 'roa',
 
   // Shares
   'Số CP lưu hành': 'outstandingShares',
@@ -52,12 +67,18 @@ const indicatorMap: Record<string, string> = {
 // Create empty result structure
 function createEmptyResult(): Record<string, Record<string, Record<string, number>>> {
   return {
-    // Income Statement
+    // Income Statement (Industrial)
     netRevenue: {},
     grossProfit: {},
     operatingProfit: {},
     enterpriseNetProfit: {},
     netProfit: {},
+
+    // Bank-specific Income Statement
+    netInterestIncome: {},
+    operatingExpenses: {},
+    totalOperatingIncome: {},
+    totalNetProfit: {},
 
     // Balance Sheet
     currentAssets: {},
@@ -281,17 +302,25 @@ function parseVietstockQuarterlyData(allPagesData: any[]): Record<string, Record
 // Parse Vietstock annual response to our format
 function parseVietstockAnnualData(rawData: any): Record<string, Record<string, number>> {
   const result: Record<string, Record<string, number>> = {
+    // Industrial
     netRevenue: {},
     grossProfit: {},
     operatingProfit: {},
     enterpriseNetProfit: {},
     netProfit: {},
+    // Bank-specific
+    netInterestIncome: {},
+    operatingExpenses: {},
+    totalOperatingIncome: {},
+    totalNetProfit: {},
+    // Balance Sheet
     currentAssets: {},
     totalAssets: {},
     totalLiabilities: {},
     shortTermDebt: {},
     shareholdersEquity: {},
     minorityInterest: {},
+    // Ratios
     eps: {},
     bvps: {},
     pe: {},

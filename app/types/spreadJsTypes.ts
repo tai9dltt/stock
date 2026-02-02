@@ -45,6 +45,7 @@ export interface CellStyle {
  */
 export interface InputCellReferences {
   currentPrice: string;
+  outstandingShares: string;
   revenueGrowth: string;
   grossMargin: string;
   netProfitGrowth: string;
@@ -61,6 +62,7 @@ export interface AnnualRowPositions {
   netProfit: number;
   grossMargin: number;
   netMargin: number;
+  netProfitMargin?: number; // Only used in bank spreadsheet
   eps: number;
   pe: number;
   ros: number;
@@ -83,9 +85,12 @@ export interface QuarterlyRowPositions {
   netProfit: number;
   shares: number;
   netMargin: number;
+  netProfitMargin?: number; // Only used in bank spreadsheet
   eps: number;
   epsTtm: number;
   pe: number;
+  roe: number;
+  roa: number;
   revGrowth: number;
   profitGrowth: number;
 }

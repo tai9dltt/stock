@@ -1,8 +1,3 @@
-/**
- * SpreadJS Builder Composable
- * Modular functions for building each section of the stock analysis spreadsheet
- */
-
 import type {
   SpreadJSContext,
   AnnualColumnMap,
@@ -22,6 +17,7 @@ import {
   ANNUAL_ROW_LABELS,
   QUARTERLY_ROW_LABELS,
   INPUT_FIELD_LABELS,
+  YEAR_DETECTION_METRICS,
   getAnnualRowPositions,
   getQuarterlyRowPositions,
 } from '~/constants/spreadJsConstants';
@@ -36,6 +32,40 @@ import {
 } from '~/utils/spreadjs';
 
 // ============ HELPER FUNCTIONS ============
+
+/**
+ * Extract years from data by checking multiple metrics
+ * Banks don't have netRevenue, so we check various metrics
+ */
+export function extractYearsFromData(data: Record<string, any>): string[] {
+  const yearsSet = new Set<string>();
+
+  for (const metric of YEAR_DETECTION_METRICS) {
+    const metricData = data[metric];
+    if (metricData && typeof metricData === 'object') {
+      Object.keys(metricData).forEach((year) => yearsSet.add(year));
+    }
+  }
+
+  return Array.from(yearsSet).sort();
+}
+
+/**
+ * Check if any quarter has data for a given year
+ */
+export function hasQuarterData(
+  quarterlyData: Record<string, any>,
+  year: string,
+  quarter: string
+): boolean {
+  for (const metric of YEAR_DETECTION_METRICS) {
+    const value = quarterlyData[metric]?.[year]?.[quarter];
+    if (value !== undefined && value !== null) {
+      return true;
+    }
+  }
+  return false;
+}
 
 /**
  * Determine if a year is forecast based on current year and data availability
@@ -54,10 +84,9 @@ export function isForecastYear(
   // Past years (2+ years old) are always historical
   if (yearInt < currentYear - 1) return false;
 
-  // Previous year: check if Q4 data exists
+  // Previous year: check if Q4 data exists in any metric
   if (yearInt === currentYear - 1) {
-    const hasQ4 = quarterlyData['netRevenue']?.[year]?.['Q4'];
-    return hasQ4 === undefined || hasQ4 === null;
+    return !hasQuarterData(quarterlyData, year, 'Q4');
   }
 
   return forecastYears.includes(year);
@@ -89,18 +118,13 @@ export function filterIncompleteYears(
     // Always show previous year
     if (yearInt === currentYear - 1) return true;
 
-    // For years MORE than 2 years old, check for all 4 quarters
+    // For years MORE than 2 years old, check for all 4 quarters in any metric
     if (yearInt < currentYear - 1) {
-      const netRev = quarterlyData['netRevenue']?.[year] || {};
       return (
-        netRev['Q1'] !== undefined &&
-        netRev['Q1'] !== null &&
-        netRev['Q2'] !== undefined &&
-        netRev['Q2'] !== null &&
-        netRev['Q3'] !== undefined &&
-        netRev['Q3'] !== null &&
-        netRev['Q4'] !== undefined &&
-        netRev['Q4'] !== null
+        hasQuarterData(quarterlyData, year, 'Q1') &&
+        hasQuarterData(quarterlyData, year, 'Q2') &&
+        hasQuarterData(quarterlyData, year, 'Q3') &&
+        hasQuarterData(quarterlyData, year, 'Q4')
       );
     }
 
@@ -249,6 +273,9 @@ export function buildInputSection(
     currentPrice: GC.Spread.Sheets.CalcEngine.rangeToFormula(
       sheet.getRange(startRow + 1, valueCol, 1, 1)
     ),
+    outstandingShares: GC.Spread.Sheets.CalcEngine.rangeToFormula(
+      sheet.getRange(startRow + 2, valueCol, 1, 1)
+    ),
     revenueGrowth: GC.Spread.Sheets.CalcEngine.rangeToFormula(
       sheet.getRange(startRow + 5, valueCol, 1, 1)
     ),
@@ -279,8 +306,8 @@ export function buildAnnualTable(
   const startRow = ANNUAL_TABLE.START_ROW;
   const rows = getAnnualRowPositions(startRow);
 
-  // Prepare years
-  const dataYears = Object.keys(data.annualData['netRevenue'] || {}).sort();
+  // Prepare years - check multiple metrics for year detection (banks don't have netRevenue)
+  const dataYears = extractYearsFromData(data.annualData);
   const allYearsSet = new Set([...dataYears, ...data.forecastYears]);
   let sortedYears = Array.from(allYearsSet).sort();
 
@@ -375,19 +402,28 @@ export function buildAnnualTable(
     setCellUtil(GC, sheet, rows.grossProfit, col, gross, { format: '#,##0', border: true });
     setCellUtil(GC, sheet, rows.operatingProfit, col, operating, { format: '#,##0', border: true });
     setCellUtil(GC, sheet, rows.netProfit, col, profit, { format: '#,##0', border: true });
-    setCellUtil(GC, sheet, rows.eps, col, eps, { format: '#,##0', border: true });
-    setCellUtil(GC, sheet, rows.pe, col, pe, { format: '0.00', border: true });
-    setCellUtil(GC, sheet, rows.ros, col, ros, { format: '0.00', border: true });
+
+    // EPS: For forecast years, will be calculated as SUM of quarterly EPS; for historical years, use API data
+    if (!forecast) {
+      setCellUtil(GC, sheet, rows.eps, col, eps, { format: '#,##0', border: true });
+    }
+
+    // P/E: For forecast years, will be calculated from EPS; for historical years, use API data
+    if (!forecast) {
+      setCellUtil(GC, sheet, rows.pe, col, pe, { format: '0.00', border: true });
+    }
+
+    // ROS: For forecast years, will be calculated as Net Profit / Revenue; for historical years, use API data
+    if (!forecast) {
+      setCellUtil(GC, sheet, rows.ros, col, ros !== undefined && ros !== null ? ros / 100 : null, { format: '0.00%', border: true });
+    }
+
     setCellUtil(GC, sheet, rows.roe, col, roe, { format: '0.00', border: true });
     setCellUtil(GC, sheet, rows.roa, col, roa, { format: '0.00', border: true });
 
-    // Margin formulas
-    if (rev && gross) {
-      setDivisionFormula(GC, sheet, rows.grossMargin, col, rows.grossProfit, col, rows.netRevenue, col, '0.00%');
-    }
-    if (rev && profit) {
-      setDivisionFormula(GC, sheet, rows.netMargin, col, rows.netProfit, col, rows.netRevenue, col, '0.00%');
-    }
+    // Margin formulas - always calculate from row references
+    setDivisionFormula(GC, sheet, rows.grossMargin, col, rows.grossProfit, col, rows.netRevenue, col, '0.00%');
+    setDivisionFormula(GC, sheet, rows.netMargin, col, rows.netProfit, col, rows.netRevenue, col, '0.00%');
     [rows.grossMargin, rows.netMargin].forEach((r) => applyBorder(GC, sheet, r, col));
 
     // Growth formulas
@@ -445,9 +481,9 @@ export function buildQuarterlyTable(
   const startRow = annualRows.profitGrowth + QUARTERLY_TABLE.GAP_FROM_ANNUAL;
   const rows = getQuarterlyRowPositions(startRow);
 
-  // Prepare years
-  const annualYearsKeys = Object.keys(data.annualData['netRevenue'] || {});
-  const qYears = Object.keys(data.quarterlyData['netRevenue'] || {});
+  // Prepare years - check multiple metrics for year detection (banks don't have netRevenue)
+  const annualYearsKeys = extractYearsFromData(data.annualData);
+  const qYears = extractYearsFromData(data.quarterlyData);
   const initialYears = Array.from(new Set([...annualYearsKeys, ...qYears, ...data.forecastYears])).sort();
 
   let allQYears = filterIncompleteYears(initialYears, data.quarterlyData, currentYear);
@@ -542,6 +578,8 @@ export function buildQuarterlyTable(
   setCellUtil(GC, sheet, rows.eps, 0, QUARTERLY_ROW_LABELS.eps, { border: true });
   setCellUtil(GC, sheet, rows.epsTtm, 0, QUARTERLY_ROW_LABELS.epsTtm, { border: true });
   setCellUtil(GC, sheet, rows.pe, 0, QUARTERLY_ROW_LABELS.pe, { border: true });
+  setCellUtil(GC, sheet, rows.roe, 0, QUARTERLY_ROW_LABELS.roe, { border: true });
+  setCellUtil(GC, sheet, rows.roa, 0, QUARTERLY_ROW_LABELS.roa, { border: true });
   setCellUtil(GC, sheet, rows.revGrowth, 0, QUARTERLY_ROW_LABELS.revGrowth, {
     border: true,
     color: SPREADJS_COLORS.TEXT_RED,
@@ -617,14 +655,27 @@ export function buildQuarterlyTable(
     setDivisionFormula(GC, sheet, rows.grossMargin, col, rows.grossProfit, col, rows.revenue, col, '0.00%');
     setDivisionFormula(GC, sheet, rows.netMargin, col, rows.netProfit, col, rows.revenue, col, '0.00%');
 
-    // EPS formula
-    const profitAddr = getCellAddr(GC, sheet, rows.netProfit, col);
-    const sharesAddr = getCellAddr(GC, sheet, rows.shares, col);
-    sheet.setFormula(rows.eps, col, `IF(${sharesAddr}<>0, (${profitAddr} * 1000000) / ${sharesAddr}, 0)`);
-    sheet.setFormatter(rows.eps, col, '#,##0');
+    // EPS - use API data if available, otherwise calculate from netProfit for forecast
+    const epsFromApi = data.quarterlyData['eps']?.[year]?.[quarter];
+    if (epsFromApi !== undefined && epsFromApi !== null) {
+      // Use EPS from API directly (historical data or forecast data from API)
+      setCellUtil(GC, sheet, rows.eps, col, epsFromApi, { format: '#,##0', border: true });
+    } else if (isForecast || profit !== undefined && profit !== null) {
+      // For forecast quarters or when we have netProfit: calculate EPS = (LNST * 1000000) / shares
+      const profitAddr = getCellAddr(GC, sheet, rows.netProfit, col);
+      const sharesAddr = getCellAddr(GC, sheet, rows.shares, col);
+      sheet.setFormula(rows.eps, col, `IF(${sharesAddr}<>0, (${profitAddr} * 1000000) / ${sharesAddr}, 0)`);
+      sheet.setFormatter(rows.eps, col, '#,##0');
+    } else {
+      // No data available
+      setCellUtil(GC, sheet, rows.eps, col, null, { format: '#,##0', border: true });
+    }
 
-    // EPS TTM
-    if (col >= 4) {
+    // EPS TTM - use API data if available, otherwise calculate
+    const epsTtmFromApi = data.quarterlyData['epsTtm']?.[year]?.[quarter];
+    if (!isForecast && epsTtmFromApi !== undefined && epsTtmFromApi !== null) {
+      setCellUtil(GC, sheet, rows.epsTtm, col, epsTtmFromApi, { format: '#,##0', border: true });
+    } else if (col >= 4) {
       const epsRange = GC.Spread.Sheets.CalcEngine.rangeToFormula(
         sheet.getRange(rows.eps, col - 3, 1, 4)
       );
@@ -646,6 +697,22 @@ export function buildQuarterlyTable(
         `IF(SUM(${epsRange}) <> 0, ${inputRefs.currentPrice} / SUM(${epsRange}), 0)`
       );
       sheet.setFormatter(rows.pe, col, '0.00');
+    }
+
+    // ROE - use API data if available (banks have ROE data)
+    const roeFromApi = data.quarterlyData['roe']?.[year]?.[quarter];
+    if (roeFromApi !== undefined && roeFromApi !== null) {
+      setCellUtil(GC, sheet, rows.roe, col, roeFromApi, { format: '0.00', border: true });
+    } else {
+      applyBorder(GC, sheet, rows.roe, col);
+    }
+
+    // ROA - use API data if available (banks have ROA data)
+    const roaFromApi = data.quarterlyData['roa']?.[year]?.[quarter];
+    if (roaFromApi !== undefined && roaFromApi !== null) {
+      setCellUtil(GC, sheet, rows.roa, col, roaFromApi, { format: '0.00', border: true });
+    } else {
+      applyBorder(GC, sheet, rows.roa, col);
     }
 
     // Growth formulas
@@ -728,21 +795,34 @@ export function linkAnnualToQuarterly(
 
     const quarterCols = [q1Col, q2Col, q3Col, q4Col];
 
-    // Sum formulas
+    // Check if this year is a forecast year (check if any quarter is forecast)
+    const isYearForecast = yearQuarters.some((q) => q.isForecast);
+
+    // Sum formulas - grossProfit only (not netProfit, which should only sum for forecast years)
     setQuarterlySumFormula(GC, sheet, quarterlyRows.grossProfit, annualRows.grossProfit, annualCol, quarterCols);
-    setQuarterlySumFormula(GC, sheet, quarterlyRows.netProfit, annualRows.netProfit, annualCol, quarterCols);
-    setQuarterlySumFormula(GC, sheet, quarterlyRows.eps, annualRows.eps, annualCol, quarterCols);
 
-    // P/E = Price / EPS
-    const epsAddr = getCellAddr(GC, sheet, annualRows.eps, annualCol);
-    sheet.setFormula(annualRows.pe, annualCol, `IF(${epsAddr}<>0, ${inputRefs.currentPrice} / ${epsAddr}, 0)`);
-    sheet.setFormatter(annualRows.pe, annualCol, '0.00');
+    // Only sum for forecast years (historical years use API data directly)
+    if (isYearForecast) {
+      // Net Profit: sum from quarterly data for forecast years
+      setQuarterlySumFormula(GC, sheet, quarterlyRows.netProfit, annualRows.netProfit, annualCol, quarterCols);
 
-    // ROS = Net Profit / Revenue
-    const profitAddr = getCellAddr(GC, sheet, annualRows.netProfit, annualCol);
-    const revAddr = getCellAddr(GC, sheet, annualRows.netRevenue, annualCol);
-    sheet.setFormula(annualRows.ros, annualCol, `IF(${revAddr}<>0, ${profitAddr} / ${revAddr}, 0)`);
-    sheet.setFormatter(annualRows.ros, annualCol, '0.00');
+      // EPS: sum from quarterly data for forecast years
+      setQuarterlySumFormula(GC, sheet, quarterlyRows.eps, annualRows.eps, annualCol, quarterCols);
+      applyBorder(GC, sheet, annualRows.eps, annualCol);
+
+      // P/E = Price / EPS (only for forecast years after EPS is calculated)
+      const epsAddr = getCellAddr(GC, sheet, annualRows.eps, annualCol);
+      sheet.setFormula(annualRows.pe, annualCol, `IF(${epsAddr}<>0, ${inputRefs.currentPrice} / ${epsAddr}, 0)`);
+      sheet.setFormatter(annualRows.pe, annualCol, '0.00');
+      applyBorder(GC, sheet, annualRows.pe, annualCol);
+
+      // ROS = Net Profit / Revenue (only for forecast years)
+      const profitAddr = getCellAddr(GC, sheet, annualRows.netProfit, annualCol);
+      const revAddr = getCellAddr(GC, sheet, annualRows.netRevenue, annualCol);
+      sheet.setFormula(annualRows.ros, annualCol, `IF(${revAddr}<>0, ${profitAddr} / ${revAddr}, 0)`);
+      sheet.setFormatter(annualRows.ros, annualCol, '0.00%');
+      applyBorder(GC, sheet, annualRows.ros, annualCol);
+    }
   });
 }
 
