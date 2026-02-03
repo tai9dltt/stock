@@ -577,21 +577,26 @@ export function buildBankQuarterlyTable(
     // Apply borders for margin rows
     [rows.netProfitMargin!, rows.netMargin].forEach((r) => applyBorder(GC, sheet, r, col));
 
-    // EPS quý - use API data if available, otherwise calculate
-    const epsFromApi = data.quarterlyData['eps']?.[year]?.[quarter];
-    if (epsFromApi !== undefined && epsFromApi !== null) {
-      // Use API data
-      setCellUtil(GC, sheet, rows.eps, col, epsFromApi, { format: '#,##0', border: true });
-    } else {
-      // For forecast or missing data: EPS = (LNST * 1000000) / shares
-      const profitAddr = getCellAddr(GC, sheet, rows.netProfit, col);
-      const sharesAddr = getCellAddr(GC, sheet, rows.shares, col);
-      sheet.setFormula(rows.eps, col, `IF(${sharesAddr}<>0, (${profitAddr} * 1000000) / ${sharesAddr}, 0)`);
-      sheet.setFormatter(rows.eps, col, '#,##0');
-    }
+    // EPS quý - ALWAYS calculate from formula (API data is actually EPS TTM/cumulative)
+    // EPS = (LNST * 1000000) / shares
+    const profitAddr = getCellAddr(GC, sheet, rows.netProfit, col);
+    const sharesAddr = getCellAddr(GC, sheet, rows.shares, col);
+    sheet.setFormula(rows.eps, col, `IF(${sharesAddr}<>0, (${profitAddr} * 1000000) / ${sharesAddr}, 0)`);
+    sheet.setFormatter(rows.eps, col, '#,##0');
 
-    // EPS TTM
-    if (col >= 4) {
+    // EPS TTM (lũy kế) - use API data for historical, formula for forecast
+    // API returns TTM in both 'epsTtm' and 'eps' fields
+    const epsTtmFromApi = data.quarterlyData['epsTtm']?.[year]?.[quarter];
+    const epsFromApi = data.quarterlyData['eps']?.[year]?.[quarter];
+
+    if (!isForecast && (epsTtmFromApi !== undefined && epsTtmFromApi !== null)) {
+      // Use epsTtm from API for historical data
+      setCellUtil(GC, sheet, rows.epsTtm, col, epsTtmFromApi, { format: '#,##0', border: true });
+    } else if (!isForecast && (epsFromApi !== undefined && epsFromApi !== null)) {
+      // Fallback to eps field (which also contains TTM) for historical data
+      setCellUtil(GC, sheet, rows.epsTtm, col, epsFromApi, { format: '#,##0', border: true });
+    } else if (col >= 4) {
+      // For forecast or when no API data: calculate as SUM of last 4 quarters
       const epsRange = GC.Spread.Sheets.CalcEngine.rangeToFormula(
         sheet.getRange(rows.eps, col - 3, 1, 4)
       );
