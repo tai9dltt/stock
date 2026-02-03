@@ -15,18 +15,13 @@ Thumbs.db
 
 # --- Security (RẤT QUAN TRỌNG) ---
 # Chứa Cookie Vietstock và Password Database -> Tuyệt đối không commit
-.env
+# .env
 .env.production
 .env.local
 
 # --- Puppeteer ---
 # Nếu có download chromium về local thì bỏ qua
 .local-chromium
-
-# --- Prisma ---
-# Nếu dùng SQLite (local) thì bỏ qua, nhưng ta dùng MySQL nên dòng này dự phòng thôi
-/prisma/*.db
-/prisma/*.db-journal
 
 # --- Lock files (Optional) ---
 # Nên commit package-lock.json để đồng bộ version, nhưng nếu team quy định khác thì bỏ comment
