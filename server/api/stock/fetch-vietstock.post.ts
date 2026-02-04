@@ -274,26 +274,28 @@ function parseVietstockQuarterlyData(allPagesData: any[]): Record<string, Record
     const allIndicators = parseAllIndicators(rawData)
 
     // Process each period
-    periods.forEach((period: any, periodIndex: number) => {
-      const year = period.YearPeriod.toString()
-      const quarter = period.TermCode // 'Q1', 'Q2', 'Q3', 'Q4'
+    // IMPORTANT: Use ID or Row field to determine which Value to use
+    periods.forEach((period: any) => {
+      const year = period.YearPeriod.toString();
+      const quarter = period.TermCode; // 'Q1', 'Q2', 'Q3', 'Q4'
+      const valueIndex = period.ID || period.Row; // Use ID or Row to determine which Value field
 
       allIndicators.forEach((item: any) => {
-        const mappedKey = indicatorMap[item.Name]
-        if (!mappedKey || !result[mappedKey]) return
+        const mappedKey = indicatorMap[item.Name];
+        if (!mappedKey || !result[mappedKey]) return;
 
         if (!result[mappedKey][year]) {
-          result[mappedKey][year] = {}
+          result[mappedKey][year] = {};
         }
 
-        const valueKey = `Value${periodIndex + 1}`
-        const value = item[valueKey]
+        const valueKey = `Value${valueIndex}`;
+        const value = item[valueKey];
 
         if (value !== null && value !== undefined) {
-          result[mappedKey][year][quarter] = Number(value)
+          result[mappedKey][year][quarter] = Number(value);
         }
-      })
-    })
+      });
+    });
   })
 
   return result
@@ -340,21 +342,25 @@ function parseVietstockAnnualData(rawData: any): Record<string, Record<string, n
   const allIndicators = parseAllIndicators(rawData)
 
   // Process each period (each year)
-  periods.forEach((period: any, periodIndex: number) => {
-    const year = period.YearPeriod.toString()
+  // IMPORTANT: Vietstock returns data where Value1 = newest year, Value2 = 2nd newest, etc.
+  // The periods array is sorted by YearPeriod descending (e.g., 2025, 2024, 2023, 2022)
+  // But the Row/ID field tells us which Value to use: ID=1 → Value1, ID=2 → Value2, etc.
+  periods.forEach((period: any) => {
+    const year = period.YearPeriod.toString();
+    const valueIndex = period.ID || period.Row; // Use ID or Row to determine which Value field
 
     allIndicators.forEach((item: any) => {
-      const mappedKey = indicatorMap[item.Name]
-      if (!mappedKey || !result[mappedKey]) return
+      const mappedKey = indicatorMap[item.Name];
+      if (!mappedKey || !result[mappedKey]) return;
 
-      const valueKey = `Value${periodIndex + 1}`
-      const value = item[valueKey]
+      const valueKey = `Value${valueIndex}`;
+      const value = item[valueKey];
 
       if (value !== null && value !== undefined) {
-        result[mappedKey][year] = Number(value)
+        result[mappedKey][year] = Number(value);
       }
-    })
-  })
+    });
+  });
 
   return result
 }

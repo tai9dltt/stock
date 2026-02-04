@@ -189,21 +189,16 @@ async function processPageData(
       const metricId = await getMetricId(metricCode)
       if (!metricId) continue
 
-      // Each metric has Value1-Value4.
-      // IMPORTANT: Vietstock periods are DESC (Newest -> Oldest), but Values are ASC (Oldest -> Newest).
-      // So Value1 corresponds to the Oldest period in this page (last index),
-      // and Value4 corresponds to the Newest period (first index).
-
+      // IMPORTANT: Use period's ID or Row to determine which Value field to use
+      // Vietstock returns: ID=1 → Value1 (newest), ID=2 → Value2, etc.
       const periodsCount = periods.length;
-      for (let i = 0; i < periodsCount && i < 4; i++) {
-        // Map Value(i+1) to Period(count - 1 - i)
-        // i=0 (Value1) -> index 3 (Last period)
-        // i=3 (Value4) -> index 0 (First period)
-        const periodIndex = periodsCount - 1 - i;
-        if (periodIndex < 0) continue;
 
-        const period = periods[periodIndex];
-        const value = metric[`Value${i + 1}`];
+      for (let i = 0; i < periodsCount && i < 4; i++) {
+        const period = periods[i];
+
+        // Use ID or Row from the period to get the correct Value
+        const valueIndex = (period as any).ID || (period as any).Row || (i + 1);
+        const value = metric[`Value${valueIndex}`];
 
         if (value === null || value === undefined) continue;
 

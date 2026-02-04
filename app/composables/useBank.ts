@@ -34,15 +34,6 @@ import {
   applyRowHighlightOnSelect,
 } from '~/utils/spreadjs';
 
-// Re-export helper functions from main builder
-export {
-  extractYearsFromData,
-  hasQuarterData,
-  isForecastYear,
-  getQuarterDateRange,
-  filterIncompleteYears,
-  fillYearGaps,
-} from './useSpreadJSBuilder';
 
 import {
   extractYearsFromData,
@@ -685,5 +676,3 @@ export function buildBankQuarterlyTable(
   return { cols, rows, currentCol };
 }
 
-// Re-export common functions that don't need bank-specific versions
-export { linkAnnualToQuarterly, buildValuationTable, applyFinalStyling } from './useSpreadJSBuilder';

@@ -89,7 +89,6 @@ async function fetchYearlyPages(
     }
   }
 
-  console.log('responses crawl year:', responses)
 
   return responses
 }
@@ -236,14 +235,16 @@ async function processYearlyData(companyId: number, symbol: string, mergedData: 
       const metricId = await getMetricId(metricCode)
       if (!metricId) continue
 
-      // IMPORTANT: Vietstock periods are DESC, Values are ASC.
-      // Value1 -> Oldest (Last index), Value4 -> Newest (First index)
+      // IMPORTANT: Use period's ID or Row to determine which Value field to use
+      // Vietstock returns: ID=1 → Value1 (newest), ID=2 → Value2, etc.
       const periodsCount = mergedData.periods.length;
 
       for (let i = 0; i < periodsCount && i < 4; i++) {
-        // Fix: Both periods and values seem to be DESC (Value1 is Newest)
         const period = mergedData.periods[i];
-        const value = metric[`Value${i + 1}`];
+
+        // Use ID or Row from the period to get the correct Value
+        const valueIndex = (period as any).ID || (period as any).Row || (i + 1);
+        const value = metric[`Value${valueIndex}`];
 
         if (value === null || value === undefined) continue;
 
