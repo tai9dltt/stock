@@ -26,6 +26,10 @@ const entryPrice = ref<number | null>(null);
 const targetPrice = ref<number | null>(null);
 const stopLoss = ref<number | null>(null);
 
+// Collapse/expand state (default: collapsed)
+const isTradingPlanExpanded = ref(false);
+const isNotesExpanded = ref(false);
+
 // Tiptap editor
 const editor = useEditor({
   content: props.noteHtml || '',
@@ -147,146 +151,170 @@ onBeforeUnmount(() => {
   <div class="trading-note-container">
     <!-- Trading Plan Section -->
     <div class="trading-plan">
-      <h3 class="section-title">
+      <h3
+        class="section-title cursor-pointer select-none hover:opacity-80 transition-opacity"
+        @click="isTradingPlanExpanded = !isTradingPlanExpanded"
+      >
         <UIcon name="i-lucide-target" class="mr-2" />
         Kế hoạch giao dịch
+        <UIcon
+          :name="
+            isTradingPlanExpanded
+              ? 'i-lucide-chevron-up'
+              : 'i-lucide-chevron-down'
+          "
+          class="ml-auto"
+        />
       </h3>
 
-      <div class="plan-inputs">
-        <div class="input-group">
-          <label for="entry-price">Vùng mua (Entry)</label>
-          <UInput
-            id="entry-price"
-            v-model.number="entryPrice"
-            type="number"
-            placeholder="25,000"
-            :step="100"
-            size="lg"
-          >
-            <template #trailing>
-              <span class="text-gray-500 text-sm">đ</span>
-            </template>
-          </UInput>
+      <div v-show="isTradingPlanExpanded" class="section-content">
+        <div class="plan-inputs">
+          <div class="input-group">
+            <label for="entry-price">Vùng mua (Entry)</label>
+            <UInput
+              id="entry-price"
+              v-model.number="entryPrice"
+              type="number"
+              placeholder="25,000"
+              :step="100"
+              size="lg"
+            >
+              <template #trailing>
+                <span class="text-gray-500 text-sm">đ</span>
+              </template>
+            </UInput>
+          </div>
+
+          <div class="input-group">
+            <label for="target-price">Mục tiêu (Target)</label>
+            <UInput
+              id="target-price"
+              v-model.number="targetPrice"
+              type="number"
+              placeholder="35,000"
+              :step="100"
+              size="lg"
+              class="target-input"
+            >
+              <template #trailing>
+                <span class="text-gray-500 text-sm">đ</span>
+              </template>
+            </UInput>
+            <span v-if="potentialGain" class="input-hint positive">
+              +{{ potentialGain }}%
+            </span>
+          </div>
+
+          <div class="input-group">
+            <label for="stop-loss">Cắt lỗ (Stoploss)</label>
+            <UInput
+              id="stop-loss"
+              v-model.number="stopLoss"
+              type="number"
+              placeholder="22,000"
+              :step="100"
+              size="lg"
+              class="stoploss-input"
+            >
+              <template #trailing>
+                <span class="text-gray-500 text-sm">đ</span>
+              </template>
+            </UInput>
+            <span v-if="potentialLoss" class="input-hint negative">
+              -{{ potentialLoss }}%
+            </span>
+          </div>
         </div>
 
-        <div class="input-group">
-          <label for="target-price">Mục tiêu (Target)</label>
-          <UInput
-            id="target-price"
-            v-model.number="targetPrice"
-            type="number"
-            placeholder="35,000"
-            :step="100"
-            size="lg"
-            class="target-input"
+        <!-- Risk/Reward Summary -->
+        <div v-if="riskRewardRatio" class="risk-reward">
+          <UIcon name="i-lucide-scale" class="mr-2" />
+          <span>Risk/Reward Ratio:</span>
+          <span
+            class="ratio-value"
+            :class="{
+              good: Number(riskRewardRatio) >= 2,
+              bad: Number(riskRewardRatio) < 1,
+            }"
           >
-            <template #trailing>
-              <span class="text-gray-500 text-sm">đ</span>
-            </template>
-          </UInput>
-          <span v-if="potentialGain" class="input-hint positive">
-            +{{ potentialGain }}%
+            1:{{ riskRewardRatio }}
           </span>
         </div>
-
-        <div class="input-group">
-          <label for="stop-loss">Cắt lỗ (Stoploss)</label>
-          <UInput
-            id="stop-loss"
-            v-model.number="stopLoss"
-            type="number"
-            placeholder="22,000"
-            :step="100"
-            size="lg"
-            class="stoploss-input"
-          >
-            <template #trailing>
-              <span class="text-gray-500 text-sm">đ</span>
-            </template>
-          </UInput>
-          <span v-if="potentialLoss" class="input-hint negative">
-            -{{ potentialLoss }}%
-          </span>
-        </div>
-      </div>
-
-      <!-- Risk/Reward Summary -->
-      <div v-if="riskRewardRatio" class="risk-reward">
-        <UIcon name="i-lucide-scale" class="mr-2" />
-        <span>Risk/Reward Ratio:</span>
-        <span
-          class="ratio-value"
-          :class="{
-            good: Number(riskRewardRatio) >= 2,
-            bad: Number(riskRewardRatio) < 1,
-          }"
-        >
-          1:{{ riskRewardRatio }}
-        </span>
       </div>
     </div>
 
     <!-- Notes Section -->
     <div class="notes-section">
-      <h3 class="section-title">
+      <h3
+        class="section-title cursor-pointer select-none hover:opacity-80 transition-opacity"
+        @click="isNotesExpanded = !isNotesExpanded"
+      >
         <UIcon name="i-lucide-file-text" class="mr-2" />
         Ghi chú phân tích
+        <UIcon
+          :name="
+            isNotesExpanded ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+          "
+          class="ml-auto"
+        />
       </h3>
 
-      <!-- Editor Toolbar -->
-      <div v-if="editor" class="editor-toolbar">
-        <UButton
-          :variant="editor.isActive('bold') ? 'solid' : 'ghost'"
-          size="xs"
-          icon="i-lucide-bold"
-          @click="editor.chain().focus().toggleBold().run()"
-        />
-        <UButton
-          :variant="editor.isActive('italic') ? 'solid' : 'ghost'"
-          size="xs"
-          icon="i-lucide-italic"
-          @click="editor.chain().focus().toggleItalic().run()"
-        />
-        <UButton
-          :variant="editor.isActive('bulletList') ? 'solid' : 'ghost'"
-          size="xs"
-          icon="i-lucide-list"
-          @click="editor.chain().focus().toggleBulletList().run()"
-        />
-        <UButton
-          :variant="editor.isActive('orderedList') ? 'solid' : 'ghost'"
-          size="xs"
-          icon="i-lucide-list-ordered"
-          @click="editor.chain().focus().toggleOrderedList().run()"
-        />
-        <UButton
-          :variant="
-            editor.isActive('heading', { level: 2 }) ? 'solid' : 'ghost'
-          "
-          size="xs"
-          icon="i-lucide-heading-2"
-          @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-        />
-        <UButton
-          :variant="
-            editor.isActive('heading', { level: 3 }) ? 'solid' : 'ghost'
-          "
-          size="xs"
-          icon="i-lucide-heading-3"
-          @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-        />
-        <div class="toolbar-separator" />
-        <UButton
-          variant="ghost"
-          size="xs"
-          icon="i-lucide-image"
-          title="Paste ảnh (Ctrl+V) hoặc kéo thả"
-        />
-      </div>
+      <div v-show="isNotesExpanded" class="section-content">
+        <!-- Editor Toolbar -->
+        <div v-if="editor" class="editor-toolbar">
+          <UButton
+            :variant="editor.isActive('bold') ? 'solid' : 'ghost'"
+            size="xs"
+            icon="i-lucide-bold"
+            @click="editor.chain().focus().toggleBold().run()"
+          />
+          <UButton
+            :variant="editor.isActive('italic') ? 'solid' : 'ghost'"
+            size="xs"
+            icon="i-lucide-italic"
+            @click="editor.chain().focus().toggleItalic().run()"
+          />
+          <UButton
+            :variant="editor.isActive('bulletList') ? 'solid' : 'ghost'"
+            size="xs"
+            icon="i-lucide-list"
+            @click="editor.chain().focus().toggleBulletList().run()"
+          />
+          <UButton
+            :variant="editor.isActive('orderedList') ? 'solid' : 'ghost'"
+            size="xs"
+            icon="i-lucide-list-ordered"
+            @click="editor.chain().focus().toggleOrderedList().run()"
+          />
+          <UButton
+            :variant="
+              editor.isActive('heading', { level: 2 }) ? 'solid' : 'ghost'
+            "
+            size="xs"
+            icon="i-lucide-heading-2"
+            @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+          />
+          <UButton
+            :variant="
+              editor.isActive('heading', { level: 3 }) ? 'solid' : 'ghost'
+            "
+            size="xs"
+            icon="i-lucide-heading-3"
+            @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+          />
+          <div class="toolbar-separator" />
+          <UButton
+            variant="ghost"
+            size="xs"
+            icon="i-lucide-image"
+            title="Paste ảnh (Ctrl+V) hoặc kéo thả"
+          />
+        </div>
 
-      <!-- Editor Content -->
-      <div class="editor-wrapper">
-        <EditorContent :editor="editor" />
+        <!-- Editor Content -->
+        <div class="editor-wrapper">
+          <EditorContent :editor="editor" />
+        </div>
       </div>
     </div>
 

@@ -90,6 +90,9 @@ async function cleanDatabase() {
       ('TOTAL_OPERATING_INCOME', 1, 'Tổng TNTT', 'Total Operating Income', 'VND', 22),
       ('TOTAL_NET_PROFIT', 1, 'Tổng LNST', 'Total Net Profit', 'VND', 23),
 
+      -- Securities Company (Chứng khoán) Specific
+      ('MARGIN_LOANS', 2, 'Các khoản cho vay', 'Margin Loans', 'VND', 15),
+
       -- Balance Sheet
       ('TOTAL_ASSETS', 2, 'Tổng tài sản', 'Total Assets', 'VND', 1),
       ('CURRENT_ASSETS', 2, 'Tài sản ngắn hạn', 'Current Assets', 'VND', 2),

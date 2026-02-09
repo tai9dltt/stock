@@ -77,6 +77,14 @@ export const METRIC_MAP: Record<string, string> = {
   'LNST của CĐ Ngân hàng mẹ': 'NET_PROFIT',
   'Lợi nhuận sau thuế của cổ đông ngân hàng mẹ': 'NET_PROFIT',
 
+  // ===== SECURITIES COMPANY (Chứng khoán) METRICS =====
+  'DT từ KD chứng khoán': 'REVENUE_NET',
+  'DT từ KD chứng khoán ': 'REVENUE_NET', // with trailing space
+  'LNT từ KD chứng khoán': 'OPERATING_PROFIT',
+  'LNT từ KD chứng khoán ': 'OPERATING_PROFIT', // with trailing space
+  'Các khoản cho vay': 'MARGIN_LOANS', // Securities-specific: margin loans
+  'Lợi ích của cổ đông thiểu số': 'MINORITY_INTEREST',
+
   // ===== SHARES =====
   'Số lượng cổ phiếu lưu hành': 'OUTSTANDING_SHARES',
   'KLCPLH': 'OUTSTANDING_SHARES',

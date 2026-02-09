@@ -28,6 +28,13 @@ const indicatorMap: Record<string, string> = {
   'LNST của CĐ cty mẹ': 'netProfit',
   'LNST của CĐ cty mẹ ': 'netProfit', // with space
 
+  // Securities Company (Chứng khoán) - SSI, VND, HCM, etc.
+  'DT từ KD chứng khoán': 'netRevenue',
+  'DT từ KD chứng khoán ': 'netRevenue', // with space
+  'LNT từ KD chứng khoán': 'operatingProfit',
+  'LNT từ KD chứng khoán ': 'operatingProfit', // with space
+  'Các khoản cho vay': 'marginLoans', // Securities-specific: margin loans
+
   // Bank-specific Income Statement
   'Thu nhập lãi thuần': 'netInterestIncome',
   'Chi phí hoạt động': 'operatingExpenses',
@@ -45,6 +52,7 @@ const indicatorMap: Record<string, string> = {
   'Nợ ngắn hạn': 'shortTermDebt',
   'Vốn chủ sở hữu': 'shareholdersEquity',
   'Lợi ích của CĐ thiểu số': 'minorityInterest',
+  'Lợi ích của cổ đông thiểu số': 'minorityInterest', // Alternative name
 
   // Financial Ratios
   'EPS 4 quý': 'eps',
@@ -79,6 +87,9 @@ function createEmptyResult(): Record<string, Record<string, Record<string, numbe
     operatingExpenses: {},
     totalOperatingIncome: {},
     totalNetProfit: {},
+
+    // Securities Company (Chứng khoán) specific
+    marginLoans: {},
 
     // Balance Sheet
     currentAssets: {},

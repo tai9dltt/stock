@@ -24,6 +24,13 @@ import {
   buildBankQuarterlyTable,
 } from '~/composables/useBank';
 import {
+  buildSecuritiesTitleSection,
+  buildSecuritiesInputSection,
+  buildSecuritiesAnnualTable,
+  buildSecuritiesQuarterlyTable,
+} from '~/composables/useSecurities';
+import { isSecuritiesStock } from '~/constants/securitiesSpreadJsConstants';
+import {
   processForecasts,
   overlayQuarterlyMetrics,
   overlayAnnualMetrics,
@@ -86,6 +93,20 @@ const forecastQuarters = ref<string[]>([]);
 const currentNoteHtml = ref('');
 const isCloning = ref(false);
 const loadingStore = useLoadingStore();
+const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart
+
+// Detect stock type
+const stockType = computed(() => {
+  if (isSecuritiesStock(stockSymbol.value)) return 'securities';
+  if (isBankStock(annualData.value, quarterlyData.value)) return 'bank';
+  return 'industrial';
+});
+
+// Tab items (UTabs uses index, not key)
+const tabItems = [
+  { label: 'Bảng tính', icon: 'i-lucide-table-2' },
+  { label: 'Biểu đồ', icon: 'i-lucide-bar-chart-2' },
+];
 
 // Component refs
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
@@ -135,19 +156,27 @@ const updateSpreadSheet = () => {
 
   const ctx = { GC, spread, sheet };
 
-  // Detect if this is a bank stock
+  // Detect stock type: industrial, bank, or securities
   const isBank = isBankStock(annualData.value, quarterlyData.value);
-  console.log(`Stock type: ${isBank ? 'Bank' : 'Industrial'}`);
+  const isSecurities = isSecuritiesStock(stockSymbol.value);
+  const stockType = isSecurities
+    ? 'Securities'
+    : isBank
+      ? 'Bank'
+      : 'Industrial';
+  console.log(`Stock type: ${stockType}`);
 
-  // Build sections - use bank or regular builder based on stock type
-  if (isBank) {
+  // Build sections - use appropriate builder based on stock type
+  if (isSecurities) {
+    buildSecuritiesTitleSection(ctx, stockSymbol.value);
+  } else if (isBank) {
     buildBankTitleSection(ctx, stockSymbol.value);
   } else {
     buildTitleSection(ctx, stockSymbol.value);
   }
 
-  const inputRefs = isBank
-    ? buildBankInputSection(ctx, {
+  const inputRefs = isSecurities
+    ? buildSecuritiesInputSection(ctx, {
         tradingDate: tradingDate.value,
         currentPrice: currentPrice.value,
         outstandingShares: outstandingShares.value,
@@ -157,23 +186,34 @@ const updateSpreadSheet = () => {
         grossMargin: grossMargin.value,
         netProfitGrowth: netProfitGrowth.value,
       })
-    : buildInputSection(ctx, {
-        tradingDate: tradingDate.value,
-        currentPrice: currentPrice.value,
-        outstandingShares: outstandingShares.value,
-        max52W: max52W.value,
-        min52W: min52W.value,
-        revenueGrowth: revenueGrowth.value,
-        grossMargin: grossMargin.value,
-        netProfitGrowth: netProfitGrowth.value,
-      });
+    : isBank
+      ? buildBankInputSection(ctx, {
+          tradingDate: tradingDate.value,
+          currentPrice: currentPrice.value,
+          outstandingShares: outstandingShares.value,
+          max52W: max52W.value,
+          min52W: min52W.value,
+          revenueGrowth: revenueGrowth.value,
+          grossMargin: grossMargin.value,
+          netProfitGrowth: netProfitGrowth.value,
+        })
+      : buildInputSection(ctx, {
+          tradingDate: tradingDate.value,
+          currentPrice: currentPrice.value,
+          outstandingShares: outstandingShares.value,
+          max52W: max52W.value,
+          min52W: min52W.value,
+          revenueGrowth: revenueGrowth.value,
+          grossMargin: grossMargin.value,
+          netProfitGrowth: netProfitGrowth.value,
+        });
 
   const {
     colMap: annualColMap,
     rows: annualRows,
     sortedYears,
-  } = isBank
-    ? buildBankAnnualTable(
+  } = isSecurities
+    ? buildSecuritiesAnnualTable(
         ctx,
         {
           annualData: annualData.value,
@@ -182,22 +222,32 @@ const updateSpreadSheet = () => {
         },
         inputRefs,
       )
-    : buildAnnualTable(
-        ctx,
-        {
-          annualData: annualData.value,
-          quarterlyData: quarterlyData.value,
-          forecastYears: forecastYears.value,
-        },
-        inputRefs,
-      );
+    : isBank
+      ? buildBankAnnualTable(
+          ctx,
+          {
+            annualData: annualData.value,
+            quarterlyData: quarterlyData.value,
+            forecastYears: forecastYears.value,
+          },
+          inputRefs,
+        )
+      : buildAnnualTable(
+          ctx,
+          {
+            annualData: annualData.value,
+            quarterlyData: quarterlyData.value,
+            forecastYears: forecastYears.value,
+          },
+          inputRefs,
+        );
 
   const {
     cols: quarterlyCols,
     rows: quarterlyRows,
     currentCol,
-  } = isBank
-    ? buildBankQuarterlyTable(
+  } = isSecurities
+    ? buildSecuritiesQuarterlyTable(
         ctx,
         {
           annualData: annualData.value,
@@ -209,18 +259,31 @@ const updateSpreadSheet = () => {
         inputRefs,
         annualRows,
       )
-    : buildQuarterlyTable(
-        ctx,
-        {
-          annualData: annualData.value,
-          quarterlyData: quarterlyData.value,
-          forecastYears: forecastYears.value,
-          forecastQuarters: forecastQuarters.value,
-          outstandingShares: outstandingShares.value,
-        },
-        inputRefs,
-        annualRows,
-      );
+    : isBank
+      ? buildBankQuarterlyTable(
+          ctx,
+          {
+            annualData: annualData.value,
+            quarterlyData: quarterlyData.value,
+            forecastYears: forecastYears.value,
+            forecastQuarters: forecastQuarters.value,
+            outstandingShares: outstandingShares.value,
+          },
+          inputRefs,
+          annualRows,
+        )
+      : buildQuarterlyTable(
+          ctx,
+          {
+            annualData: annualData.value,
+            quarterlyData: quarterlyData.value,
+            forecastYears: forecastYears.value,
+            forecastQuarters: forecastQuarters.value,
+            outstandingShares: outstandingShares.value,
+          },
+          inputRefs,
+          annualRows,
+        );
 
   // Store positions for save
   sharesRowPosition.value = quarterlyRows.shares;
@@ -644,12 +707,20 @@ useHead({
             </span>
           </nav>
         </div>
+        <div class="header-right mt-4 md:mt-0">
+          <UTabs
+            v-model="activeTab"
+            :items="tabItems"
+            :ui="{ label: 'cursor-pointer' }"
+            class="w-full md:w-[320px]"
+          />
+        </div>
       </div>
     </header>
 
     <main class="page-content space-y-6">
       <!-- SpreadJS Area -->
-      <UCard class="p-0 overflow-hidden">
+      <UCard v-show="activeTab === '0'" class="p-0 overflow-hidden">
         <ClientOnly>
           <div class="h-[600px] w-full">
             <GcSpreadSheets
@@ -658,6 +729,15 @@ useHead({
             />
           </div>
         </ClientOnly>
+      </UCard>
+
+      <!-- Chart View -->
+      <UCard v-if="activeTab === '1'" class="p-4">
+        <AnalysisChartView
+          :quarterly-data="quarterlyData"
+          :annual-data="annualData"
+          :stock-type="stockType"
+        />
       </UCard>
 
       <!-- Trading Note -->
