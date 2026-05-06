@@ -30,6 +30,9 @@ import {
   getCellAddr,
   setDivisionFormula,
   applyRowHighlightOnSelect,
+  applyGrowthHighlightRange,
+  getThinBorder,
+  getDoubleBorder,
 } from '~/utils/spreadjs';
 
 import {
@@ -109,7 +112,7 @@ export function buildSecuritiesInputSection(
     sheet
       .getRange(row, col, 1, 2)
       .setBorder(
-        new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin),
+        getThinBorder(GC),
         { all: true }
       );
 
@@ -362,6 +365,14 @@ export function buildSecuritiesAnnualTable(
     applyBorder(GC, sheet, rows.profitGrowth, col);
   });
 
+  // Conditional formatting: highlight growth > 20% green, < 0 pink (range-based)
+  if (sortedYears.length > 0) {
+    const startCol = colMap[sortedYears[0]]!;
+    const colCount = sortedYears.length;
+    applyGrowthHighlightRange(GC, sheet, rows.revGrowth, startCol, colCount);
+    applyGrowthHighlightRange(GC, sheet, rows.profitGrowth, startCol, colCount);
+  }
+
   return { colMap, rows, sortedYears };
 }
 
@@ -429,7 +440,7 @@ export function buildSecuritiesQuarterlyTable(
     sheet
       .getRange(startRow, currentCol, 1, 4)
       .setBorder(
-        new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin),
+        getThinBorder(GC),
         { all: true }
       );
 
@@ -648,20 +659,22 @@ export function buildSecuritiesQuarterlyTable(
     if (quarter === 'Q4') {
       sheet
         .getRange(startRow, col, rows.profitGrowth - startRow + 1, 1)
-        .setBorder(
-          new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.double),
-          { right: true }
-        );
+        .setBorder(getDoubleBorder(GC), { right: true });
     }
   });
+
+  // Conditional formatting: highlight growth > 20% green, < 0 pink (range-based)
+  if (cols.length > 0) {
+    const firstCol = cols[0].col;
+    const colCount = cols.length;
+    applyGrowthHighlightRange(GC, sheet, rows.revGrowth, firstCol, colCount);
+    applyGrowthHighlightRange(GC, sheet, rows.profitGrowth, firstCol, colCount);
+  }
 
   // Bottom border
   sheet
     .getRange(rows.profitGrowth, 0, 1, currentCol)
-    .setBorder(
-      new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.double),
-      { bottom: true }
-    );
+    .setBorder(getDoubleBorder(GC), { bottom: true });
 
   return { cols, rows, currentCol };
 }

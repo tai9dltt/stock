@@ -12,7 +12,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Server-only config (not exposed to client)
     vietstockCookie: process.env.VIETSTOCK_COOKIE_RAW || '',
-    vietstockToken: process.env.VIETSTOCK_TOKEN || ''
+    vietstockToken: process.env.VIETSTOCK_TOKEN || '',
+    vietstockEmail: process.env.VIETSTOCK_EMAIL || '',
+    vietstockPassword: process.env.VIETSTOCK_PASSWORD || '',
+    geminiApiKey: process.env.GEMINI_API_KEY || ''
   },
 
   // Enable SSR for full-stack capabilities
@@ -21,5 +24,12 @@ export default defineNuxtConfig({
   // TypeScript configuration
   typescript: {
     strict: true
+  },
+
+  // Vue compiler options
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag: string) => tag.startsWith('gc-')
+    }
   }
 })

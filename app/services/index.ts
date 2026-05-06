@@ -86,3 +86,30 @@ export async function deleteStockAnalysis(symbol: string): Promise<{ success: bo
     method: 'DELETE',
   });
 }
+
+/**
+ * Get Vietstock authentication status
+ */
+export async function getVietstockStatus(): Promise<{
+  authenticated: boolean;
+  email: string | null;
+  expiresAt: string | null;
+  loginTime: string | null;
+  source: 'auto-login' | 'env-cookie' | 'none';
+}> {
+  return await $fetch('/api/auth/vietstock-status');
+}
+
+/**
+ * Trigger Vietstock login manually
+ */
+export async function loginVietstock(email?: string, password?: string): Promise<{
+  success: boolean;
+  message: string;
+  expiresAt?: string | null;
+}> {
+  return await $fetch('/api/auth/vietstock-login', {
+    method: 'POST',
+    body: { email, password },
+  });
+}

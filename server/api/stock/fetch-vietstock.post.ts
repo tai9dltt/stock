@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { getVietstockCredentials } from '../../utils/vietstockAuth'
 
 interface QuarterlyDataResponse {
   success: boolean
@@ -134,21 +135,30 @@ async function fetchVietstockQuarterlyData(code: string, cookie: string, token: 
 
       const response = await fetch('https://finance.vietstock.vn/data/financeinfo', {
         method: 'POST',
+        redirect: 'manual',
         headers: {
           'Accept': '*/*',
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
           'Cookie': cookie,
-          'Referer': `https://finance.vietstock.vn/${code}`
+          'X-Requested-With': 'XMLHttpRequest',
+          'Referer': `https://finance.vietstock.vn/${code}`,
+          'Origin': 'https://finance.vietstock.vn'
         },
         body: new URLSearchParams(bodyParams).toString()
       })
 
       if (!response.ok) {
-        console.warn(`Failed to fetch quarterly page ${page} for ${code}`)
+        console.log(`Failed to fetch quarterly page ${page} for ${code}: status ${response.status}`)
         continue
       }
 
-      const pageData = await response.json()
+      const text = await response.text()
+      if (text.startsWith('<')) {
+        console.warn(`Quarterly page ${page} returned HTML (likely redirect/login page), skipping`)
+        continue
+      }
+
+      const pageData = JSON.parse(text)
       if (pageData && Array.isArray(pageData) && pageData.length > 0) {
         allData.push(pageData)
       }
@@ -178,21 +188,30 @@ async function fetchVietstockAnnualData(code: string, cookie: string, token: str
 
     const response = await fetch('https://finance.vietstock.vn/data/financeinfo', {
       method: 'POST',
+      redirect: 'manual',
       headers: {
         'Accept': '*/*',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'Cookie': cookie,
-        'Referer': `https://finance.vietstock.vn/${code}`
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': `https://finance.vietstock.vn/${code}`,
+        'Origin': 'https://finance.vietstock.vn'
       },
       body: new URLSearchParams(bodyParams).toString()
     })
 
     if (!response.ok) {
-      console.warn(`Failed to fetch annual data for ${code}`)
+      console.warn(`Failed to fetch annual data for ${code}: status ${response.status}`)
       return null
     }
 
-    return await response.json()
+    const text = await response.text()
+    if (text.startsWith('<')) {
+      console.warn(`Annual data for ${code} returned HTML (likely redirect/login page), skipping`)
+      return null
+    }
+
+    return JSON.parse(text)
   } catch (error) {
     console.error('Error fetching annual data:', error)
     return null
@@ -214,21 +233,30 @@ async function fetchVietstockTradingInfo(code: string, cookie: string, token: st
 
     const response = await fetch('https://finance.vietstock.vn/company/tradinginfo', {
       method: 'POST',
+      redirect: 'manual',
       headers: {
         'Accept': '*/*',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'Cookie': cookie,
-        'Referer': `https://finance.vietstock.vn/${code}`
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': `https://finance.vietstock.vn/${code}`,
+        'Origin': 'https://finance.vietstock.vn'
       },
       body: new URLSearchParams(bodyParams).toString()
     })
 
     if (!response.ok) {
-      console.warn(`Failed to fetch trading info for ${code}`)
+      console.warn(`Failed to fetch trading info for ${code}: status ${response.status}`)
       return null
     }
 
-    return await response.json()
+    const text = await response.text()
+    if (text.startsWith('<')) {
+      console.warn(`Trading info for ${code} returned HTML (likely redirect/login page), skipping`)
+      return null
+    }
+
+    return JSON.parse(text)
   } catch (error) {
     console.error('Error fetching trading info:', error)
     return null
@@ -377,7 +405,6 @@ function parseVietstockAnnualData(rawData: any): Record<string, Record<string, n
 }
 
 export default defineEventHandler(async (event: H3Event): Promise<QuarterlyDataResponse> => {
-  const config = useRuntimeConfig()
   const body = await readBody(event)
 
   const { code } = body as { code: string }
@@ -389,14 +416,7 @@ export default defineEventHandler(async (event: H3Event): Promise<QuarterlyDataR
     })
   }
 
-  const cookie = config.vietstockCookie
-  const token = config.vietstockToken
-  if (!cookie) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Vietstock cookie not configured'
-    })
-  }
+  const { cookie, token } = await getVietstockCredentials()
 
   try {
     // Fetch quarterly, annual, and trading data in parallel

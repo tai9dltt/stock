@@ -1,84 +1,87 @@
 # Stock Analysis App
 
-Ứng dụng phân tích cổ phiếu Việt Nam với tích hợp dữ liệu từ Vietstock và công cụ phân tích tài chính.
+Ứng dụng phân tích cổ phiếu Việt Nam với tích hợp dữ liệu từ Vietstock và công cụ phân tích tài chính chuyên sâu.
 
-## Setup
+## 🚀 Tính Năng Chính
 
-Install dependencies:
+- ✅ **Crawl dữ liệu tự động**: Lấy dữ liệu tài chính (quý & năm) từ Vietstock.
+- ✅ **Báo cáo tài chính**: Hiển thị dưới dạng bảng tính chuyên nghiệp với SpreadJS.
+- ✅ **Chỉ số tài chính**: Tự động tính toán các chỉ số quan trọng (EPS, P/E, ROE, ROA...).
+- ✅ **Định giá & Dự báo**: Công cụ hỗ trợ định giá cổ phiếu và dự báo tương lai.
+- ✅ **Đa dạng mô hình**: Hỗ trợ cả doanh nghiệp sản xuất/thương mại và ngân hàng.
+
+## 🛠 Cài Đặt (Installation)
+
+### 1. Yêu cầu hệ thống
+
+- Node.js (Khuyến nghị phiên bản mới nhất, v18+)
+- MySQL Database
+
+### 2. Cài đặt dependencies
+
+Chạy lệnh sau để cài đặt các thư viện cần thiết:
 
 ```bash
 npm install
 ```
 
-## Environment Variables
+### 3. Cấu hình môi trường
 
-Create `.env` file in the root directory:
+Tạo file `.env` tại thư mục gốc của dự án và điền thông tin xác thực Vietstock (để crawl dữ liệu):
 
 ```env
+# Vietstock Credentials (Lấy từ cookie trình duyệt khi đăng nhập Vietstock)
 VIETSTOCK_COOKIE=your_vietstock_cookie
 VIETSTOCK_TOKEN=your_vietstock_token
 ```
 
-## Development Server
+## 💻 Sử Dụng (Usage)
 
-Start the development server on `http://localhost:3000`:
+### Môi trường phát triển (Development)
+
+Khởi chạy server development tại `http://localhost:3000`:
 
 ```bash
 npm run dev
 ```
 
-## Database Scripts
+### Môi trường sản xuất (Production)
 
-### Clean Entire Database
+Build và preview ứng dụng:
 
-Xóa toàn bộ data trong database (giữ lại schema):
+```bash
+# Build ứng dụng
+npm run build
+
+# Xem trước bản build
+npm run preview
+```
+
+## 🗄 Quản Lý Database (Database Scripts)
+
+Dự án cung cấp các script tiện ích để quản lý dữ liệu crawl:
+
+### Xóa toàn bộ dữ liệu
+
+Để xóa sạch dữ liệu trong database (chỉ giữ lại cấu trúc bảng), dùng lệnh:
 
 ```bash
 node scripts/clean-db.js
 ```
 
-### Clean Specific Symbol
+_Sử dụng khi cần reset hoàn toàn dữ liệu._
 
-Xóa data của một mã cổ phiếu cụ thể:
+### Xóa dữ liệu theo mã cổ phiếu
+
+Để xóa dữ liệu của một mã cổ phiếu cụ thể (ví dụ muốn crawl lại từ đầu):
 
 ```bash
-node scripts/clean-symbol.js MSH
+node scripts/clean-symbol.js [MÃ_CỔ_PHIẾU]
+```
+
+**Ví dụ:**
+
+```bash
+node scripts/clean-symbol.js MSHgi
 node scripts/clean-symbol.js VNM
-```
-
-**Khi nào dùng:**
-
-- `clean-symbol.js`: Khi cần re-crawl data cho một cổ phiếu cụ thể
-- `clean-db.js`: Khi cần reset toàn bộ database
-
-## Features
-
-- ✅ Crawl dữ liệu tài chính từ Vietstock (quarterly & annual)
-- ✅ Hiển thị báo cáo tài chính với SpreadJS
-- ✅ Tính toán chỉ số tài chính tự động
-- ✅ Dự báo tài chính
-- ✅ Bảng định giá cổ phiếu
-- ✅ Hỗ trợ cả doanh nghiệp thường và ngân hàng
-
-## Tech Stack
-
-- **Frontend**: Nuxt 3, Vue 3, TypeScript
-- **UI**: Nuxt UI (Tailwind CSS)
-- **Spreadsheet**: SpreadJS
-- **Backend**: Nitro
-- **Database**: MySQL
-- **Data Source**: Vietstock API
-
-## Production
-
-Build the application:
-
-```bash
-npm run build
-```
-
-Preview production build:
-
-```bash
-npm run preview
 ```

@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@google/genai": "^1.42.0",
     "@mescius/spread-sheets-vue": "^19.0.2",
     "@nuxt/ui": "^4.3.0",
     "@pinia/nuxt": "^0.11.3",

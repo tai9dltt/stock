@@ -17,5 +17,6 @@ onMounted(() => {
     <NuxtPage />
     <UNotifications />
     <GlobalLoading />
+    <AiChat />
   </UApp>
 </template>

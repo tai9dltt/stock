@@ -1,6 +1,11 @@
 /**
  * SpreadJS Utility Functions
  * Helper functions for working with SpreadJS spreadsheets
+ *
+ * Performance optimizations:
+ * - Cached LineBorder singletons (avoid creating hundreds of identical objects)
+ * - Style-based cell styling (single getCell/setStyle call vs multiple)
+ * - Range-based conditional formatting (2 rules per row vs per cell)
  */
 
 // Color constants
@@ -13,8 +18,38 @@ export const COLORS = {
   DISPLAY: '#E2EFDA',
 }
 
+// ============ CACHED BORDER SINGLETONS ============
+
+let _cachedThinBorder: any = null
+let _cachedDoubleBorder: any = null
+let _cachedBorderGC: any = null // Track which GC the borders were created for
+
 /**
- * Apply thin border to a cell or range
+ * Get or create a cached thin LineBorder singleton
+ */
+export function getThinBorder(GC: any): any {
+  if (!_cachedThinBorder || _cachedBorderGC !== GC) {
+    _cachedThinBorder = new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin)
+    _cachedBorderGC = GC
+  }
+  return _cachedThinBorder
+}
+
+/**
+ * Get or create a cached double LineBorder singleton
+ */
+export function getDoubleBorder(GC: any): any {
+  if (!_cachedDoubleBorder || _cachedBorderGC !== GC) {
+    _cachedDoubleBorder = new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.double)
+    _cachedBorderGC = GC
+  }
+  return _cachedDoubleBorder
+}
+
+// ============ CORE UTILITIES ============
+
+/**
+ * Apply thin border to a cell or range using cached border
  * @param GC - The GC.Spread.Sheets module
  * @param sheet - The SpreadJS worksheet
  * @param row - Row index
@@ -32,10 +67,7 @@ export function applyBorder(
 ): void {
   sheet
     .getRange(row, col, rowCount, colCount)
-    .setBorder(
-      new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin),
-      { all: true }
-    );
+    .setBorder(getThinBorder(GC), { all: true });
 }
 
 /**
@@ -78,6 +110,8 @@ export function setDivisionFormula(
   sheet.setFormatter(targetRow, targetCol, format);
 }
 
+// ============ ROW/COLUMN HIGHLIGHT ============
+
 /**
  * Apply row highlight on cell selection
  * When a cell is clicked, the entire row will be highlighted
@@ -104,9 +138,6 @@ export function applyRowHighlightOnSelect(
 
   const viewport = GC.Spread.Sheets.SheetArea.viewport
   const cfs = sheet.conditionalFormats
-
-  // Clear existing conditional format rules
-  cfs.clearRule()
 
   // Use provided columnCount if available, otherwise use all columns in the sheet
   const finalColumnCount = columnCount ?? sheet.getColumnCount(viewport)
@@ -183,9 +214,11 @@ export function clearConditionalFormats(sheet: any): void {
   cfs.clearRule()
 }
 
+// ============ CELL STYLING (OPTIMIZED) ============
+
 /**
- * Set cell value and apply styling
- * Helper function to set cell value and apply various styles in one call
+ * Set cell value and apply styling using a single Style object.
+ * This is much faster than calling getCell() multiple times.
  *
  * @param GC - The GC.Spread.Sheets module
  * @param sheet - The SpreadJS worksheet
@@ -210,44 +243,45 @@ export function setCell(
     size?: number
   } = {}
 ): void {
-  // Clear any existing formula to ensure the value is set correctly
-  // Only clear if we are setting a value, otherwise formula might be intended
-  sheet.setFormula(r, c, null);
   sheet.setValue(r, c, value)
 
-  if (style.bold) {
-    const fontSize = style.size || 11
-    sheet.getCell(r, c).font(`bold ${fontSize}pt Calibri`)
-  }
+  // Only create Style object if any styling is needed
+  const hasStyle = style.bold || style.align || style.color || style.bg || style.border
+  if (hasStyle) {
+    const cellStyle = new GC.Spread.Sheets.Style()
 
-  if (style.align) {
-    sheet
-      .getCell(r, c)
-      .hAlign(
+    if (style.bold) {
+      const fontSize = style.size || 11
+      cellStyle.font = `bold ${fontSize}pt Calibri`
+    }
+
+    if (style.align) {
+      cellStyle.hAlign =
         style.align === 'center'
           ? GC.Spread.Sheets.HorizontalAlign.center
           : style.align === 'right'
             ? GC.Spread.Sheets.HorizontalAlign.right
-            : GC.Spread.Sheets.HorizontalAlign.left,
-      )
+            : GC.Spread.Sheets.HorizontalAlign.left
+    }
+
+    if (style.color) cellStyle.foreColor = style.color
+    if (style.bg) cellStyle.backColor = style.bg
+
+    if (style.border) {
+      const border = getThinBorder(GC)
+      cellStyle.borderLeft = border
+      cellStyle.borderTop = border
+      cellStyle.borderRight = border
+      cellStyle.borderBottom = border
+    }
+
+    sheet.setStyle(r, c, cellStyle)
   }
 
   if (style.format) sheet.setFormatter(r, c, style.format)
-  if (style.color) sheet.getCell(r, c).foreColor(style.color)
-  if (style.bg) sheet.getCell(r, c).backColor(style.bg)
-
-  if (style.border) {
-    sheet
-      .getRange(r, c, 1, 1)
-      .setBorder(
-        new GC.Spread.Sheets.LineBorder(
-          'black',
-          GC.Spread.Sheets.LineStyle.thin,
-        ),
-        { all: true },
-      )
-  }
 }
+
+// ============ FORMULA HELPERS ============
 
 /**
  * Create a SUM formula from quarterly columns and set it to the annual cell
@@ -295,3 +329,88 @@ export function setQuarterlySumFormula(
   sheet.setFormatter(annualRow, annualCol, format);
 }
 
+// ============ CONDITIONAL FORMATTING ============
+
+/**
+ * Apply conditional formatting to highlight growth cells (SINGLE CELL):
+ * - Light green (#C6EFCE) when value > 20% (0.2)
+ * - Light pink (#FFC7CE) when value < 0 (negative)
+ *
+ * @param GC - The GC.Spread.Sheets module
+ * @param sheet - The SpreadJS worksheet
+ * @param row - Row index
+ * @param col - Column index
+ */
+export function applyGrowthHighlight(
+  GC: any,
+  sheet: any,
+  row: number,
+  col: number
+): void {
+  const cfs = sheet.conditionalFormats
+  const range = [new GC.Spread.Sheets.Range(row, col, 1, 1)]
+  const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
+  const border = getThinBorder(GC)
+
+  // Green for > 20%
+  const greenStyle = new GC.Spread.Sheets.Style()
+  greenStyle.backColor = '#C6EFCE'
+  greenStyle.borderLeft = border
+  greenStyle.borderTop = border
+  greenStyle.borderRight = border
+  greenStyle.borderBottom = border
+  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
+
+  // Pink for < 0
+  const pinkStyle = new GC.Spread.Sheets.Style()
+  pinkStyle.backColor = '#FFC7CE'
+  pinkStyle.borderLeft = border
+  pinkStyle.borderTop = border
+  pinkStyle.borderRight = border
+  pinkStyle.borderBottom = border
+  cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
+}
+
+/**
+ * Apply conditional formatting to highlight an entire row range at once.
+ * Uses 2 rules for the whole range instead of 2 rules per cell.
+ * Much more efficient when applied to many columns.
+ *
+ * @param GC - The GC.Spread.Sheets module
+ * @param sheet - The SpreadJS worksheet
+ * @param row - Row index
+ * @param startCol - Starting column index
+ * @param colCount - Number of columns to cover
+ */
+export function applyGrowthHighlightRange(
+  GC: any,
+  sheet: any,
+  row: number,
+  startCol: number,
+  colCount: number
+): void {
+  if (colCount <= 0) return
+
+  const cfs = sheet.conditionalFormats
+  const range = [new GC.Spread.Sheets.Range(row, startCol, 1, colCount)]
+  const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
+  const border = getThinBorder(GC)
+
+  // Green for > 20%
+  const greenStyle = new GC.Spread.Sheets.Style()
+  greenStyle.backColor = '#C6EFCE'
+  greenStyle.borderLeft = border
+  greenStyle.borderTop = border
+  greenStyle.borderRight = border
+  greenStyle.borderBottom = border
+  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
+
+  // Pink for < 0
+  const pinkStyle = new GC.Spread.Sheets.Style()
+  pinkStyle.backColor = '#FFC7CE'
+  pinkStyle.borderLeft = border
+  pinkStyle.borderTop = border
+  pinkStyle.borderRight = border
+  pinkStyle.borderBottom = border
+  cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
+}

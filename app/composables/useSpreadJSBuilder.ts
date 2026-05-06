@@ -29,6 +29,7 @@ import {
   setDivisionFormula,
   setQuarterlySumFormula,
   applyRowHighlightOnSelect,
+  applyGrowthHighlight,
 } from '~/utils/spreadjs';
 
 // ============ HELPER FUNCTIONS ============
@@ -455,6 +456,10 @@ export function buildAnnualTable(
     // Borders for growth rows
     applyBorder(GC, sheet, rows.revGrowth, col);
     applyBorder(GC, sheet, rows.profitGrowth, col);
+
+    // Conditional formatting: highlight growth > 20% green, < 0 pink
+    applyGrowthHighlight(GC, sheet, rows.revGrowth, col);
+    applyGrowthHighlight(GC, sheet, rows.profitGrowth, col);
   });
 
   return { colMap, rows, sortedYears };
@@ -741,6 +746,10 @@ export function buildQuarterlyTable(
     for (let r = rows.grossMargin; r <= rows.profitGrowth; r++) {
       applyBorder(GC, sheet, r, col);
     }
+
+    // Conditional formatting: highlight growth > 20% green, < 0 pink
+    applyGrowthHighlight(GC, sheet, rows.revGrowth, col);
+    applyGrowthHighlight(GC, sheet, rows.profitGrowth, col);
 
     // Double border at Q4
     if (quarter === 'Q4') {

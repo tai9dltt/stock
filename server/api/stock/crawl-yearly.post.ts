@@ -1,5 +1,6 @@
 import { query, queryOne } from '../../utils/db'
 import { resolveMetricCode } from '../../utils/metricMap'
+import { getVietstockCredentials } from '../../utils/vietstockAuth'
 
 const VIETSTOCK_API = 'https://finance.vietstock.vn/data/financeinfo'
 
@@ -348,7 +349,6 @@ async function updateIncompleteYearsStatus(companyId: number, years: number[]) {
 
 // Main handler
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<CrawlYearlyRequest>(event)
   const { symbol, pages = 1 } = body
 
@@ -356,12 +356,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Symbol is required' })
   }
 
-  const cookie = config.vietstockCookie
-  const token = config.vietstockToken
-
-  if (!cookie || !token) {
-    throw createError({ statusCode: 500, statusMessage: 'Vietstock credentials not configured' })
-  }
+  const { cookie, token } = await getVietstockCredentials()
 
   try {
     console.log(`Crawling yearly data for ${symbol}...`)

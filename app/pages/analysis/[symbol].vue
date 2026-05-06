@@ -147,6 +147,9 @@ const updateSpreadSheet = () => {
   sheet.name('Analysis');
   sheet.reset();
 
+  // Suspend calc service to avoid recalculating formulas during build
+  sheet.suspendCalcService(false);
+
   // Set default styles
   const defaultStyle = new GC.Spread.Sheets.Style();
   defaultStyle.font = '11pt Calibri';
@@ -338,6 +341,8 @@ const updateSpreadSheet = () => {
 
   applyFinalStyling(ctx, maxCol, valuationStartRow);
 
+  // Resume calc service and repaint
+  sheet.resumeCalcService(false);
   spread.resumePaint();
 };
 
@@ -366,9 +371,14 @@ const addYear = () => {
 
 // ============ DATA WATCHERS ============
 
+let _updateDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 watch(
   [annualData, quarterlyData, currentPrice, tradingDate],
-  () => updateSpreadSheet(),
+  () => {
+    if (_updateDebounceTimer) clearTimeout(_updateDebounceTimer);
+    _updateDebounceTimer = setTimeout(() => updateSpreadSheet(), 100);
+  },
   { deep: true },
 );
 
@@ -722,7 +732,7 @@ useHead({
       <!-- SpreadJS Area -->
       <UCard v-show="activeTab === '0'" class="p-0 overflow-hidden">
         <ClientOnly>
-          <div class="h-[600px] w-full">
+          <div class="h-[700px] w-full">
             <GcSpreadSheets
               class="h-full w-full"
               @workbookInitialized="initWorkbook"
