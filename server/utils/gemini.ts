@@ -12,6 +12,9 @@ export function createGeminiClient() {
   return new GoogleGenAI({ apiKey })
 }
 
+// Gemini model to use across all API calls
+export const GEMINI_MODEL = 'gemini-3.7-flash'
+
 // System prompt for the AI agent
 export const SYSTEM_PROMPT = `Bạn là một trợ lý AI chuyên về phân tích cổ phiếu Việt Nam. Bạn có thể:
 

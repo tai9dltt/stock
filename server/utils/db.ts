@@ -1,11 +1,12 @@
 import mysql from 'mysql2/promise'
 
-// Create MySQL connection pool
+// Create MySQL connection pool using environment variables
+const config = useRuntimeConfig()
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '', // No password for local MySQL
-  database: 'stock_analysis_db',
+  host: config.dbHost || 'localhost',
+  user: config.dbUser || 'root',
+  password: config.dbPassword || '',
+  database: config.dbName || 'stock_analysis_db',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

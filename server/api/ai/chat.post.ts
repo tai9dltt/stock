@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { createGeminiClient, SYSTEM_PROMPT, TOOL_DEFINITIONS } from '../../utils/gemini'
+import { createGeminiClient, GEMINI_MODEL, SYSTEM_PROMPT, TOOL_DEFINITIONS } from '../../utils/gemini'
 import { query, queryOne } from '../../utils/db'
 import { getVietstockCredentials } from '../../utils/vietstockAuth'
 
@@ -237,7 +237,7 @@ async function executeTool(name: string, args: Record<string, any>): Promise<any
 
 /**
  * Perform Google Search via a separate Gemini API call with built-in googleSearch tool.
- * This workaround is needed because gemini-2.5-flash doesn't allow combining
+ * This workaround is needed because gemini-3.7-flash doesn't allow combining
  * googleSearch (built-in) with functionDeclarations in the same request.
  */
 async function executeGoogleSearch(query: string): Promise<any> {
@@ -245,7 +245,7 @@ async function executeGoogleSearch(query: string): Promise<any> {
     const ai = createGeminiClient()
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: GEMINI_MODEL,
       contents: [{ role: 'user' as const, parts: [{ text: query }] }],
       config: {
         tools: [{ googleSearch: {} }]
@@ -304,7 +304,7 @@ export default defineEventHandler(async (event: H3Event) => {
     ]
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: GEMINI_MODEL,
       contents,
       config: {
         systemInstruction: SYSTEM_PROMPT,
@@ -353,7 +353,7 @@ export default defineEventHandler(async (event: H3Event) => {
       ]
 
       currentResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: GEMINI_MODEL,
         contents: updatedContents,
         config: {
           systemInstruction: SYSTEM_PROMPT,

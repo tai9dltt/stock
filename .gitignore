@@ -15,7 +15,7 @@ Thumbs.db
 
 # --- Security (RẤT QUAN TRỌNG) ---
 # Chứa Cookie Vietstock và Password Database -> Tuyệt đối không commit
-# .env
+.env
 .env.production
 .env.local
 

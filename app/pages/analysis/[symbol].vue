@@ -127,6 +127,13 @@ const initWorkbook = async (spread: any) => {
   if (!GC) {
     GC = await import('@mescius/spread-sheets');
     await import('@mescius/spread-sheets/styles/gc.spread.sheets.excel2013white.css');
+
+    // Set SpreadJS license key from environment variable
+    const config = useRuntimeConfig();
+    const licenseKey = config.public.spreadjsLicenseKey;
+    if (licenseKey) {
+      GC.Spread.Sheets.LicenseKey = licenseKey;
+    }
   }
 
   updateSpreadSheet();

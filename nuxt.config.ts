@@ -15,7 +15,16 @@ export default defineNuxtConfig({
     vietstockToken: process.env.VIETSTOCK_TOKEN || '',
     vietstockEmail: process.env.VIETSTOCK_EMAIL || '',
     vietstockPassword: process.env.VIETSTOCK_PASSWORD || '',
-    geminiApiKey: process.env.GEMINI_API_KEY || ''
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
+    // Database config
+    dbHost: process.env.DB_HOST || 'localhost',
+    dbUser: process.env.DB_USER || 'root',
+    dbPassword: process.env.DB_PASSWORD || '',
+    dbName: process.env.DB_NAME || 'stock_analysis_db',
+    // Client-side config (exposed to client)
+    public: {
+      spreadjsLicenseKey: process.env.SPREADJS_LICENSE_KEY || '',
+    },
   },
 
   // Enable SSR for full-stack capabilities
