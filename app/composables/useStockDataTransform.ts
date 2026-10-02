@@ -7,6 +7,8 @@ import {
   METRIC_TO_INDICATOR_QUARTERLY,
   METRIC_TO_INDICATOR_ANNUAL,
 } from '~/constants/spreadJsConstants';
+import type { AnalysisSheetData } from '~/spreadsheet/types';
+import type { StockData, TradingInfo } from '~/types';
 
 /**
  * Process forecast periods from API response
@@ -221,4 +223,111 @@ export function extractInputValues(
     grossMargin: getValue(inputRowStart + 6),
     netProfitGrowth: getValue(inputRowStart + 7),
   };
+}
+
+// ============ PAGE STATE ============
+
+export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
+  return {
+    symbol,
+    annualData: {},
+    quarterlyData: {},
+    forecastYears: [],
+    forecastQuarters: [],
+    peAssumptions: {},
+    tradingDate: '',
+    currentPrice: 0,
+    outstandingShares: 0,
+    max52W: 0,
+    min52W: 0,
+    revenueGrowth: 0,
+    grossMargin: 0,
+    netProfitGrowth: 0,
+  };
+}
+
+/**
+ * Build the analysis page state from GET /api/stock/get and the live trading info.
+ *
+ * Precedence: live trading info > stored snapshot > values saved with the analysis.
+ * Crawled metrics override saved (manually entered) figures for the same period.
+ */
+export function buildAnalysisState(
+  symbol: string,
+  data: StockData,
+  tradingInfo: TradingInfo | null | undefined,
+  today: string
+): AnalysisSheetData {
+  const state = createEmptyAnalysisState(symbol);
+
+  if (data.periods) {
+    const forecasts = processForecasts(data.periods);
+    state.forecastYears = forecasts.forecastYears;
+    state.forecastQuarters = forecasts.forecastQuarters;
+  }
+
+  const snapshot = data.tradingSnapshot;
+  if (snapshot) {
+    if (snapshot.outstandingShares) state.outstandingShares = snapshot.outstandingShares;
+    if (snapshot.lastPrice) state.currentPrice = snapshot.lastPrice;
+    if (snapshot.tradingDate) state.tradingDate = snapshot.tradingDate;
+  }
+
+  if (tradingInfo) {
+    if (tradingInfo.lastPrice) {
+      state.currentPrice = tradingInfo.lastPrice;
+      state.tradingDate = today;
+    }
+    if (tradingInfo.outstandingShares) state.outstandingShares = tradingInfo.outstandingShares;
+    if (tradingInfo.min52W) state.min52W = tradingInfo.min52W;
+    if (tradingInfo.max52W) state.max52W = tradingInfo.max52W;
+  }
+
+  const saved = data.analysis?.quarterlyData;
+  if (saved) {
+    if (saved.quarterlyData) state.quarterlyData = saved.quarterlyData;
+    if (saved.annualData) state.annualData = saved.annualData;
+    if (saved.peAssumptions) state.peAssumptions = saved.peAssumptions;
+    if (saved.outstandingShares && !state.outstandingShares) state.outstandingShares = saved.outstandingShares;
+    if (saved.currentPrice && !state.currentPrice) state.currentPrice = saved.currentPrice;
+    if (saved.max52W && !state.max52W) state.max52W = saved.max52W;
+    if (saved.min52W && !state.min52W) state.min52W = saved.min52W;
+    if (saved.revenueGrowth !== undefined) state.revenueGrowth = saved.revenueGrowth;
+    if (saved.grossMargin !== undefined) state.grossMargin = saved.grossMargin;
+    if (saved.netProfitGrowth !== undefined) state.netProfitGrowth = saved.netProfitGrowth;
+  }
+
+  if (data.metrics && Object.keys(data.metrics).length > 0) {
+    state.quarterlyData = overlayQuarterlyMetrics(data.metrics, state.quarterlyData);
+  }
+  if (data.yearlyMetrics && Object.keys(data.yearlyMetrics).length > 0) {
+    state.annualData = overlayAnnualMetrics(data.yearlyMetrics, state.annualData);
+  }
+
+  // Years that only have annual data still get (empty) quarter columns
+  state.quarterlyData = syncYearsToQuarterly(state.annualData, state.quarterlyData);
+
+  return state;
+}
+
+/**
+ * The year "Add Year" appends: the year after the last known one.
+ */
+export function nextForecastYear(annualData: Record<string, any>, forecastYears: string[]): string {
+  const years = [...Object.keys(annualData['netRevenue'] || {}), ...forecastYears].sort();
+  const lastYear = years[years.length - 1];
+  return lastYear ? String(parseInt(lastYear) + 1) : String(new Date().getFullYear());
+}
+
+/**
+ * Make sure every quarter of a forecast year is marked as a forecast quarter.
+ */
+export function withForecastYearQuarters(forecastYears: string[], forecastQuarters: string[]): string[] {
+  const result = [...forecastQuarters];
+  for (const year of forecastYears) {
+    for (const q of ['Q1', 'Q2', 'Q3', 'Q4']) {
+      if (!result.includes(`${year}_${q}`)) result.push(`${year}_${q}`);
+    }
+  }
+  return result;
 }

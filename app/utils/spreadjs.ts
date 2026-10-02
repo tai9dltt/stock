@@ -162,58 +162,6 @@ export function applyRowHighlightOnSelect(
   )
 }
 
-/**
- * Apply column highlight on cell selection
- * When a cell is clicked, the entire column will be highlighted
- *
- * @param sheet - The SpreadJS worksheet
- * @param columnColor - Background color for highlighted column
- * @param startColumnOffset - Starting column offset (default: 0)
- * @param rowCount - Number of rows to highlight (default: all rows)
- * @param startRowIndex - Starting row index (default: 0)
- */
-export function applyColumnHighlightOnSelect(
-  sheet: any,
-  columnColor: string = COLORS.SELECTED,
-  startColumnOffset: number = 0,
-  rowCount?: number,
-  startRowIndex: number = 0
-): void {
-  const GC = (globalThis as any).GC
-  if (!GC) return
-
-  const viewport = GC.Spread.Sheets.SheetArea.viewport
-  const cfs = sheet.conditionalFormats
-
-  const finalRowCount = rowCount ?? sheet.getRowCount(viewport)
-
-  const columnStyle = new GC.Spread.Sheets.Style()
-  columnStyle.backColor = columnColor
-
-  const viewportRange = new GC.Spread.Sheets.Range(
-    startRowIndex ?? 0,
-    Math.max(0, startColumnOffset),
-    finalRowCount,
-    Math.max(0, sheet.getColumnCount(viewport) - Math.max(0, startColumnOffset))
-  )
-
-  cfs.addColumnStateRule(
-    GC.Spread.Sheets.RowColumnStates.active,
-    columnStyle,
-    [viewportRange]
-  )
-}
-
-/**
- * Clear all conditional formatting rules from a sheet
- *
- * @param sheet - The SpreadJS worksheet
- */
-export function clearConditionalFormats(sheet: any): void {
-  const cfs = sheet.conditionalFormats
-  cfs.clearRule()
-}
-
 // ============ CELL STYLING (OPTIMIZED) ============
 
 /**
@@ -330,46 +278,6 @@ export function setQuarterlySumFormula(
 }
 
 // ============ CONDITIONAL FORMATTING ============
-
-/**
- * Apply conditional formatting to highlight growth cells (SINGLE CELL):
- * - Light green (#C6EFCE) when value > 20% (0.2)
- * - Light pink (#FFC7CE) when value < 0 (negative)
- *
- * @param GC - The GC.Spread.Sheets module
- * @param sheet - The SpreadJS worksheet
- * @param row - Row index
- * @param col - Column index
- */
-export function applyGrowthHighlight(
-  GC: any,
-  sheet: any,
-  row: number,
-  col: number
-): void {
-  const cfs = sheet.conditionalFormats
-  const range = [new GC.Spread.Sheets.Range(row, col, 1, 1)]
-  const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
-  const border = getThinBorder(GC)
-
-  // Green for > 20%
-  const greenStyle = new GC.Spread.Sheets.Style()
-  greenStyle.backColor = '#C6EFCE'
-  greenStyle.borderLeft = border
-  greenStyle.borderTop = border
-  greenStyle.borderRight = border
-  greenStyle.borderBottom = border
-  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
-
-  // Pink for < 0
-  const pinkStyle = new GC.Spread.Sheets.Style()
-  pinkStyle.backColor = '#FFC7CE'
-  pinkStyle.borderLeft = border
-  pinkStyle.borderTop = border
-  pinkStyle.borderRight = border
-  pinkStyle.borderBottom = border
-  cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
-}
 
 /**
  * Apply conditional formatting to highlight an entire row range at once.
