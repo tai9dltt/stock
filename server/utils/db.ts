@@ -12,13 +12,29 @@ const pool = mysql.createPool({
   queueLimit: 0
 })
 
+/**
+ * mysql2 connection failures (e.g. ECONNREFUSED) come as errors with an empty
+ * message, so rethrow them with a readable one. The original error is kept as `cause`.
+ */
+function wrapDbError(error: unknown): unknown {
+  if (!(error instanceof Error) || error.message) return error
+
+  const { code, address, port } = error as Error & { code?: string; address?: string; port?: number }
+  const target = address ? ` ${address}:${port}` : ` ${config.dbHost || 'localhost'}`
+  return new Error(`Không kết nối được MySQL (${code || error.name}${target})`, { cause: error })
+}
+
 // Export the pool for direct queries
 export const db = pool
 
 // Helper function to execute queries
 export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
-  const [rows] = await pool.execute(sql, params)
-  return rows as T[]
+  try {
+    const [rows] = await pool.execute(sql, params)
+    return rows as T[]
+  } catch (error) {
+    throw wrapDbError(error)
+  }
 }
 
 // Helper function to execute single query
@@ -29,14 +45,16 @@ export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T 
 
 // Helper function to get a database connection
 export async function getDb() {
-  return pool.getConnection()
+  return pool.getConnection().catch((error) => {
+    throw wrapDbError(error)
+  })
 }
 
 // Helper function to execute queries within a transaction
 export async function transaction<T>(
   callback: (connection: mysql.PoolConnection) => Promise<T>
 ): Promise<T> {
-  const connection = await pool.getConnection()
+  const connection = await getDb()
 
   try {
     await connection.beginTransaction()
