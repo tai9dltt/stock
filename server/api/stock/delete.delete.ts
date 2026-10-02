@@ -1,4 +1,3 @@
-import type { PoolConnection } from 'mysql2/promise';
 import { transaction } from '../../utils/db';
 
 export default defineEventHandler(async (event) => {

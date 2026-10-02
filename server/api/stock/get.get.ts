@@ -1,25 +1,5 @@
 import { query, queryOne } from '../../utils/db'
 
-interface StockData {
-  companyId: number
-  symbol: string
-  periods: {
-    id: number
-    year: number
-    quarter: number
-    source: string
-  }[]
-  metrics: Record<string, Record<string, number | null>>  // metricCode -> {2024_Q1: value, ...}
-  tradingSnapshot?: {
-    lastPrice: number
-    outstandingShares: number
-    marketCap: number
-    pe: number
-    eps: number
-    tradingDate: string
-  }
-}
-
 export default defineEventHandler(async (event) => {
   const query_params = getQuery(event)
   const symbol = query_params.symbol as string
@@ -94,7 +74,7 @@ export default defineEventHandler(async (event) => {
         ? `${mv.year}`  // Just year for yearly
         : `${mv.year}_Q${mv.quarter}`  // year_Q1 for quarterly
 
-      targetMetrics[mv.metric_code][periodKey] = mv.value
+      targetMetrics[mv.metric_code]![periodKey] = mv.value
     }
 
     // 5. Get latest trading snapshot if any

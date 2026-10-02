@@ -80,8 +80,8 @@ async function executeGetFinancialData(symbol: string) {
         const valueKey = `Value${valueIndex}`
         const value = item[valueKey]
         if (value !== null && value !== undefined) {
-          if (!result[item.Name]) result[item.Name] = {}
-          result[item.Name][year] = Number(value)
+          result[item.Name] ??= {}
+          result[item.Name]![year] = Number(value)
         }
       })
     })

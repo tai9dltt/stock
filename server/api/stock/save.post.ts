@@ -145,6 +145,9 @@ export default defineEventHandler(async (event) => {
       message: `Stock analysis for ${symbol} saved successfully`,
     };
   } catch (error) {
+    // Keep intentional HTTP errors (e.g. 404 company not found) as-is
+    if (isError(error)) throw error
+
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     throw createError({
       statusCode: 500,

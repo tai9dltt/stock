@@ -137,7 +137,10 @@ export async function ensureCurrentYearForecast(
 }
 
 /**
- * Years that have some but not all 4 quarters are marked as forecast.
+ * Years that have quarterly data but no Q4 yet (still in progress) are marked as forecast.
+ *
+ * Only a missing Q4 counts: the oldest year in the crawl window usually lacks its
+ * early quarters (e.g. only Q3, Q4) but is a finished year, not a forecast.
  */
 export async function markIncompleteYearsAsForecast(
   conn: PoolConnection,
@@ -147,14 +150,14 @@ export async function markIncompleteYearsAsForecast(
   if (years.length === 0) return
 
   const [rows] = await conn.query<RowDataPacket[]>(
-    `SELECT year, COUNT(*) AS q_count
+    `SELECT year, MAX(quarter) AS last_quarter
      FROM periods
      WHERE company_id = ? AND year IN (?) AND quarter > 0
      GROUP BY year`,
     [companyId, years]
   )
 
-  const incomplete = rows.filter(r => r.q_count > 0 && r.q_count < 4).map(r => r.year as number)
+  const incomplete = rows.filter(r => r.last_quarter < 4).map(r => r.year as number)
   if (incomplete.length === 0) return
 
   console.log(`⚠️ Incomplete years marked as forecast: ${incomplete.join(', ')}`)

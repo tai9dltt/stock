@@ -948,7 +948,7 @@ export function buildValuationTable(
   });
 
   // Quarter sub-headers
-  quarterlyCols.forEach(({ year, quarter, col, isForecast }) => {
+  quarterlyCols.forEach(({ quarter, col, isForecast }) => {
     const qIdx = parseInt(quarter.replace('Q', '')) - 1;
 
     setCellUtil(

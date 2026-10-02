@@ -65,7 +65,7 @@ function extractCookies(response: Response, existingCookies: string = ''): strin
  */
 function getCookieValue(cookieStr: string, name: string): string | null {
   const match = cookieStr.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`))
-  return match ? match[1] : null
+  return match?.[1] ?? null
 }
 
 /**
@@ -75,7 +75,7 @@ function decodeJwtExpiry(jwt: string): number | null {
   try {
     const parts = jwt.split('.')
     if (parts.length !== 3) return null
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+    const payload = JSON.parse(Buffer.from(parts[1]!, 'base64').toString())
     return payload.exp ? payload.exp * 1000 : null // Convert to milliseconds
   } catch {
     return null
@@ -86,31 +86,18 @@ function decodeJwtExpiry(jwt: string): number | null {
  * Extract __RequestVerificationToken from HTML page
  * Handles both quoted (value="token") and unquoted (value=token) attributes
  */
+const FORM_TOKEN_PATTERNS = [
+  /name="__RequestVerificationToken"[^>]*value="([^"]+)"/, // quoted
+  /value="([^"]+)"[^>]*name="__RequestVerificationToken"/, // quoted, reverse order
+  /name=__RequestVerificationToken[^>]*value=([^\s>]+)/, // unquoted
+  /value=([^\s>]+)[^>]*name=__RequestVerificationToken/, // unquoted, reverse order
+]
+
 function extractFormToken(html: string): string | null {
-  // Pattern 1: Quoted value - name="__RequestVerificationToken" ... value="TOKEN"
-  const quoted1 = html.match(
-    /name="__RequestVerificationToken"[^>]*value="([^"]+)"/
-  )
-  if (quoted1) return quoted1[1]
-
-  // Pattern 2: Quoted reverse order - value="TOKEN" ... name="__RequestVerificationToken"
-  const quoted2 = html.match(
-    /value="([^"]+)"[^>]*name="__RequestVerificationToken"/
-  )
-  if (quoted2) return quoted2[1]
-
-  // Pattern 3: Unquoted value - name=__RequestVerificationToken ... value=TOKEN
-  const unquoted1 = html.match(
-    /name=__RequestVerificationToken[^>]*value=([^\s>]+)/
-  )
-  if (unquoted1) return unquoted1[1]
-
-  // Pattern 4: Unquoted reverse - value=TOKEN ... name=__RequestVerificationToken
-  const unquoted2 = html.match(
-    /value=([^\s>]+)[^>]*name=__RequestVerificationToken/
-  )
-  if (unquoted2) return unquoted2[1]
-
+  for (const pattern of FORM_TOKEN_PATTERNS) {
+    const token = html.match(pattern)?.[1]
+    if (token) return token
+  }
   return null
 }
 
@@ -213,7 +200,6 @@ async function postLogin(
   // Step 3: Fetch a page with authenticated cookies to get the form token
   // The cookie __RequestVerificationToken and body/form token are DIFFERENT in ASP.NET
   console.log('🔐 Step 3: Fetching form token for API calls...')
-  let apiFormToken = ''
   try {
     const pageResponse = await fetch(VIETSTOCK_BASE, {
       method: 'GET',
@@ -227,7 +213,7 @@ async function postLogin(
     const pageHtml = await pageResponse.text()
     // Update cookies from this response too
     const finalCookies = extractCookies(pageResponse, mergedCookies)
-    apiFormToken = extractFormToken(pageHtml) || ''
+    const apiFormToken = extractFormToken(pageHtml) || ''
     if (apiFormToken) {
       console.log('✅ Got form token for API calls')
     }
@@ -247,7 +233,7 @@ async function postLogin(
     }
 
     return session
-  } catch (err) {
+  } catch {
     console.warn('⚠️ Could not fetch form token, using cookie token as fallback')
     // Fallback: use cookie token
     const verificationToken = getCookieValue(mergedCookies, '__RequestVerificationToken') || ''

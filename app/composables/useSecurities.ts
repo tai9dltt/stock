@@ -10,7 +10,6 @@ import type {
 import {
   SPREADJS_COLORS,
   INPUT_AREA,
-  VALUATION_TABLE,
   QUARTER_DATE_RANGES,
 } from '~/constants/spreadJsConstants';
 
@@ -29,7 +28,6 @@ import {
   applyBorder,
   getCellAddr,
   setDivisionFormula,
-  applyRowHighlightOnSelect,
   applyGrowthHighlightRange,
   getThinBorder,
   getDoubleBorder,
@@ -367,7 +365,7 @@ export function buildSecuritiesAnnualTable(
 
   // Conditional formatting: highlight growth > 20% green, < 0 pink (range-based)
   if (sortedYears.length > 0) {
-    const startCol = colMap[sortedYears[0]]!;
+    const startCol = colMap[sortedYears[0]!]!;
     const colCount = sortedYears.length;
     applyGrowthHighlightRange(GC, sheet, rows.revGrowth, startCol, colCount);
     applyGrowthHighlightRange(GC, sheet, rows.profitGrowth, startCol, colCount);
@@ -665,7 +663,7 @@ export function buildSecuritiesQuarterlyTable(
 
   // Conditional formatting: highlight growth > 20% green, < 0 pink (range-based)
   if (cols.length > 0) {
-    const firstCol = cols[0].col;
+    const firstCol = cols[0]!.col;
     const colCount = cols.length;
     applyGrowthHighlightRange(GC, sheet, rows.revGrowth, firstCol, colCount);
     applyGrowthHighlightRange(GC, sheet, rows.profitGrowth, firstCol, colCount);

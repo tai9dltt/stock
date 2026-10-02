@@ -18,7 +18,7 @@ const loadStocks = async () => {
     if (response.success) {
       stocks.value = response.data;
     }
-  } catch (error) {
+  } catch {
     toast.add({
       title: 'Lỗi',
       description: 'Không thể tải danh sách cổ phiếu',
@@ -162,7 +162,7 @@ useHead({
             variant="link"
             icon="i-lucide-x"
             :padded="false"
-            @click="searchQuery = ''"
+            @click="() => { searchQuery = '' }"
           />
         </template>
       </UInput>
@@ -223,7 +223,7 @@ useHead({
             </th>
             <th
               class="px-4 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-            ></th>
+            />
           </tr>
         </thead>
         <tbody>
@@ -281,7 +281,7 @@ useHead({
             color="neutral"
             variant="outline"
             class="cursor-pointer"
-            @click="showDeleteModal = false"
+            @click="() => { showDeleteModal = false }"
           >
             Hủy
           </UButton>

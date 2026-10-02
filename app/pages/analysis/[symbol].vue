@@ -90,7 +90,6 @@ const quarterlyData = ref<Record<string, any>>({});
 const forecastYears = ref<string[]>([]);
 const forecastQuarters = ref<string[]>([]);
 const currentNoteHtml = ref('');
-const isCloning = ref(false);
 const loadingStore = useLoadingStore();
 const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart
 
@@ -220,7 +219,6 @@ const updateSpreadSheet = () => {
   const {
     colMap: annualColMap,
     rows: annualRows,
-    sortedYears,
   } = isSecurities
     ? buildSecuritiesAnnualTable(
         ctx,
@@ -740,7 +738,7 @@ useHead({
           <div class="h-[700px] w-full">
             <GcSpreadSheets
               class="h-full w-full"
-              @workbookInitialized="initWorkbook"
+              @workbook-initialized="initWorkbook"
             />
           </div>
         </ClientOnly>
@@ -771,12 +769,12 @@ useHead({
       <div class="w-full flex justify-between px-3">
         <div class="flex gap-2">
           <UButton
-            @click="refreshData"
             color="primary"
             variant="soft"
             size="md"
             class="cursor-pointer"
             icon="i-lucide-arrow-down-to-line"
+            @click="refreshData"
           >
             Crawl
           </UButton>

@@ -10,9 +10,7 @@ import type {
 import {
   SPREADJS_COLORS,
   INPUT_AREA,
-  VALUATION_TABLE,
   QUARTER_DATE_RANGES,
-  YEAR_DETECTION_METRICS,
 } from '~/constants/spreadJsConstants';
 
 import {
@@ -30,8 +28,6 @@ import {
   applyBorder,
   getCellAddr,
   setDivisionFormula,
-  setQuarterlySumFormula,
-  applyRowHighlightOnSelect,
   applyGrowthHighlight,
 } from '~/utils/spreadjs';
 
@@ -270,13 +266,10 @@ export function buildBankAnnualTable(
     // Bank-specific metrics from Vietstock API
     const netInterestIncome = data.annualData['netInterestIncome']?.[year];
     const operatingExpenses = data.annualData['operatingExpenses']?.[year];
-    const totalOperatingIncome = data.annualData['totalOperatingIncome']?.[year];
-    const totalNetProfit = data.annualData['totalNetProfit']?.[year];
     const netProfit = data.annualData['netProfit']?.[year];
     const totalAssets = data.annualData['totalAssets']?.[year];
     const eps = data.annualData['eps']?.[year];
     const pe = data.annualData['pe']?.[year];
-    const bvps = data.annualData['bvps']?.[year];
     const roe = data.annualData['roe']?.[year];
     const roa = data.annualData['roa']?.[year];
 
@@ -502,8 +495,6 @@ export function buildBankQuarterlyTable(
     // Bank-specific metrics from Vietstock API
     const netInterestIncome = data.quarterlyData['netInterestIncome']?.[year]?.[quarter];
     const operatingExpenses = data.quarterlyData['operatingExpenses']?.[year]?.[quarter];
-    const totalOperatingIncome = data.quarterlyData['totalOperatingIncome']?.[year]?.[quarter];
-    const totalNetProfit = data.quarterlyData['totalNetProfit']?.[year]?.[quarter];
     const netProfit = data.quarterlyData['netProfit']?.[year]?.[quarter];
     const totalAssets = data.quarterlyData['totalAssets']?.[year]?.[quarter];
     const roa = data.quarterlyData['roa']?.[year]?.[quarter];

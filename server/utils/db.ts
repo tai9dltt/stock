@@ -40,7 +40,7 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> 
 // Helper function to execute single query
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | null> {
   const rows = await query<T>(sql, params)
-  return rows.length > 0 ? rows[0] : null
+  return rows[0] ?? null
 }
 
 // Helper function to get a database connection
