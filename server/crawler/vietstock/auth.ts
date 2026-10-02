@@ -8,6 +8,7 @@
 import { USER_AGENT, VIETSTOCK_BASE } from './constants'
 
 const LOGIN_URL = `${VIETSTOCK_BASE}/Account/Login`
+const AUTH_TIMEOUT_MS = 15_000
 
 // ─── In-memory session cache ────────────────────────────────────────
 
@@ -112,6 +113,7 @@ async function fetchInitialPage(): Promise<{ cookies: string; formToken: string 
   const response = await fetch(VIETSTOCK_BASE, {
     method: 'GET',
     redirect: 'follow',
+    signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
     headers: {
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'vi,en-US;q=0.9,en;q=0.8',
@@ -159,6 +161,7 @@ async function postLogin(
   const response = await fetch(LOGIN_URL, {
     method: 'POST',
     redirect: 'manual',
+    signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
     headers: {
       'Accept': '*/*',
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -204,6 +207,7 @@ async function postLogin(
     const pageResponse = await fetch(VIETSTOCK_BASE, {
       method: 'GET',
       redirect: 'follow',
+      signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
       headers: {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Cookie': mergedCookies,

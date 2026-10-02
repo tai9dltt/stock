@@ -1,27 +1,12 @@
-import { CrawlNoDataError, crawlStock, type CrawlType } from '../../crawler/crawlStock'
+import { CrawlNoDataError, crawlStock } from '../../crawler/crawlStock'
 import { VietstockAuthError } from '../../crawler/vietstock/client'
-
-interface CrawlRequest {
-  symbol: string
-  type?: CrawlType
-  quarterPages?: number
-  yearPages?: number
-}
-
-const CRAWL_TYPES: CrawlType[] = ['all', 'quarter', 'year']
+import { crawlBodySchema } from '../../utils/schemas'
 
 export default defineEventHandler(async (event) => {
-  const { symbol, type = 'all', quarterPages, yearPages } = await readBody<CrawlRequest>(event)
-
-  if (!symbol) {
-    throw createError({ statusCode: 400, statusMessage: 'Symbol is required' })
-  }
-  if (!CRAWL_TYPES.includes(type)) {
-    throw createError({ statusCode: 400, statusMessage: `type must be one of: ${CRAWL_TYPES.join(', ')}` })
-  }
+  const { symbol, ...options } = await readValidatedBody(event, crawlBodySchema.parse)
 
   try {
-    const data = await crawlStock(symbol, { type, quarterPages, yearPages })
+    const data = await crawlStock(symbol, options)
     return { success: true, data }
   } catch (error) {
     console.error('Crawl error:', error)

@@ -3,15 +3,7 @@ import { createGeminiClient, GEMINI_MODEL, SYSTEM_PROMPT, TOOL_DEFINITIONS } fro
 import { query, queryOne } from '../../utils/db'
 import { fetchFinanceInfo } from '../../crawler/vietstock/financeinfo'
 import { fetchTradingInfoRaw } from '../../crawler/vietstock/tradingInfo'
-
-interface ChatMessage {
-  role: 'user' | 'assistant'
-  content: string
-}
-
-interface ChatRequest {
-  messages: ChatMessage[]
-}
+import { chatBodySchema } from '../../utils/schemas'
 
 // ─── Tool execution functions ───────────────────────────────────────
 
@@ -235,14 +227,7 @@ async function executeGoogleSearch(query: string): Promise<any> {
 // ─── Main chat endpoint ─────────────────────────────────────────────
 
 export default defineEventHandler(async (event: H3Event) => {
-  const body = await readBody<ChatRequest>(event)
-
-  if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Messages array is required'
-    })
-  }
+  const body = await readValidatedBody(event, chatBodySchema.parse)
 
   try {
     const ai = createGeminiClient()

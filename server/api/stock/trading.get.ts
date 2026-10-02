@@ -1,16 +1,13 @@
 import { transaction } from '../../utils/db'
 import { fetchTradingInfoRaw, toTradingInfo } from '../../crawler/vietstock/tradingInfo'
 import { findCompanyId, upsertTradingSnapshot } from '../../repositories/stockRepo'
+import { symbolQuerySchema } from '../../utils/schemas'
 
 /**
  * Fetch live trading info from Vietstock and store today's snapshot.
  */
 export default defineEventHandler(async (event) => {
-  const symbol = (getQuery(event).symbol as string | undefined)?.trim().toUpperCase()
-
-  if (!symbol) {
-    throw createError({ statusCode: 400, statusMessage: 'Symbol is required' })
-  }
+  const { symbol } = await getValidatedQuery(event, symbolQuerySchema.parse)
 
   try {
     const raw = await fetchTradingInfoRaw(symbol)

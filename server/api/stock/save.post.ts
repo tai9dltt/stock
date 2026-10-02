@@ -1,35 +1,6 @@
 import type { PoolConnection } from 'mysql2/promise';
 import { transaction } from '../../utils/db';
-
-
-interface QuarterlyAnalysisData {
-  years: string[]
-  quarters: Record<string, Record<string, Record<string, number | null>>>
-  forecastStartYear: string
-  forecastStartQuarter: string
-  outstandingShares: number | null
-  currentPrice: number | null
-}
-
-interface SaveRequestBody {
-  symbol: string
-  // New format - manual edits only
-  manualEdits?: {
-    quarterly?: Record<string, any>
-    annual?: Record<string, any>
-  }
-  pe2022?: number
-  pe2023?: number
-  outstandingShares?: number
-  currentPrice?: number
-  // Old format - for backward compatibility
-  quarterlyData?: QuarterlyAnalysisData
-  entryPrice?: number
-  targetPrice?: number
-  stopLoss?: number
-  noteHtml?: string
-}
-
+import { saveBodySchema } from '../../utils/schemas';
 
 interface StockAnalysis {
   id: number
@@ -44,17 +15,10 @@ interface StockAnalysis {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<SaveRequestBody>(event)
-
-  if (!body.symbol) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Stock symbol is required'
-    })
-  }
+  const body = await readValidatedBody(event, saveBodySchema.parse)
 
   try {
-    const symbol = body.symbol.toUpperCase();
+    const symbol = body.symbol;
 
     const result = await transaction(async (connection) => {
       // Get company ID first

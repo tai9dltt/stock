@@ -1,15 +1,8 @@
 import { query, queryOne } from '../../utils/db'
+import { symbolQuerySchema } from '../../utils/schemas'
 
 export default defineEventHandler(async (event) => {
-  const query_params = getQuery(event)
-  const symbol = query_params.symbol as string
-
-  if (!symbol) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Symbol is required'
-    })
-  }
+  const { symbol } = await getValidatedQuery(event, symbolQuerySchema.parse)
 
   try {
     // 1. Get company
