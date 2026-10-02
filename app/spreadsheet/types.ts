@@ -106,7 +106,8 @@ export interface AnalysisSheetData {
   quarterlyData: Record<string, any>
   forecastYears: string[]
   forecastQuarters: string[]
-  peAssumptions: Record<string, any>
+  /** Saved P/E scenarios of the valuation table; empty = derive defaults */
+  peScenarios: number[]
   tradingDate: string
   currentPrice: number
   outstandingShares: number

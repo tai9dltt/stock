@@ -8,7 +8,7 @@ import {
   ANNUAL_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
 import type { AnalysisSheetData } from '~/spreadsheet/types';
-import type { StockData, TradingInfo } from '~/types';
+import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
 
 /**
  * Process forecast periods from API response
@@ -232,7 +232,7 @@ export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
     quarterlyData: {},
     forecastYears: [],
     forecastQuarters: [],
-    peAssumptions: {},
+    peScenarios: [],
     tradingDate: '',
     currentPrice: 0,
     outstandingShares: 0,
@@ -248,7 +248,8 @@ export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
  * Build the analysis page state from GET /api/stock/get and the live trading info.
  *
  * Precedence: live trading info > stored snapshot > values saved with the analysis.
- * Crawled metrics override saved (manually entered) figures for the same period.
+ * Financial figures come from the crawled metrics; the saved analysis only adds
+ * the user's inputs (assumptions, P/E scenarios, shares per quarter).
  */
 export function buildAnalysisState(
   symbol: string,
@@ -281,18 +282,18 @@ export function buildAnalysisState(
     if (tradingInfo.max52W) state.max52W = tradingInfo.max52W;
   }
 
-  const saved = data.analysis?.quarterlyData;
+  const saved = data.analysis;
   if (saved) {
-    if (saved.quarterlyData) state.quarterlyData = saved.quarterlyData;
-    if (saved.annualData) state.annualData = saved.annualData;
-    if (saved.peAssumptions) state.peAssumptions = saved.peAssumptions;
+    // Shares per quarter are the only per-period figures the user enters
+    if (saved.sharesByQuarter) state.quarterlyData = { outstandingShares: structuredClone(saved.sharesByQuarter) };
+    if (saved.peScenarios?.length) state.peScenarios = [...saved.peScenarios];
     if (saved.outstandingShares && !state.outstandingShares) state.outstandingShares = saved.outstandingShares;
     if (saved.currentPrice && !state.currentPrice) state.currentPrice = saved.currentPrice;
     if (saved.max52W && !state.max52W) state.max52W = saved.max52W;
     if (saved.min52W && !state.min52W) state.min52W = saved.min52W;
-    if (saved.revenueGrowth !== undefined) state.revenueGrowth = saved.revenueGrowth;
-    if (saved.grossMargin !== undefined) state.grossMargin = saved.grossMargin;
-    if (saved.netProfitGrowth !== undefined) state.netProfitGrowth = saved.netProfitGrowth;
+    state.revenueGrowth = saved.revenueGrowth;
+    state.grossMargin = saved.grossMargin;
+    state.netProfitGrowth = saved.netProfitGrowth;
   }
 
   if (data.metrics && Object.keys(data.metrics).length > 0) {
@@ -328,4 +329,30 @@ export function withForecastYearQuarters(forecastYears: string[], forecastQuarte
     }
   }
   return result;
+}
+
+export interface TradingPlan {
+  noteHtml: string;
+  entryPrice: number | null;
+  targetPrice: number | null;
+  stopLoss: number | null;
+}
+
+/**
+ * What gets saved for a stock: only the user's inputs, not the crawled figures.
+ */
+export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): SaveAnalysisPayload {
+  return {
+    symbol: state.symbol,
+    revenueGrowth: state.revenueGrowth,
+    grossMargin: state.grossMargin,
+    netProfitGrowth: state.netProfitGrowth,
+    peScenarios: state.peScenarios.length > 0 ? state.peScenarios : null,
+    sharesByQuarter: state.quarterlyData['outstandingShares'] ?? null,
+    currentPrice: state.currentPrice || null,
+    outstandingShares: state.outstandingShares || null,
+    max52W: state.max52W || null,
+    min52W: state.min52W || null,
+    ...plan,
+  };
 }

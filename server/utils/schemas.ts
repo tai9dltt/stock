@@ -23,19 +23,23 @@ export const crawlBodySchema = z.object({
   yearPages: z.number().int().min(1).max(5).optional(),
 })
 
+const nonNegative = z.number().min(0).nullable().optional()
+
 export const saveBodySchema = z.object({
   symbol: symbolSchema,
-  // Current format sent by the analysis page (stored as-is in stock_analysis.quarterly_data)
-  quarterlyData: z.record(z.string(), z.unknown()).optional(),
-  // Older format, still accepted
-  manualEdits: z.object({
-    quarterly: z.record(z.string(), z.unknown()).optional(),
-    annual: z.record(z.string(), z.unknown()).optional(),
-  }).optional(),
-  pe2022: nullableNumber,
-  pe2023: nullableNumber,
-  outstandingShares: nullableNumber,
-  currentPrice: nullableNumber,
+  // Forecast assumptions as fractions (0.25 = 25%)
+  revenueGrowth: z.number().default(0),
+  grossMargin: z.number().default(0),
+  netProfitGrowth: z.number().default(0),
+  peScenarios: z.array(z.number()).max(50).nullable().optional(),
+  // { "2025": { "Q1": 123456 } }
+  sharesByQuarter: z.record(z.string(), z.record(z.string(), z.number())).nullable().optional(),
+  // Market data shown in the sheet (fallback when no live price is available)
+  currentPrice: nonNegative,
+  outstandingShares: nonNegative,
+  max52W: nonNegative,
+  min52W: nonNegative,
+  // Trading plan
   entryPrice: nullableNumber,
   targetPrice: nullableNumber,
   stopLoss: nullableNumber,

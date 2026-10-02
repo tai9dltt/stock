@@ -311,8 +311,7 @@ function resolvePeScenarios(
   data: AnalysisSheetData,
   defaultPE: number
 ): number[] {
-  const saved = data.peAssumptions?.values
-  if (Array.isArray(saved) && saved.length > 0) return saved
+  if (data.peScenarios.length > 0) return data.peScenarios
 
   const byPeriod = (a: QuarterlyColumnInfo, b: QuarterlyColumnInfo) =>
     parseInt(a.year) - parseInt(b.year) || parseInt(a.quarter.slice(1)) - parseInt(b.quarter.slice(1))

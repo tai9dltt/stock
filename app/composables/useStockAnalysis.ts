@@ -6,15 +6,13 @@ import { ref, type Ref } from 'vue';
 import type { AnalysisSheetData } from '~/spreadsheet/types';
 import type { SheetEdits } from '~/composables/useAnalysisSheet';
 import type { StockData } from '~/types';
+import type { TradingPlan } from '~/composables/useStockDataTransform';
 import { crawlStockData, fetchTradingInfo, getStockData, saveStockAnalysis } from '~/services';
-import { buildAnalysisState, createEmptyAnalysisState, nextForecastYear } from '~/composables/useStockDataTransform';
+import {
+  buildAnalysisState, createEmptyAnalysisState, nextForecastYear, toSavePayload,
+} from '~/composables/useStockDataTransform';
 
-export interface TradingPlan {
-  noteHtml: string;
-  entryPrice: number | null;
-  targetPrice: number | null;
-  stopLoss: number | null;
-}
+export type { TradingPlan } from '~/composables/useStockDataTransform';
 
 export function useStockAnalysis(symbol: Ref<string>) {
   const toast = useToast();
@@ -95,28 +93,13 @@ export function useStockAnalysis(symbol: Ref<string>) {
     const s = state.value;
     if (edits) {
       Object.assign(s, edits.inputs);
-      if (edits.peValues) s.peAssumptions = { values: edits.peValues };
+      if (edits.peValues) s.peScenarios = edits.peValues;
       if (edits.sharesPerQuarter) s.quarterlyData['outstandingShares'] = edits.sharesPerQuarter;
     }
 
     loadingStore.show('Đang lưu dữ liệu...');
     try {
-      await saveStockAnalysis({
-        symbol: symbol.value,
-        quarterlyData: {
-          annualData: s.annualData,
-          quarterlyData: s.quarterlyData,
-          peAssumptions: s.peAssumptions,
-          outstandingShares: s.outstandingShares,
-          currentPrice: s.currentPrice,
-          max52W: s.max52W,
-          min52W: s.min52W,
-          revenueGrowth: s.revenueGrowth,
-          grossMargin: s.grossMargin,
-          netProfitGrowth: s.netProfitGrowth,
-        },
-        ...plan,
-      });
+      await saveStockAnalysis(toSavePayload({ ...s, symbol: symbol.value }, plan));
 
       toast.add({
         title: 'Đã lưu',
