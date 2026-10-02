@@ -41,8 +41,7 @@ import {
 import {
   getStockData,
   fetchTradingInfo,
-  crawlQuarterlyData,
-  crawlYearlyData,
+  crawlStockData,
   saveStockAnalysis,
 } from '~/services';
 
@@ -449,10 +448,9 @@ const refreshData = async () => {
   loadingStore.show('Đang cập nhật dữ liệu từ Vietstock...');
 
   try {
-    const quarterlyResponse = await crawlQuarterlyData(stockSymbol.value, 4);
-    const yearlyResponse = await crawlYearlyData(stockSymbol.value, 2);
+    const crawlResponse = await crawlStockData(stockSymbol.value);
 
-    if (quarterlyResponse.success && yearlyResponse.success) {
+    if (crawlResponse.success) {
       toast.add({
         title: 'Đã cập nhật',
         description: 'Crawled data successfully',
@@ -462,7 +460,7 @@ const refreshData = async () => {
     } else {
       toast.add({
         title: 'Lỗi',
-        description: 'Không thể crawl dữ liệu',
+        description: crawlResponse.error || 'Không thể crawl dữ liệu',
         color: 'error',
       });
     }

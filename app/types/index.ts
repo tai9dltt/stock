@@ -51,17 +51,6 @@ export interface StockDataResponse {
   error?: string;
 }
 
-export interface SmartUpdateResponse {
-  success: boolean;
-  data?: {
-    quarters: any;
-    annual?: any;
-    newDataFetched: boolean;
-    message: string;
-  };
-  error?: string;
-}
-
 export interface CrawlResponse {
   success: boolean;
   data?: any;

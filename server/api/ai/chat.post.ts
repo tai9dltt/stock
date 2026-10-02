@@ -1,7 +1,8 @@
 import type { H3Event } from 'h3'
 import { createGeminiClient, GEMINI_MODEL, SYSTEM_PROMPT, TOOL_DEFINITIONS } from '../../utils/gemini'
 import { query, queryOne } from '../../utils/db'
-import { getVietstockCredentials } from '../../utils/vietstockAuth'
+import { fetchFinanceInfo } from '../../crawler/vietstock/financeinfo'
+import { fetchTradingInfoRaw } from '../../crawler/vietstock/tradingInfo'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -16,30 +17,10 @@ interface ChatRequest {
 
 async function executeGetStockPrice(symbol: string) {
   try {
-    const { cookie, token } = await getVietstockCredentials()
-    const bodyParams: Record<string, string> = {
-      code: symbol.toUpperCase(),
-      s: '0',
-      t: ''
+    const data = await fetchTradingInfoRaw(symbol.toUpperCase())
+    if (!data) {
+      return { error: 'Không có dữ liệu giá' }
     }
-    if (token) bodyParams['__RequestVerificationToken'] = token
-
-    const response = await fetch('https://finance.vietstock.vn/company/tradinginfo', {
-      method: 'POST',
-      headers: {
-        'Accept': '*/*',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Cookie': cookie,
-        'Referer': `https://finance.vietstock.vn/${symbol.toUpperCase()}`
-      },
-      body: new URLSearchParams(bodyParams).toString()
-    })
-
-    if (!response.ok) {
-      return { error: `API returned status ${response.status}` }
-    }
-
-    const data = await response.json()
     return {
       symbol: symbol.toUpperCase(),
       lastPrice: data.LastPrice,
@@ -59,35 +40,9 @@ async function executeGetStockPrice(symbol: string) {
 
 async function executeGetFinancialData(symbol: string) {
   try {
-    const { cookie, token } = await getVietstockCredentials()
     const code = symbol.toUpperCase()
-    const bodyParams: Record<string, string> = {
-      Code: code,
-      Page: '1',
-      PageSize: '4',
-      ReportTermType: '1', // Annual
-      ReportType: 'BCTQ',
-      Unit: '1000000'
-    }
-    if (token) bodyParams['__RequestVerificationToken'] = token
-
-    const response = await fetch('https://finance.vietstock.vn/data/financeinfo', {
-      method: 'POST',
-      headers: {
-        'Accept': '*/*',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Cookie': cookie,
-        'Referer': `https://finance.vietstock.vn/${code}`
-      },
-      body: new URLSearchParams(bodyParams).toString()
-    })
-
-    if (!response.ok) {
-      return { error: `API returned status ${response.status}` }
-    }
-
-    const rawData = await response.json()
-    if (!rawData || !Array.isArray(rawData) || rawData.length < 2) {
+    const rawData = await fetchFinanceInfo(code, 'year', 1, 4)
+    if (!rawData) {
       return { error: 'Không có dữ liệu tài chính' }
     }
 

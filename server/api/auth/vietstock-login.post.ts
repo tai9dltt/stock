@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { loginVietstock, clearVietstockSession } from '../../utils/vietstockAuth'
+import { loginVietstock, clearVietstockSession } from '../../crawler/vietstock/auth'
 
 interface LoginRequest {
   email?: string

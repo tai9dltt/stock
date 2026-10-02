@@ -106,7 +106,8 @@ export default defineEventHandler(async (event) => {
       eps: number
       trading_date: string
     }>(
-      `SELECT last_price, outstanding_shares, market_cap, pe, eps, trading_date
+      `SELECT last_price, outstanding_shares, market_cap, pe, eps,
+              DATE_FORMAT(trading_date, '%Y-%m-%d') AS trading_date
        FROM trading_snapshots
        WHERE company_id = ?
        ORDER BY trading_date DESC

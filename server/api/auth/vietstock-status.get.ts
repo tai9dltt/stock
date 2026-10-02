@@ -1,4 +1,4 @@
-import { getVietstockSessionStatus } from '../../utils/vietstockAuth'
+import { getVietstockSessionStatus } from '../../crawler/vietstock/auth'
 
 /**
  * GET /api/auth/vietstock-status

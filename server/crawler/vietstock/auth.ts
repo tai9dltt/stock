@@ -5,7 +5,8 @@
  * Caches authenticated cookies in memory and auto-refreshes when expired.
  */
 
-const VIETSTOCK_BASE = 'https://finance.vietstock.vn'
+import { USER_AGENT, VIETSTOCK_BASE } from './constants'
+
 const LOGIN_URL = `${VIETSTOCK_BASE}/Account/Login`
 
 // ─── In-memory session cache ────────────────────────────────────────
@@ -19,6 +20,8 @@ interface VietstockSession {
 }
 
 let cachedSession: VietstockSession | null = null
+// Shared in-flight auto-login so concurrent requests don't log in twice
+let pendingLogin: Promise<VietstockSession> | null = null
 
 // ─── Cookie parsing helpers ─────────────────────────────────────────
 
@@ -125,7 +128,7 @@ async function fetchInitialPage(): Promise<{ cookies: string; formToken: string 
     headers: {
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'vi,en-US;q=0.9,en;q=0.8',
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+      'User-Agent': USER_AGENT,
     },
   })
 
@@ -176,7 +179,7 @@ async function postLogin(
       'Referer': `${VIETSTOCK_BASE}/`,
       'Origin': VIETSTOCK_BASE,
       'X-Requested-With': 'XMLHttpRequest',
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+      'User-Agent': USER_AGENT,
     },
     body,
   })
@@ -218,7 +221,7 @@ async function postLogin(
       headers: {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Cookie': mergedCookies,
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+        'User-Agent': USER_AGENT,
       },
     })
     const pageHtml = await pageResponse.text()
@@ -320,8 +323,13 @@ export async function getVietstockCredentials(): Promise<{ cookie: string; token
 
   if (email && password) {
     try {
-      console.log('🔄 Auto-login to Vietstock...')
-      const session = await loginVietstock(email, password)
+      if (!pendingLogin) {
+        console.log('🔄 Auto-login to Vietstock...')
+        pendingLogin = loginVietstock(email, password).finally(() => {
+          pendingLogin = null
+        })
+      }
+      const session = await pendingLogin
       return { cookie: session.cookie, token: session.token }
     } catch (error) {
       console.error('❌ Auto-login failed:', error instanceof Error ? error.message : error)
