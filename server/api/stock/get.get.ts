@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   try {
     // 1. Get company
     const company = await queryOne<{ id: number; symbol: string; name: string }>(
-      'SELECT id, symbol, name FROM companies WHERE UPPER(symbol) = UPPER(?)',
+      'SELECT id, symbol, name FROM companies WHERE symbol = ?',
       [symbol]
     )
 

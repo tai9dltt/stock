@@ -63,49 +63,37 @@ export const QUARTER_DATE_RANGES = [
 ];
 
 // ============ METRIC MAPPINGS ============
-export const METRIC_TO_INDICATOR_QUARTERLY: Record<string, string> = {
-  REVENUE_NET: 'netRevenue',
-  GROSS_PROFIT: 'grossProfit',
-  OPERATING_PROFIT: 'operatingProfit',
-  NET_PROFIT: 'netProfit',
-  PROFIT_AFTER_TAX: 'netProfit',
-  EPS_TTM: 'eps',
-  EPS_BASIC: 'eps',
-  PE: 'pe',
-  ROS: 'netMargin',
-  ROE: 'roe',
-  ROA: 'roa',
-  TOTAL_ASSETS: 'totalAssets',
-  CURRENT_ASSETS: 'currentAssets',
-  TOTAL_LIABILITIES: 'totalLiabilities',
-  SHORT_TERM_LIABILITIES: 'shortTermLiabilities',
-  EQUITY: 'equity',
-  BVPS: 'bvps',
-  // Bank-specific metrics
-  NET_INTEREST_INCOME: 'netInterestIncome',
-  OPERATING_EXPENSES: 'operatingExpenses',
-  TOTAL_OPERATING_INCOME: 'totalOperatingIncome',
-  TOTAL_NET_PROFIT: 'totalNetProfit',
+// Page indicator ← DB metric codes, highest priority first. When several codes
+// feed one indicator, each period takes the first code that has a value.
+const SHARED_INDICATOR_SOURCES: Record<string, string[]> = {
+  netRevenue: ['REVENUE_NET'],
+  grossProfit: ['GROSS_PROFIT'],
+  operatingProfit: ['OPERATING_PROFIT'],
+  // Profit attributable to the parent company; total profit after tax as fallback
+  netProfit: ['NET_PROFIT', 'PROFIT_AFTER_TAX'],
+  eps: ['EPS_BASIC', 'EPS_TTM'],
+  pe: ['PE'],
+  roe: ['ROE'],
+  roa: ['ROA'],
+  totalAssets: ['TOTAL_ASSETS'],
+  totalLiabilities: ['TOTAL_LIABILITIES'],
+  bvps: ['BVPS'],
+  // Bank-specific
+  netInterestIncome: ['NET_INTEREST_INCOME'],
+  operatingExpenses: ['OPERATING_EXPENSES'],
+  totalOperatingIncome: ['TOTAL_OPERATING_INCOME'],
+  totalNetProfit: ['TOTAL_NET_PROFIT'],
 };
 
-export const METRIC_TO_INDICATOR_ANNUAL: Record<string, string> = {
-  REVENUE_NET: 'netRevenue',
-  GROSS_PROFIT: 'grossProfit',
-  OPERATING_PROFIT: 'operatingProfit',
-  NET_PROFIT: 'netProfit',
-  PROFIT_AFTER_TAX: 'netProfit',
-  EPS_TTM: 'eps',
-  EPS_BASIC: 'eps',
-  PE: 'pe',
-  ROS: 'ros',
-  ROE: 'roe',
-  ROA: 'roa',
-  // Bank-specific metrics
-  TOTAL_ASSETS: 'totalAssets',
-  TOTAL_LIABILITIES: 'totalLiabilities',
-  BVPS: 'bvps',
-  NET_INTEREST_INCOME: 'netInterestIncome',
-  OPERATING_EXPENSES: 'operatingExpenses',
-  TOTAL_OPERATING_INCOME: 'totalOperatingIncome',
-  TOTAL_NET_PROFIT: 'totalNetProfit',
+export const QUARTERLY_INDICATOR_SOURCES: Record<string, string[]> = {
+  ...SHARED_INDICATOR_SOURCES,
+  netMargin: ['ROS'],
+  currentAssets: ['CURRENT_ASSETS'],
+  shortTermLiabilities: ['SHORT_TERM_LIABILITIES'],
+  equity: ['EQUITY'],
+};
+
+export const ANNUAL_INDICATOR_SOURCES: Record<string, string[]> = {
+  ...SHARED_INDICATOR_SOURCES,
+  ros: ['ROS'],
 };

@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     // Database config
     dbHost: process.env.DB_HOST || 'localhost',
+    dbPort: process.env.DB_PORT || '3306',
     dbUser: process.env.DB_USER || 'root',
     dbPassword: process.env.DB_PASSWORD || '',
     dbName: process.env.DB_NAME || 'stock_analysis_db',

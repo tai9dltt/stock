@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     const result = await transaction(async (connection) => {
       // Get company ID first
       const [companies] = await connection.query<any[]>(
-        'SELECT id, symbol FROM companies WHERE UPPER(symbol) = UPPER(?)',
+        'SELECT id, symbol FROM companies WHERE symbol = ?',
         [symbol]
       );
 

@@ -28,13 +28,20 @@ export interface ParsedFinanceData {
 const METRIC_GROUPS = ['Kết quả kinh doanh', 'Cân đối kế toán', 'Chỉ số tài chính']
 
 /**
- * Parse Vietstock date format (YYYYMM or YYYYMMDD) to MySQL DATE
+ * Parse Vietstock date format (YYYYMM or YYYYMMDD) to MySQL DATE.
+ * A bare month is the first day for a period start and the last day for a period end.
  */
-export function parseVietstockDate(dateStr: string | null | undefined): string | null {
+export function parseVietstockDate(
+  dateStr: string | null | undefined,
+  edge: 'start' | 'end' = 'start'
+): string | null {
   if (!dateStr) return null
   const digits = dateStr.replace(/\D/g, '')
   if (digits.length === 6) {
-    return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-01`
+    const year = Number(digits.slice(0, 4))
+    const month = Number(digits.slice(4, 6))
+    const day = edge === 'end' ? new Date(Date.UTC(year, month, 0)).getUTCDate() : 1
+    return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${String(day).padStart(2, '0')}`
   } else if (digits.length === 8) {
     return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`
   }
@@ -57,7 +64,7 @@ export function parseFinanceInfoPages(term: ReportTerm, pages: FinanceInfoPage[]
       year: p.YearPeriod,
       quarter: toQuarter(term, p),
       periodBegin: parseVietstockDate(p.PeriodBegin),
-      periodEnd: parseVietstockDate(p.PeriodEnd),
+      periodEnd: parseVietstockDate(p.PeriodEnd, 'end'),
       // Vietstock returns: ID=1 → Value1 (newest), ID=2 → Value2, etc.
       valueKey: `Value${p.ID || p.Row || i + 1}` as const,
     }))

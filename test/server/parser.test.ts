@@ -24,6 +24,13 @@ describe('parseVietstockDate', () => {
     expect(parseVietstockDate('20251231')).toBe('2025-12-31')
   })
 
+  it('uses the last day of the month for a period end', () => {
+    expect(parseVietstockDate('202503', 'end')).toBe('2025-03-31')
+    expect(parseVietstockDate('202506', 'end')).toBe('2025-06-30')
+    expect(parseVietstockDate('202402', 'end')).toBe('2024-02-29')
+    expect(parseVietstockDate('20251215', 'end')).toBe('2025-12-15')
+  })
+
   it('returns null for empty or unknown formats', () => {
     expect(parseVietstockDate(null)).toBeNull()
     expect(parseVietstockDate('')).toBeNull()
@@ -71,7 +78,7 @@ describe('parseFinanceInfoPages', () => {
     ])
 
     expect(data.periods).toEqual([
-      { year: 2025, quarter: 3, periodBegin: '2025-07-01', periodEnd: '2025-09-01' },
+      { year: 2025, quarter: 3, periodBegin: '2025-07-01', periodEnd: '2025-09-30' },
     ])
   })
 

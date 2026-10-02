@@ -1,17 +1,7 @@
--- Stock Analysis Database Schema
--- Based on Vietstock API structure
--- Run this to create/reset the database
+-- Initial schema (baseline). Applied once by scripts/migrate.mjs.
+-- To wipe data use scripts/clean-db.js; never re-run this file on a live database.
 
--- Drop existing tables if any
-DROP TABLE IF EXISTS metric_values;
-DROP TABLE IF EXISTS trading_snapshots;
-DROP TABLE IF EXISTS metrics;
-DROP TABLE IF EXISTS report_components;
-DROP TABLE IF EXISTS periods;
-DROP TABLE IF EXISTS stock_analysis;
-DROP TABLE IF EXISTS companies;
-DROP TABLE IF EXISTS audited_status;
-DROP TABLE IF EXISTS united_types;
+ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 📋 audited_status
 CREATE TABLE audited_status (

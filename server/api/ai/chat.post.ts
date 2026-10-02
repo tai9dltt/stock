@@ -114,7 +114,7 @@ async function executeGetStockList() {
 async function executeGetStockAnalysis(symbol: string) {
   try {
     const company = await queryOne<{ id: number; symbol: string; name: string }>(
-      'SELECT id, symbol, name FROM companies WHERE UPPER(symbol) = UPPER(?)',
+      'SELECT id, symbol, name FROM companies WHERE symbol = ?',
       [symbol]
     )
 

@@ -4,6 +4,7 @@ import mysql from 'mysql2/promise'
 const config = useRuntimeConfig()
 const pool = mysql.createPool({
   host: config.dbHost || 'localhost',
+  port: Number(config.dbPort) || 3306,
   user: config.dbUser || 'root',
   password: config.dbPassword || '',
   database: config.dbName || 'stock_analysis_db',

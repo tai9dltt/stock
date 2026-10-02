@@ -12,7 +12,10 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:migrate": "node --env-file-if-exists=.env scripts/migrate.mjs",
+    "db:clean": "node --env-file-if-exists=.env scripts/clean-db.js",
+    "db:clean-symbol": "node --env-file-if-exists=.env scripts/clean-symbol.js"
   },
   "dependencies": {
     "@google/genai": "^1.42.0",

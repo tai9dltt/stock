@@ -4,8 +4,8 @@
  */
 
 import {
-  METRIC_TO_INDICATOR_QUARTERLY,
-  METRIC_TO_INDICATOR_ANNUAL,
+  QUARTERLY_INDICATOR_SOURCES,
+  ANNUAL_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
 import type { AnalysisSheetData } from '~/spreadsheet/types';
 import type { StockData, TradingInfo } from '~/types';
@@ -37,6 +37,16 @@ export function processForecasts(periods: any[]): {
 }
 
 /**
+ * Metric codes feeding each indicator, lowest priority first, so that writing
+ * them in order leaves the highest-priority value in place.
+ */
+function sourcesLowestFirst(sources: Record<string, string[]>, metrics: Record<string, any>) {
+  return Object.entries(sources)
+    .map(([indicator, codes]) => [indicator, [...codes].reverse().filter(code => code in metrics)] as const)
+    .filter(([, codes]) => codes.length > 0);
+}
+
+/**
  * Overlay crawled quarterly metrics onto existing data
  * Official data overrides manual input for overlapping periods
  */
@@ -46,26 +56,17 @@ export function overlayQuarterlyMetrics(
 ): Record<string, any> {
   const result = { ...quarterlyData };
 
-  for (const [metricCode, periodValues] of Object.entries(metrics)) {
-    const indicatorKey = METRIC_TO_INDICATOR_QUARTERLY[metricCode];
-    if (!indicatorKey) continue;
+  for (const [indicator, codes] of sourcesLowestFirst(QUARTERLY_INDICATOR_SOURCES, metrics)) {
+    result[indicator] ??= {};
 
-    if (!result[indicatorKey]) {
-      result[indicatorKey] = {};
-    }
+    for (const code of codes) {
+      for (const [periodKey, value] of Object.entries(metrics[code] as Record<string, string>)) {
+        const [year, quarter] = periodKey.split('_');
+        if (!year || !quarter) continue;
 
-    for (const [periodKey, value] of Object.entries(periodValues as Record<string, string>)) {
-      const parts = periodKey.split('_');
-      if (parts.length < 2) continue;
-
-      const year = parts[0]!;
-      const quarter = parts[1]!;
-
-      if (!result[indicatorKey][year]) {
-        result[indicatorKey][year] = {};
+        result[indicator][year] ??= {};
+        result[indicator][year][quarter] = parseFloat(value);
       }
-
-      result[indicatorKey][year][quarter] = parseFloat(value as string);
     }
   }
 
@@ -81,16 +82,13 @@ export function overlayAnnualMetrics(
 ): Record<string, any> {
   const result = { ...annualData };
 
-  for (const [metricCode, yearValues] of Object.entries(yearlyMetrics)) {
-    const indicatorKey = METRIC_TO_INDICATOR_ANNUAL[metricCode];
-    if (!indicatorKey) continue;
+  for (const [indicator, codes] of sourcesLowestFirst(ANNUAL_INDICATOR_SOURCES, yearlyMetrics)) {
+    result[indicator] ??= {};
 
-    if (!result[indicatorKey]) {
-      result[indicatorKey] = {};
-    }
-
-    for (const [year, value] of Object.entries(yearValues as Record<string, string>)) {
-      result[indicatorKey][year] = parseFloat(value);
+    for (const code of codes) {
+      for (const [year, value] of Object.entries(yearlyMetrics[code] as Record<string, string>)) {
+        result[indicator][year] = parseFloat(value);
+      }
     }
   }
 
