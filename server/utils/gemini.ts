@@ -81,7 +81,7 @@ export const TOOL_DEFINITIONS: FunctionDeclaration[] = [
   },
   {
     name: 'getStockAnalysis',
-    description: 'Lấy dữ liệu phân tích chi tiết đã lưu của một cổ phiếu, bao gồm các chỉ số tài chính, trading snapshot, giả định P/E, và ghi chú phân tích.',
+    description: 'Lấy phân tích đã lưu của một cổ phiếu: giá và vốn hóa gần nhất đã lưu (trading snapshot), kế hoạch giao dịch (giá vào, giá mục tiêu, cắt lỗ) và việc có ghi chú hay không. Dùng getFinancialData để lấy số liệu tài chính.',
     parameters: {
       type: Type.OBJECT,
       properties: {

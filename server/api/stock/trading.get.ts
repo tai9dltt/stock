@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
         if (!companyId || !tradingInfo.lastPrice) return
 
         const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date())
-        await upsertTradingSnapshot(conn, companyId, symbol, today, tradingInfo)
+        await upsertTradingSnapshot(conn, companyId, today, tradingInfo)
       })
     } catch (error) {
       console.warn('⚠️ Could not save trading snapshot:', error instanceof Error ? error.message : error)

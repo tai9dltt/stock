@@ -13,7 +13,10 @@ interface StockSummary {
 export default defineEventHandler(async () => {
   try {
     const stocks = await query<StockSummary>(
-      'SELECT id, symbol, created_at, updated_at, entry_price, target_price, stop_loss FROM stock_analysis ORDER BY updated_at DESC'
+      `SELECT sa.id, c.symbol, sa.created_at, sa.updated_at, sa.entry_price, sa.target_price, sa.stop_loss
+       FROM stock_analysis sa
+       JOIN companies c ON c.id = sa.company_id
+       ORDER BY sa.updated_at DESC`
     )
 
     return {

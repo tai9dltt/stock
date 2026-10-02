@@ -47,18 +47,17 @@ export async function loadMetricIds(conn: PoolConnection): Promise<Map<string, n
 export async function upsertPeriods(
   conn: PoolConnection,
   companyId: number,
-  symbol: string,
   source: PeriodSource,
   periods: ParsedPeriod[]
 ): Promise<Map<string, number>> {
   if (periods.length > 0) {
     const rows = periods.map(p => [
-      companyId, symbol, p.year, p.quarter, p.periodBegin, p.periodEnd, source, false,
+      companyId, p.year, p.quarter, p.periodBegin, p.periodEnd, source, false,
     ])
     const onDuplicate = source === 'year' ? 'is_forecast = FALSE' : 'id = id'
 
     await conn.query(
-      `INSERT INTO periods (company_id, symbol, year, quarter, period_begin, period_end, source, is_forecast)
+      `INSERT INTO periods (company_id, year, quarter, period_begin, period_end, source, is_forecast)
        VALUES ? ON DUPLICATE KEY UPDATE ${onDuplicate}`,
       [rows]
     )
@@ -78,7 +77,6 @@ export async function upsertPeriods(
 export async function upsertMetricValues(
   conn: PoolConnection,
   companyId: number,
-  symbol: string,
   values: ParsedValue[],
   periodIds: Map<string, number>,
   metricIds: Map<string, number>
@@ -95,12 +93,12 @@ export async function upsertMetricValues(
     const periodId = periodIds.get(`${v.year}_${v.quarter}`)
     if (!periodId) continue
 
-    rows.push([companyId, symbol, metricId, periodId, v.value, 'vietstock'])
+    rows.push([companyId, metricId, periodId, v.value, 'vietstock'])
   }
 
   for (let i = 0; i < rows.length; i += BULK_CHUNK_SIZE) {
     await conn.query(
-      `INSERT INTO metric_values (company_id, symbol, metric_id, period_id, value, source)
+      `INSERT INTO metric_values (company_id, metric_id, period_id, value, source)
        VALUES ? ON DUPLICATE KEY UPDATE value = VALUES(value)`,
       [rows.slice(i, i + BULK_CHUNK_SIZE)]
     )
@@ -116,7 +114,6 @@ export async function upsertMetricValues(
 export async function ensureCurrentYearForecast(
   conn: PoolConnection,
   companyId: number,
-  symbol: string,
   crawledYears: number[]
 ): Promise<void> {
   const currentYear = new Date().getFullYear()
@@ -129,9 +126,9 @@ export async function ensureCurrentYearForecast(
   if (existing.length > 0) return
 
   await conn.query(
-    `INSERT INTO periods (company_id, symbol, year, quarter, period_begin, period_end, source, is_forecast)
-     VALUES (?, ?, ?, 0, ?, ?, 'year', TRUE)`,
-    [companyId, symbol, currentYear, `${currentYear}-01-01`, `${currentYear}-12-31`]
+    `INSERT INTO periods (company_id, year, quarter, period_begin, period_end, source, is_forecast)
+     VALUES (?, ?, 0, ?, ?, 'year', TRUE)`,
+    [companyId, currentYear, `${currentYear}-01-01`, `${currentYear}-12-31`]
   )
   console.log(`✅ Added forecast period for ${currentYear}`)
 }
@@ -183,7 +180,6 @@ export interface TradingSnapshotInput {
 export async function upsertTradingSnapshot(
   conn: PoolConnection,
   companyId: number,
-  symbol: string,
   tradingDate: string,
   info: TradingSnapshotInput
 ): Promise<void> {
@@ -193,9 +189,9 @@ export async function upsertTradingSnapshot(
 
   await conn.query(
     `INSERT INTO trading_snapshots
-       (company_id, symbol, trading_date, last_price, outstanding_shares, listed_shares,
+       (company_id, trading_date, last_price, outstanding_shares, listed_shares,
         market_cap, min_52w_price, max_52w_price, vol_52w)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        last_price = VALUES(last_price),
        outstanding_shares = VALUES(outstanding_shares),
@@ -205,7 +201,7 @@ export async function upsertTradingSnapshot(
        max_52w_price = VALUES(max_52w_price),
        vol_52w = VALUES(vol_52w)`,
     [
-      companyId, symbol, tradingDate,
+      companyId, tradingDate,
       info.lastPrice ?? null, info.outstandingShares ?? null, info.listedShares ?? null,
       marketCap, info.min52W ?? null, info.max52W ?? null, info.vol52W ?? null,
     ]

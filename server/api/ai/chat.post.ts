@@ -94,7 +94,10 @@ async function executeGetStockList() {
       id: number; symbol: string; entry_price: number | null
       target_price: number | null; stop_loss: number | null; updated_at: Date
     }>(
-      'SELECT id, symbol, entry_price, target_price, stop_loss, updated_at FROM stock_analysis ORDER BY updated_at DESC'
+      `SELECT sa.id, c.symbol, sa.entry_price, sa.target_price, sa.stop_loss, sa.updated_at
+       FROM stock_analysis sa
+       JOIN companies c ON c.id = sa.company_id
+       ORDER BY sa.updated_at DESC`
     )
     return {
       count: stocks.length,
@@ -124,10 +127,10 @@ async function executeGetStockAnalysis(symbol: string) {
 
     // Get trading snapshot
     const snapshot = await queryOne<{
-      last_price: number; outstanding_shares: number; market_cap: number
-      pe: number; eps: number; trading_date: string
+      last_price: number; outstanding_shares: number; market_cap: number; trading_date: string
     }>(
-      'SELECT last_price, outstanding_shares, market_cap, pe, eps, trading_date FROM trading_snapshots WHERE company_id = ? ORDER BY trading_date DESC LIMIT 1',
+      `SELECT last_price, outstanding_shares, market_cap, DATE_FORMAT(trading_date, '%Y-%m-%d') AS trading_date
+       FROM trading_snapshots WHERE company_id = ? ORDER BY trading_date DESC LIMIT 1`,
       [company.id]
     )
 
@@ -147,8 +150,6 @@ async function executeGetStockAnalysis(symbol: string) {
         lastPrice: Number(snapshot.last_price),
         outstandingShares: Number(snapshot.outstanding_shares),
         marketCap: Number(snapshot.market_cap),
-        pe: Number(snapshot.pe),
-        eps: Number(snapshot.eps),
         tradingDate: snapshot.trading_date
       } : null,
       analysis: analysis ? {

@@ -69,9 +69,9 @@ export async function crawlStock(rawSymbol: string, options: CrawlOptions = {}):
     // Quarterly must be written before yearly: the forecast check counts quarters
     for (const term of terms) {
       const data = parsed.get(term)!
-      const periodIds = await upsertPeriods(conn, companyId, symbol, term, data.periods)
+      const periodIds = await upsertPeriods(conn, companyId, term, data.periods)
       const { written, unknownMetricCodes } = await upsertMetricValues(
-        conn, companyId, symbol, data.values, periodIds, metricIds
+        conn, companyId, data.values, periodIds, metricIds
       )
       if (unknownMetricCodes.length > 0) {
         console.info(`ℹ️ Metric codes missing in metrics table: ${unknownMetricCodes.join(', ')}`)
@@ -80,7 +80,7 @@ export async function crawlStock(rawSymbol: string, options: CrawlOptions = {}):
       const years = [...new Set(data.periods.map(p => p.year))].sort((a, b) => b - a)
 
       if (term === 'year') {
-        await ensureCurrentYearForecast(conn, companyId, symbol, years)
+        await ensureCurrentYearForecast(conn, companyId, years)
         await markIncompleteYearsAsForecast(conn, companyId, years)
       }
 

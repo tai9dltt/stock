@@ -75,11 +75,9 @@ export default defineEventHandler(async (event) => {
       last_price: number
       outstanding_shares: number
       market_cap: number
-      pe: number
-      eps: number
       trading_date: string
     }>(
-      `SELECT last_price, outstanding_shares, market_cap, pe, eps,
+      `SELECT last_price, outstanding_shares, market_cap,
               DATE_FORMAT(trading_date, '%Y-%m-%d') AS trading_date
        FROM trading_snapshots
        WHERE company_id = ?
@@ -113,8 +111,6 @@ export default defineEventHandler(async (event) => {
           lastPrice: Number(snapshot.last_price),
           outstandingShares: Number(snapshot.outstanding_shares),
           marketCap: Number(snapshot.market_cap),
-          pe: Number(snapshot.pe),
-          eps: Number(snapshot.eps),
           tradingDate: snapshot.trading_date
         } : null,
         analysis: analysis ? {

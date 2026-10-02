@@ -22,9 +22,9 @@ export default defineEventHandler(async (event) => {
   try {
     await query(
       `INSERT INTO stock_analysis
-         (company_id, symbol, revenue_growth, gross_margin, net_profit_growth, pe_scenarios, shares_by_quarter,
+         (company_id, revenue_growth, gross_margin, net_profit_growth, pe_scenarios, shares_by_quarter,
           current_price, outstanding_shares, max_52w, min_52w, entry_price, target_price, stop_loss, note_html)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
          revenue_growth = VALUES(revenue_growth),
          gross_margin = VALUES(gross_margin),
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
          stop_loss = VALUES(stop_loss),
          note_html = VALUES(note_html)`,
       [
-        company.id, body.symbol,
+        company.id,
         body.revenueGrowth, body.grossMargin, body.netProfitGrowth,
         json(body.peScenarios), json(body.sharesByQuarter),
         body.currentPrice || null, body.outstandingShares || null, body.max52W || null, body.min52W || null,
