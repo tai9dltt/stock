@@ -4,9 +4,11 @@
  */
 
 import {
-  METRIC_TO_INDICATOR_QUARTERLY,
-  METRIC_TO_INDICATOR_ANNUAL,
+  QUARTERLY_INDICATOR_SOURCES,
+  ANNUAL_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
+import type { AnalysisSheetData } from '~/spreadsheet/types';
+import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
 
 /**
  * Process forecast periods from API response
@@ -35,6 +37,16 @@ export function processForecasts(periods: any[]): {
 }
 
 /**
+ * Metric codes feeding each indicator, lowest priority first, so that writing
+ * them in order leaves the highest-priority value in place.
+ */
+function sourcesLowestFirst(sources: Record<string, string[]>, metrics: Record<string, any>) {
+  return Object.entries(sources)
+    .map(([indicator, codes]) => [indicator, [...codes].reverse().filter(code => code in metrics)] as const)
+    .filter(([, codes]) => codes.length > 0);
+}
+
+/**
  * Overlay crawled quarterly metrics onto existing data
  * Official data overrides manual input for overlapping periods
  */
@@ -44,26 +56,17 @@ export function overlayQuarterlyMetrics(
 ): Record<string, any> {
   const result = { ...quarterlyData };
 
-  for (const [metricCode, periodValues] of Object.entries(metrics)) {
-    const indicatorKey = METRIC_TO_INDICATOR_QUARTERLY[metricCode];
-    if (!indicatorKey) continue;
+  for (const [indicator, codes] of sourcesLowestFirst(QUARTERLY_INDICATOR_SOURCES, metrics)) {
+    result[indicator] ??= {};
 
-    if (!result[indicatorKey]) {
-      result[indicatorKey] = {};
-    }
+    for (const code of codes) {
+      for (const [periodKey, value] of Object.entries(metrics[code] as Record<string, string>)) {
+        const [year, quarter] = periodKey.split('_');
+        if (!year || !quarter) continue;
 
-    for (const [periodKey, value] of Object.entries(periodValues as Record<string, string>)) {
-      const parts = periodKey.split('_');
-      if (parts.length < 2) continue;
-
-      const year = parts[0]!;
-      const quarter = parts[1]!;
-
-      if (!result[indicatorKey][year]) {
-        result[indicatorKey][year] = {};
+        result[indicator][year] ??= {};
+        result[indicator][year][quarter] = parseFloat(value);
       }
-
-      result[indicatorKey][year][quarter] = parseFloat(value as string);
     }
   }
 
@@ -79,16 +82,13 @@ export function overlayAnnualMetrics(
 ): Record<string, any> {
   const result = { ...annualData };
 
-  for (const [metricCode, yearValues] of Object.entries(yearlyMetrics)) {
-    const indicatorKey = METRIC_TO_INDICATOR_ANNUAL[metricCode];
-    if (!indicatorKey) continue;
+  for (const [indicator, codes] of sourcesLowestFirst(ANNUAL_INDICATOR_SOURCES, yearlyMetrics)) {
+    result[indicator] ??= {};
 
-    if (!result[indicatorKey]) {
-      result[indicatorKey] = {};
-    }
-
-    for (const [year, value] of Object.entries(yearValues as Record<string, string>)) {
-      result[indicatorKey][year] = parseFloat(value);
+    for (const code of codes) {
+      for (const [year, value] of Object.entries(yearlyMetrics[code] as Record<string, string>)) {
+        result[indicator][year] = parseFloat(value);
+      }
     }
   }
 
@@ -220,5 +220,139 @@ export function extractInputValues(
     revenueGrowth: getValue(inputRowStart + 5),
     grossMargin: getValue(inputRowStart + 6),
     netProfitGrowth: getValue(inputRowStart + 7),
+  };
+}
+
+// ============ PAGE STATE ============
+
+export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
+  return {
+    symbol,
+    annualData: {},
+    quarterlyData: {},
+    forecastYears: [],
+    forecastQuarters: [],
+    peScenarios: [],
+    tradingDate: '',
+    currentPrice: 0,
+    outstandingShares: 0,
+    max52W: 0,
+    min52W: 0,
+    revenueGrowth: 0,
+    grossMargin: 0,
+    netProfitGrowth: 0,
+  };
+}
+
+/**
+ * Build the analysis page state from GET /api/stock/get and the live trading info.
+ *
+ * Precedence: live trading info > stored snapshot > values saved with the analysis.
+ * Financial figures come from the crawled metrics; the saved analysis only adds
+ * the user's inputs (assumptions, P/E scenarios, shares per quarter).
+ */
+export function buildAnalysisState(
+  symbol: string,
+  data: StockData,
+  tradingInfo: TradingInfo | null | undefined,
+  today: string
+): AnalysisSheetData {
+  const state = createEmptyAnalysisState(symbol);
+
+  if (data.periods) {
+    const forecasts = processForecasts(data.periods);
+    state.forecastYears = forecasts.forecastYears;
+    state.forecastQuarters = forecasts.forecastQuarters;
+  }
+
+  const snapshot = data.tradingSnapshot;
+  if (snapshot) {
+    if (snapshot.outstandingShares) state.outstandingShares = snapshot.outstandingShares;
+    if (snapshot.lastPrice) state.currentPrice = snapshot.lastPrice;
+    if (snapshot.tradingDate) state.tradingDate = snapshot.tradingDate;
+  }
+
+  if (tradingInfo) {
+    if (tradingInfo.lastPrice) {
+      state.currentPrice = tradingInfo.lastPrice;
+      state.tradingDate = today;
+    }
+    if (tradingInfo.outstandingShares) state.outstandingShares = tradingInfo.outstandingShares;
+    if (tradingInfo.min52W) state.min52W = tradingInfo.min52W;
+    if (tradingInfo.max52W) state.max52W = tradingInfo.max52W;
+  }
+
+  const saved = data.analysis;
+  if (saved) {
+    // Shares per quarter are the only per-period figures the user enters
+    if (saved.sharesByQuarter) state.quarterlyData = { outstandingShares: structuredClone(saved.sharesByQuarter) };
+    if (saved.peScenarios?.length) state.peScenarios = [...saved.peScenarios];
+    if (saved.outstandingShares && !state.outstandingShares) state.outstandingShares = saved.outstandingShares;
+    if (saved.currentPrice && !state.currentPrice) state.currentPrice = saved.currentPrice;
+    if (saved.max52W && !state.max52W) state.max52W = saved.max52W;
+    if (saved.min52W && !state.min52W) state.min52W = saved.min52W;
+    state.revenueGrowth = saved.revenueGrowth;
+    state.grossMargin = saved.grossMargin;
+    state.netProfitGrowth = saved.netProfitGrowth;
+  }
+
+  if (data.metrics && Object.keys(data.metrics).length > 0) {
+    state.quarterlyData = overlayQuarterlyMetrics(data.metrics, state.quarterlyData);
+  }
+  if (data.yearlyMetrics && Object.keys(data.yearlyMetrics).length > 0) {
+    state.annualData = overlayAnnualMetrics(data.yearlyMetrics, state.annualData);
+  }
+
+  // Years that only have annual data still get (empty) quarter columns
+  state.quarterlyData = syncYearsToQuarterly(state.annualData, state.quarterlyData);
+
+  return state;
+}
+
+/**
+ * The year "Add Year" appends: the year after the last known one.
+ */
+export function nextForecastYear(annualData: Record<string, any>, forecastYears: string[]): string {
+  const years = [...Object.keys(annualData['netRevenue'] || {}), ...forecastYears].sort();
+  const lastYear = years[years.length - 1];
+  return lastYear ? String(parseInt(lastYear) + 1) : String(new Date().getFullYear());
+}
+
+/**
+ * Make sure every quarter of a forecast year is marked as a forecast quarter.
+ */
+export function withForecastYearQuarters(forecastYears: string[], forecastQuarters: string[]): string[] {
+  const result = [...forecastQuarters];
+  for (const year of forecastYears) {
+    for (const q of ['Q1', 'Q2', 'Q3', 'Q4']) {
+      if (!result.includes(`${year}_${q}`)) result.push(`${year}_${q}`);
+    }
+  }
+  return result;
+}
+
+export interface TradingPlan {
+  noteHtml: string;
+  entryPrice: number | null;
+  targetPrice: number | null;
+  stopLoss: number | null;
+}
+
+/**
+ * What gets saved for a stock: only the user's inputs, not the crawled figures.
+ */
+export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): SaveAnalysisPayload {
+  return {
+    symbol: state.symbol,
+    revenueGrowth: state.revenueGrowth,
+    grossMargin: state.grossMargin,
+    netProfitGrowth: state.netProfitGrowth,
+    peScenarios: state.peScenarios.length > 0 ? state.peScenarios : null,
+    sharesByQuarter: state.quarterlyData['outstandingShares'] ?? null,
+    currentPrice: state.currentPrice || null,
+    outstandingShares: state.outstandingShares || null,
+    max52W: state.max52W || null,
+    min52W: state.min52W || null,
+    ...plan,
   };
 }

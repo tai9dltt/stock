@@ -1,40 +1,13 @@
 import { query, queryOne } from '../../utils/db'
-
-interface StockData {
-  companyId: number
-  symbol: string
-  periods: {
-    id: number
-    year: number
-    quarter: number
-    source: string
-  }[]
-  metrics: Record<string, Record<string, number | null>>  // metricCode -> {2024_Q1: value, ...}
-  tradingSnapshot?: {
-    lastPrice: number
-    outstandingShares: number
-    marketCap: number
-    pe: number
-    eps: number
-    tradingDate: string
-  }
-}
+import { symbolQuerySchema } from '../../utils/schemas'
 
 export default defineEventHandler(async (event) => {
-  const query_params = getQuery(event)
-  const symbol = query_params.symbol as string
-
-  if (!symbol) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Symbol is required'
-    })
-  }
+  const { symbol } = await getValidatedQuery(event, symbolQuerySchema.parse)
 
   try {
     // 1. Get company
     const company = await queryOne<{ id: number; symbol: string; name: string }>(
-      'SELECT id, symbol, name FROM companies WHERE UPPER(symbol) = UPPER(?)',
+      'SELECT id, symbol, name FROM companies WHERE symbol = ?',
       [symbol]
     )
 
@@ -94,7 +67,7 @@ export default defineEventHandler(async (event) => {
         ? `${mv.year}`  // Just year for yearly
         : `${mv.year}_Q${mv.quarter}`  // year_Q1 for quarterly
 
-      targetMetrics[mv.metric_code][periodKey] = mv.value
+      targetMetrics[mv.metric_code]![periodKey] = mv.value
     }
 
     // 5. Get latest trading snapshot if any
@@ -102,11 +75,10 @@ export default defineEventHandler(async (event) => {
       last_price: number
       outstanding_shares: number
       market_cap: number
-      pe: number
-      eps: number
       trading_date: string
     }>(
-      `SELECT last_price, outstanding_shares, market_cap, pe, eps, trading_date
+      `SELECT last_price, outstanding_shares, market_cap,
+              DATE_FORMAT(trading_date, '%Y-%m-%d') AS trading_date
        FROM trading_snapshots
        WHERE company_id = ?
        ORDER BY trading_date DESC
@@ -114,33 +86,17 @@ export default defineEventHandler(async (event) => {
       [company.id]
     )
 
-    // 6. Get user analysis if any
-    const analysis = await queryOne<{
-      quarterly_data: any
-      entry_price: number | null
-      target_price: number | null
-      stop_loss: number | null
-      note_html: string | null
-      pe_assumptions: string | null
-    }>(
-      `SELECT quarterly_data, entry_price, target_price, stop_loss, note_html, pe_assumptions
+    // 6. Get user analysis if any (DECIMAL columns come back as strings)
+    const analysis = await queryOne<Record<string, any>>(
+      `SELECT revenue_growth, gross_margin, net_profit_growth, pe_scenarios, shares_by_quarter,
+              current_price, outstanding_shares, max_52w, min_52w,
+              entry_price, target_price, stop_loss, note_html
        FROM stock_analysis
        WHERE company_id = ?`,
       [company.id]
     )
 
-    const parseJSON = (jsonData: string | object | null) => {
-      if (!jsonData) return null
-      // If MySQL driver already parsed JSON (when column type is JSON), return as-is
-      if (typeof jsonData === 'object') return jsonData
-      // Otherwise parse the string
-      try {
-        return JSON.parse(jsonData)
-      } catch (e) {
-        console.error('Failed to parse JSON:', jsonData, e)
-        return null
-      }
-    }
+    const num = (v: unknown) => (v === null || v === undefined ? null : Number(v))
 
     return {
       success: true,
@@ -155,23 +111,25 @@ export default defineEventHandler(async (event) => {
           lastPrice: Number(snapshot.last_price),
           outstandingShares: Number(snapshot.outstanding_shares),
           marketCap: Number(snapshot.market_cap),
-          pe: Number(snapshot.pe),
-          eps: Number(snapshot.eps),
           tradingDate: snapshot.trading_date
         } : null,
         analysis: analysis ? {
-          quarterlyData: parseJSON(analysis.quarterly_data),
+          revenueGrowth: Number(analysis.revenue_growth),
+          grossMargin: Number(analysis.gross_margin),
+          netProfitGrowth: Number(analysis.net_profit_growth),
+          peScenarios: analysis.pe_scenarios,
+          sharesByQuarter: analysis.shares_by_quarter,
+          currentPrice: num(analysis.current_price),
+          outstandingShares: num(analysis.outstanding_shares),
+          max52W: num(analysis.max_52w),
+          min52W: num(analysis.min_52w),
           entryPrice: analysis.entry_price ? Number(analysis.entry_price) : null,
           targetPrice: analysis.target_price ? Number(analysis.target_price) : null,
           stopLoss: analysis.stop_loss ? Number(analysis.stop_loss) : null,
           noteHtml: analysis.note_html,
-          peAssumptions: parseJSON(analysis.pe_assumptions)
         } : null
       }
     }
-
-
-
   } catch (error) {
     console.error('Get stock error:', error)
     throw createError({

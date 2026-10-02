@@ -4,27 +4,18 @@
  * This script will delete all data for a specific stock symbol from the database
  *
  * Usage:
- *   node scripts/clean-symbol.js MSH
- *   node scripts/clean-symbol.js VNM
+ *   npm run db:clean-symbol -- MSH
  */
 
 import mysql from 'mysql2/promise'
+import { dbConfig } from './db-config.mjs'
 
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '', // No password for local MySQL
-  database: 'stock_analysis_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-})
+const pool = mysql.createPool(dbConfig)
 
 async function cleanSymbolData(symbol) {
   if (!symbol) {
     console.error('❌ Error: Symbol is required')
-    console.log('Usage: node scripts/clean-symbol.js <SYMBOL>')
-    console.log('Example: node scripts/clean-symbol.js MSH')
+    console.log('Usage: npm run db:clean-symbol -- <SYMBOL>')
     process.exit(1)
   }
 
@@ -39,7 +30,7 @@ async function cleanSymbolData(symbol) {
 
     // Get company ID
     const [companies] = await connection.query(
-      'SELECT id FROM companies WHERE UPPER(symbol) = ?',
+      'SELECT id FROM companies WHERE symbol = ?',
       [upperSymbol]
     )
 

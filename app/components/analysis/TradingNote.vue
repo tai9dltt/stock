@@ -8,19 +8,6 @@ const props = defineProps<{
   noteHtml?: string;
 }>();
 
-// Emits
-const emit = defineEmits<{
-  (
-    e: 'save',
-    data: {
-      noteHtml: string;
-      entryPrice: number | null;
-      targetPrice: number | null;
-      stopLoss: number | null;
-    },
-  ): void;
-}>();
-
 // Trading plan inputs
 const entryPrice = ref<number | null>(null);
 const targetPrice = ref<number | null>(null);
@@ -106,16 +93,6 @@ const potentialLoss = computed(() => {
     100
   ).toFixed(1);
 });
-
-// Save handler
-const handleSave = () => {
-  emit('save', {
-    noteHtml: editor.value?.getHTML() || '',
-    entryPrice: entryPrice.value,
-    targetPrice: targetPrice.value,
-    stopLoss: stopLoss.value,
-  });
-};
 
 // Set values from parent
 const setValues = (data: {
@@ -266,25 +243,25 @@ onBeforeUnmount(() => {
             :variant="editor.isActive('bold') ? 'solid' : 'ghost'"
             size="xs"
             icon="i-lucide-bold"
-            @click="editor.chain().focus().toggleBold().run()"
+            @click="() => { editor?.chain().focus().toggleBold().run() }"
           />
           <UButton
             :variant="editor.isActive('italic') ? 'solid' : 'ghost'"
             size="xs"
             icon="i-lucide-italic"
-            @click="editor.chain().focus().toggleItalic().run()"
+            @click="() => { editor?.chain().focus().toggleItalic().run() }"
           />
           <UButton
             :variant="editor.isActive('bulletList') ? 'solid' : 'ghost'"
             size="xs"
             icon="i-lucide-list"
-            @click="editor.chain().focus().toggleBulletList().run()"
+            @click="() => { editor?.chain().focus().toggleBulletList().run() }"
           />
           <UButton
             :variant="editor.isActive('orderedList') ? 'solid' : 'ghost'"
             size="xs"
             icon="i-lucide-list-ordered"
-            @click="editor.chain().focus().toggleOrderedList().run()"
+            @click="() => { editor?.chain().focus().toggleOrderedList().run() }"
           />
           <UButton
             :variant="
@@ -292,7 +269,7 @@ onBeforeUnmount(() => {
             "
             size="xs"
             icon="i-lucide-heading-2"
-            @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+            @click="() => { editor?.chain().focus().toggleHeading({ level: 2 }).run() }"
           />
           <UButton
             :variant="
@@ -300,7 +277,7 @@ onBeforeUnmount(() => {
             "
             size="xs"
             icon="i-lucide-heading-3"
-            @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+            @click="() => { editor?.chain().focus().toggleHeading({ level: 3 }).run() }"
           />
           <div class="toolbar-separator" />
           <UButton

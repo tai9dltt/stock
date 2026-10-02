@@ -1,45 +1,18 @@
 import type { H3Event } from 'h3'
 import { createGeminiClient, GEMINI_MODEL, SYSTEM_PROMPT, TOOL_DEFINITIONS } from '../../utils/gemini'
 import { query, queryOne } from '../../utils/db'
-import { getVietstockCredentials } from '../../utils/vietstockAuth'
-
-interface ChatMessage {
-  role: 'user' | 'assistant'
-  content: string
-}
-
-interface ChatRequest {
-  messages: ChatMessage[]
-}
+import { fetchFinanceInfo } from '../../crawler/vietstock/financeinfo'
+import { fetchTradingInfoRaw } from '../../crawler/vietstock/tradingInfo'
+import { chatBodySchema } from '../../utils/schemas'
 
 // ─── Tool execution functions ───────────────────────────────────────
 
 async function executeGetStockPrice(symbol: string) {
   try {
-    const { cookie, token } = await getVietstockCredentials()
-    const bodyParams: Record<string, string> = {
-      code: symbol.toUpperCase(),
-      s: '0',
-      t: ''
+    const data = await fetchTradingInfoRaw(symbol.toUpperCase())
+    if (!data) {
+      return { error: 'Không có dữ liệu giá' }
     }
-    if (token) bodyParams['__RequestVerificationToken'] = token
-
-    const response = await fetch('https://finance.vietstock.vn/company/tradinginfo', {
-      method: 'POST',
-      headers: {
-        'Accept': '*/*',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Cookie': cookie,
-        'Referer': `https://finance.vietstock.vn/${symbol.toUpperCase()}`
-      },
-      body: new URLSearchParams(bodyParams).toString()
-    })
-
-    if (!response.ok) {
-      return { error: `API returned status ${response.status}` }
-    }
-
-    const data = await response.json()
     return {
       symbol: symbol.toUpperCase(),
       lastPrice: data.LastPrice,
@@ -59,35 +32,9 @@ async function executeGetStockPrice(symbol: string) {
 
 async function executeGetFinancialData(symbol: string) {
   try {
-    const { cookie, token } = await getVietstockCredentials()
     const code = symbol.toUpperCase()
-    const bodyParams: Record<string, string> = {
-      Code: code,
-      Page: '1',
-      PageSize: '4',
-      ReportTermType: '1', // Annual
-      ReportType: 'BCTQ',
-      Unit: '1000000'
-    }
-    if (token) bodyParams['__RequestVerificationToken'] = token
-
-    const response = await fetch('https://finance.vietstock.vn/data/financeinfo', {
-      method: 'POST',
-      headers: {
-        'Accept': '*/*',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Cookie': cookie,
-        'Referer': `https://finance.vietstock.vn/${code}`
-      },
-      body: new URLSearchParams(bodyParams).toString()
-    })
-
-    if (!response.ok) {
-      return { error: `API returned status ${response.status}` }
-    }
-
-    const rawData = await response.json()
-    if (!rawData || !Array.isArray(rawData) || rawData.length < 2) {
+    const rawData = await fetchFinanceInfo(code, 'year', 1, 4)
+    if (!rawData) {
       return { error: 'Không có dữ liệu tài chính' }
     }
 
@@ -125,8 +72,8 @@ async function executeGetFinancialData(symbol: string) {
         const valueKey = `Value${valueIndex}`
         const value = item[valueKey]
         if (value !== null && value !== undefined) {
-          if (!result[item.Name]) result[item.Name] = {}
-          result[item.Name][year] = Number(value)
+          result[item.Name] ??= {}
+          result[item.Name]![year] = Number(value)
         }
       })
     })
@@ -147,7 +94,10 @@ async function executeGetStockList() {
       id: number; symbol: string; entry_price: number | null
       target_price: number | null; stop_loss: number | null; updated_at: Date
     }>(
-      'SELECT id, symbol, entry_price, target_price, stop_loss, updated_at FROM stock_analysis ORDER BY updated_at DESC'
+      `SELECT sa.id, c.symbol, sa.entry_price, sa.target_price, sa.stop_loss, sa.updated_at
+       FROM stock_analysis sa
+       JOIN companies c ON c.id = sa.company_id
+       ORDER BY sa.updated_at DESC`
     )
     return {
       count: stocks.length,
@@ -167,7 +117,7 @@ async function executeGetStockList() {
 async function executeGetStockAnalysis(symbol: string) {
   try {
     const company = await queryOne<{ id: number; symbol: string; name: string }>(
-      'SELECT id, symbol, name FROM companies WHERE UPPER(symbol) = UPPER(?)',
+      'SELECT id, symbol, name FROM companies WHERE symbol = ?',
       [symbol]
     )
 
@@ -177,10 +127,10 @@ async function executeGetStockAnalysis(symbol: string) {
 
     // Get trading snapshot
     const snapshot = await queryOne<{
-      last_price: number; outstanding_shares: number; market_cap: number
-      pe: number; eps: number; trading_date: string
+      last_price: number; outstanding_shares: number; market_cap: number; trading_date: string
     }>(
-      'SELECT last_price, outstanding_shares, market_cap, pe, eps, trading_date FROM trading_snapshots WHERE company_id = ? ORDER BY trading_date DESC LIMIT 1',
+      `SELECT last_price, outstanding_shares, market_cap, DATE_FORMAT(trading_date, '%Y-%m-%d') AS trading_date
+       FROM trading_snapshots WHERE company_id = ? ORDER BY trading_date DESC LIMIT 1`,
       [company.id]
     )
 
@@ -200,8 +150,6 @@ async function executeGetStockAnalysis(symbol: string) {
         lastPrice: Number(snapshot.last_price),
         outstandingShares: Number(snapshot.outstanding_shares),
         marketCap: Number(snapshot.market_cap),
-        pe: Number(snapshot.pe),
-        eps: Number(snapshot.eps),
         tradingDate: snapshot.trading_date
       } : null,
       analysis: analysis ? {
@@ -280,14 +228,7 @@ async function executeGoogleSearch(query: string): Promise<any> {
 // ─── Main chat endpoint ─────────────────────────────────────────────
 
 export default defineEventHandler(async (event: H3Event) => {
-  const body = await readBody<ChatRequest>(event)
-
-  if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Messages array is required'
-    })
-  }
+  const body = await readValidatedBody(event, chatBodySchema.parse)
 
   try {
     const ai = createGeminiClient()

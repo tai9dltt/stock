@@ -1,5 +1,5 @@
 
-import type { StockDataResponse, SmartUpdateResponse, CrawlResponse, SaveAnalysisPayload, TradingInfo } from '~/types';
+import type { StockDataResponse, CrawlResponse, SaveAnalysisPayload, TradingInfo } from '~/types';
 
 /**
  * Fetch stock data including metrics, analysis, and trading info
@@ -29,42 +29,22 @@ export async function getStockList(): Promise<{ success: boolean; data: StockSum
 }
 
 /**
- * Fetch trading information from Vietstock
+ * Fetch live trading information from Vietstock (also stores today's snapshot)
  */
 export async function fetchTradingInfo(symbol: string): Promise<{ success: boolean; data?: { tradingInfo: TradingInfo } }> {
-  return await $fetch('/api/stock/fetch-vietstock', {
-    method: 'POST',
-    body: { code: symbol },
+  return await $fetch('/api/stock/trading', {
+    method: 'GET',
+    params: { symbol },
   });
 }
 
 /**
- * Smart update - fetch new data if available, otherwise return existing
+ * Crawl quarterly + yearly financial data from Vietstock into the DB
  */
-export async function smartUpdateStock(symbol: string): Promise<SmartUpdateResponse> {
-  return await $fetch<SmartUpdateResponse>('/api/stock/smart-update', {
-    method: 'POST',
-    body: { symbol },
-  });
-}
-
-/**
- * Crawl quarterly data from Vietstock
- */
-export async function crawlQuarterlyData(symbol: string, pages: number = 4): Promise<CrawlResponse> {
+export async function crawlStockData(symbol: string): Promise<CrawlResponse> {
   return await $fetch<CrawlResponse>('/api/stock/crawl', {
     method: 'POST',
-    body: { symbol, pages },
-  });
-}
-
-/**
- * Crawl yearly data from Vietstock
- */
-export async function crawlYearlyData(symbol: string, pages: number = 2): Promise<CrawlResponse> {
-  return await $fetch<CrawlResponse>('/api/stock/crawl-yearly', {
-    method: 'POST',
-    body: { symbol, pages },
+    body: { symbol, type: 'all' },
   });
 }
 

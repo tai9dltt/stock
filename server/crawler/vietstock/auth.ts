@@ -5,8 +5,10 @@
  * Caches authenticated cookies in memory and auto-refreshes when expired.
  */
 
-const VIETSTOCK_BASE = 'https://finance.vietstock.vn'
+import { USER_AGENT, VIETSTOCK_BASE } from './constants'
+
 const LOGIN_URL = `${VIETSTOCK_BASE}/Account/Login`
+const AUTH_TIMEOUT_MS = 15_000
 
 // ─── In-memory session cache ────────────────────────────────────────
 
@@ -19,6 +21,8 @@ interface VietstockSession {
 }
 
 let cachedSession: VietstockSession | null = null
+// Shared in-flight auto-login so concurrent requests don't log in twice
+let pendingLogin: Promise<VietstockSession> | null = null
 
 // ─── Cookie parsing helpers ─────────────────────────────────────────
 
@@ -62,7 +66,7 @@ function extractCookies(response: Response, existingCookies: string = ''): strin
  */
 function getCookieValue(cookieStr: string, name: string): string | null {
   const match = cookieStr.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`))
-  return match ? match[1] : null
+  return match?.[1] ?? null
 }
 
 /**
@@ -72,7 +76,7 @@ function decodeJwtExpiry(jwt: string): number | null {
   try {
     const parts = jwt.split('.')
     if (parts.length !== 3) return null
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+    const payload = JSON.parse(Buffer.from(parts[1]!, 'base64').toString())
     return payload.exp ? payload.exp * 1000 : null // Convert to milliseconds
   } catch {
     return null
@@ -83,31 +87,18 @@ function decodeJwtExpiry(jwt: string): number | null {
  * Extract __RequestVerificationToken from HTML page
  * Handles both quoted (value="token") and unquoted (value=token) attributes
  */
+const FORM_TOKEN_PATTERNS = [
+  /name="__RequestVerificationToken"[^>]*value="([^"]+)"/, // quoted
+  /value="([^"]+)"[^>]*name="__RequestVerificationToken"/, // quoted, reverse order
+  /name=__RequestVerificationToken[^>]*value=([^\s>]+)/, // unquoted
+  /value=([^\s>]+)[^>]*name=__RequestVerificationToken/, // unquoted, reverse order
+]
+
 function extractFormToken(html: string): string | null {
-  // Pattern 1: Quoted value - name="__RequestVerificationToken" ... value="TOKEN"
-  const quoted1 = html.match(
-    /name="__RequestVerificationToken"[^>]*value="([^"]+)"/
-  )
-  if (quoted1) return quoted1[1]
-
-  // Pattern 2: Quoted reverse order - value="TOKEN" ... name="__RequestVerificationToken"
-  const quoted2 = html.match(
-    /value="([^"]+)"[^>]*name="__RequestVerificationToken"/
-  )
-  if (quoted2) return quoted2[1]
-
-  // Pattern 3: Unquoted value - name=__RequestVerificationToken ... value=TOKEN
-  const unquoted1 = html.match(
-    /name=__RequestVerificationToken[^>]*value=([^\s>]+)/
-  )
-  if (unquoted1) return unquoted1[1]
-
-  // Pattern 4: Unquoted reverse - value=TOKEN ... name=__RequestVerificationToken
-  const unquoted2 = html.match(
-    /value=([^\s>]+)[^>]*name=__RequestVerificationToken/
-  )
-  if (unquoted2) return unquoted2[1]
-
+  for (const pattern of FORM_TOKEN_PATTERNS) {
+    const token = html.match(pattern)?.[1]
+    if (token) return token
+  }
   return null
 }
 
@@ -122,10 +113,11 @@ async function fetchInitialPage(): Promise<{ cookies: string; formToken: string 
   const response = await fetch(VIETSTOCK_BASE, {
     method: 'GET',
     redirect: 'follow',
+    signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
     headers: {
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'vi,en-US;q=0.9,en;q=0.8',
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+      'User-Agent': USER_AGENT,
     },
   })
 
@@ -169,6 +161,7 @@ async function postLogin(
   const response = await fetch(LOGIN_URL, {
     method: 'POST',
     redirect: 'manual',
+    signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
     headers: {
       'Accept': '*/*',
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -176,7 +169,7 @@ async function postLogin(
       'Referer': `${VIETSTOCK_BASE}/`,
       'Origin': VIETSTOCK_BASE,
       'X-Requested-With': 'XMLHttpRequest',
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+      'User-Agent': USER_AGENT,
     },
     body,
   })
@@ -210,21 +203,21 @@ async function postLogin(
   // Step 3: Fetch a page with authenticated cookies to get the form token
   // The cookie __RequestVerificationToken and body/form token are DIFFERENT in ASP.NET
   console.log('🔐 Step 3: Fetching form token for API calls...')
-  let apiFormToken = ''
   try {
     const pageResponse = await fetch(VIETSTOCK_BASE, {
       method: 'GET',
       redirect: 'follow',
+      signal: AbortSignal.timeout(AUTH_TIMEOUT_MS),
       headers: {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Cookie': mergedCookies,
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+        'User-Agent': USER_AGENT,
       },
     })
     const pageHtml = await pageResponse.text()
     // Update cookies from this response too
     const finalCookies = extractCookies(pageResponse, mergedCookies)
-    apiFormToken = extractFormToken(pageHtml) || ''
+    const apiFormToken = extractFormToken(pageHtml) || ''
     if (apiFormToken) {
       console.log('✅ Got form token for API calls')
     }
@@ -244,7 +237,7 @@ async function postLogin(
     }
 
     return session
-  } catch (err) {
+  } catch {
     console.warn('⚠️ Could not fetch form token, using cookie token as fallback')
     // Fallback: use cookie token
     const verificationToken = getCookieValue(mergedCookies, '__RequestVerificationToken') || ''
@@ -320,8 +313,13 @@ export async function getVietstockCredentials(): Promise<{ cookie: string; token
 
   if (email && password) {
     try {
-      console.log('🔄 Auto-login to Vietstock...')
-      const session = await loginVietstock(email, password)
+      if (!pendingLogin) {
+        console.log('🔄 Auto-login to Vietstock...')
+        pendingLogin = loginVietstock(email, password).finally(() => {
+          pendingLogin = null
+        })
+      }
+      const session = await pendingLogin
       return { cookie: session.cookie, token: session.token }
     } catch (error) {
       console.error('❌ Auto-login failed:', error instanceof Error ? error.message : error)

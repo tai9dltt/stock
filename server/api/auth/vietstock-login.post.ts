@@ -1,10 +1,6 @@
 import type { H3Event } from 'h3'
-import { loginVietstock, clearVietstockSession } from '../../utils/vietstockAuth'
-
-interface LoginRequest {
-  email?: string
-  password?: string
-}
+import { loginVietstock, clearVietstockSession } from '../../crawler/vietstock/auth'
+import { vietstockLoginBodySchema } from '../../utils/schemas'
 
 /**
  * POST /api/auth/vietstock-login
@@ -13,7 +9,7 @@ interface LoginRequest {
  * Uses provided email/password or falls back to env vars.
  */
 export default defineEventHandler(async (event: H3Event) => {
-  const body = await readBody<LoginRequest>(event)
+  const body = await readValidatedBody(event, vietstockLoginBodySchema.parse)
   const config = useRuntimeConfig()
 
   const email = body.email || config.vietstockEmail

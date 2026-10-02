@@ -95,7 +95,7 @@ const formatContent = (content: string) => {
       <path d="M15 13v2" />
       <path d="M9 13v2" />
     </svg>
-    <span class="ai-chat-fab-badge" v-if="messages.length > 0">{{
+    <span v-if="messages.length > 0" class="ai-chat-fab-badge">{{
       messages.length
     }}</span>
   </button>
@@ -134,8 +134,8 @@ const formatContent = (content: string) => {
         <div class="ai-chat-header-actions">
           <button
             class="ai-chat-header-btn"
-            @click="clearChat"
             title="Xóa lịch sử"
+            @click="clearChat"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -155,8 +155,8 @@ const formatContent = (content: string) => {
           </button>
           <button
             class="ai-chat-header-btn"
-            @click="isOpen = false"
             title="Đóng"
+            @click="isOpen = false"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +230,7 @@ const formatContent = (content: string) => {
         >
           <div class="ai-chat-bubble ai-chat-bubble--assistant">
             <div class="ai-chat-typing">
-              <span></span><span></span><span></span>
+              <span/><span/><span/>
             </div>
           </div>
         </div>
@@ -244,7 +244,7 @@ const formatContent = (content: string) => {
           placeholder="Hỏi về cổ phiếu..."
           :disabled="isLoading"
           @keyup.enter="handleSend"
-        />
+        >
         <button
           class="ai-chat-send-btn"
           :disabled="!inputText.trim() || isLoading"

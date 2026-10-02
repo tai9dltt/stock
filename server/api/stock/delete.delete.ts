@@ -1,16 +1,8 @@
-import type { PoolConnection } from 'mysql2/promise';
 import { transaction } from '../../utils/db';
+import { symbolQuerySchema } from '../../utils/schemas';
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const symbol = query.symbol as string;
-
-  if (!symbol) {
-    throw createError({
-      statusCode: 400,
-      message: 'Symbol is required',
-    });
-  }
+  const { symbol } = await getValidatedQuery(event, symbolQuerySchema.parse);
 
   try {
     const result = await transaction(async (connection) => {

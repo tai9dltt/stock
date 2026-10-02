@@ -1,0 +1,59 @@
+/**
+ * Shared zod schemas for validating API input.
+ * Use with h3's readValidatedBody / getValidatedQuery: invalid input becomes a 400.
+ */
+
+import { z } from 'zod'
+
+/** Stock symbol, normalized to upper case (e.g. "fpt " → "FPT") */
+export const symbolSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .regex(/^[A-Z0-9]{2,10}$/, 'Invalid stock symbol')
+
+export const symbolQuerySchema = z.object({ symbol: symbolSchema })
+
+const nullableNumber = z.number().nullable().optional()
+
+export const crawlBodySchema = z.object({
+  symbol: symbolSchema,
+  type: z.enum(['all', 'quarter', 'year']).default('all'),
+  quarterPages: z.number().int().min(1).max(10).optional(),
+  yearPages: z.number().int().min(1).max(5).optional(),
+})
+
+const nonNegative = z.number().min(0).nullable().optional()
+
+export const saveBodySchema = z.object({
+  symbol: symbolSchema,
+  // Forecast assumptions as fractions (0.25 = 25%)
+  revenueGrowth: z.number().default(0),
+  grossMargin: z.number().default(0),
+  netProfitGrowth: z.number().default(0),
+  peScenarios: z.array(z.number()).max(50).nullable().optional(),
+  // { "2025": { "Q1": 123456 } }
+  sharesByQuarter: z.record(z.string(), z.record(z.string(), z.number())).nullable().optional(),
+  // Market data shown in the sheet (fallback when no live price is available)
+  currentPrice: nonNegative,
+  outstandingShares: nonNegative,
+  max52W: nonNegative,
+  min52W: nonNegative,
+  // Trading plan
+  entryPrice: nullableNumber,
+  targetPrice: nullableNumber,
+  stopLoss: nullableNumber,
+  noteHtml: z.string().max(1_000_000).nullable().optional(),
+})
+
+export const chatBodySchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(['user', 'assistant']),
+    content: z.string().max(20_000),
+  })).min(1).max(100),
+})
+
+export const vietstockLoginBodySchema = z.object({
+  email: z.email().optional(),
+  password: z.string().min(1).optional(),
+}).default({})

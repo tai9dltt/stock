@@ -8,57 +8,45 @@ export interface TradingInfo {
   vol52W: number;
 }
 
-export interface SaveAnalysisPayload {
-  symbol: string;
-  quarterlyData: {
-    annualData: any;
-    quarterlyData: any;
-    peAssumptions: any;
-    outstandingShares: number;
-    currentPrice: number;
-    max52W: number;
-    min52W: number;
-    revenueGrowth: number;
-    grossMargin: number;
-    netProfitGrowth: number;
-  };
+/** User inputs saved per stock (crawled figures are not part of it) */
+export interface AnalysisInputs {
+  /** Forecast assumptions as fractions (0.25 = 25%) */
+  revenueGrowth: number;
+  grossMargin: number;
+  netProfitGrowth: number;
+  peScenarios: number[] | null;
+  sharesByQuarter: Record<string, Record<string, number>> | null;
+  /** Market data last shown in the sheet, used when no live price is available */
+  currentPrice: number | null;
+  outstandingShares: number | null;
+  max52W: number | null;
+  min52W: number | null;
   entryPrice: number | null;
   targetPrice: number | null;
   stopLoss: number | null;
-  noteHtml: string;
+  noteHtml: string | null;
+}
+
+export interface SaveAnalysisPayload extends AnalysisInputs {
+  symbol: string;
+}
+
+/** data of GET /api/stock/get */
+export interface StockData {
+  metrics: Record<string, Record<string, number | string | null>>;
+  yearlyMetrics: Record<string, Record<string, number | string | null>>;
+  periods?: { year: number; quarter: number; source: string; is_forecast: number | boolean }[];
+  tradingSnapshot?: {
+    outstandingShares?: number;
+    lastPrice?: number;
+    tradingDate?: string;
+  } | null;
+  analysis?: AnalysisInputs | null;
 }
 
 export interface StockDataResponse {
   success: boolean;
-  data?: {
-    metrics: any;
-    yearlyMetrics: any;
-    periods?: any[];
-    tradingSnapshot?: {
-      outstandingShares?: number;
-      lastPrice?: number;
-      tradingDate?: string;
-    };
-    analysis?: {
-      quarterlyData: any;
-      noteHtml?: string;
-      entryPrice?: number;
-      targetPrice?: number;
-      stopLoss?: number;
-    };
-    tradingInfo?: TradingInfo;
-  };
-  error?: string;
-}
-
-export interface SmartUpdateResponse {
-  success: boolean;
-  data?: {
-    quarters: any;
-    annual?: any;
-    newDataFetched: boolean;
-    message: string;
-  };
+  data?: StockData | null;
   error?: string;
 }
 
