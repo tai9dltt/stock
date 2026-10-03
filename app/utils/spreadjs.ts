@@ -146,12 +146,56 @@ export function applyRowHighlightOnSelect(
     finalColumnCount
   )
 
+  // Cells with their own colour keep it in the selected row
+  const keepRules = keepCellColours(GC, sheet, viewportRange.rowCount, finalColumnCount)
+
   // Add row state rule for active row
-  cfs.addRowStateRule(
+  const rowRule = cfs.addRowStateRule(
     GC.Spread.Sheets.RowColumnStates.active,
     rowStyle,
     [viewportRange]
   )
+
+  // The newest rule wins by default. Order instead: growth / margin colours,
+  // then the cells' own colours, then the selected row.
+  const rules: any[] | undefined = cfs.getRules?.()
+  if (rules && rowRule) {
+    const others = rules.filter(r => r !== rowRule && !keepRules.includes(r))
+      .sort((a, b) => a.priority() - b.priority())
+    ;[...others, ...keepRules, rowRule].forEach((r, i) => r.priority(i + 1))
+  }
+}
+
+/**
+ * Conditional rules that repaint each cell with its own background (inputs,
+ * headers, highlighted P/E), so the selected-row colour does not cover it.
+ * Zebra stripes are left out: the selected row may cover them.
+ */
+function keepCellColours(GC: any, sheet: any, rowCount: number, colCount: number): any[] {
+  const rangesByColour = new Map<string, any[]>()
+  for (let row = 0; row < rowCount; row++) {
+    let runStart = -1
+    let runColour = ''
+    // Merge runs of same-coloured cells in a row into one range
+    for (let col = 0; col <= colCount; col++) {
+      const colour = col < colCount ? sheet.getCell(row, col).backColor() : undefined
+      const own = colour && colour !== SPREADJS_COLORS.STRIPE ? colour : ''
+      if (own === runColour) continue
+      if (runColour) {
+        const ranges = rangesByColour.get(runColour) ?? []
+        ranges.push(new GC.Spread.Sheets.Range(row, runStart, 1, col - runStart))
+        rangesByColour.set(runColour, ranges)
+      }
+      runStart = col
+      runColour = own
+    }
+  }
+
+  return [...rangesByColour].map(([colour, ranges]) => {
+    const style = new GC.Spread.Sheets.Style()
+    style.backColor = colour
+    return sheet.conditionalFormats.addFormulaRule('=TRUE', style, ranges)
+  })
 }
 
 // ============ CELL STYLING (OPTIMIZED) ============

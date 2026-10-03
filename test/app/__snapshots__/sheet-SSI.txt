@@ -70,7 +70,7 @@ F9 | =IF(F5<>0, F6/F5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRi
 K9 | "% TT Doanh thu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M9 | 0 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
-N9 | "Dự phóng · YoY các quý (F), sửa riêng từng quý ở dòng TT" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
+N9 | "Dự phóng · YoY, sửa riêng ở dòng TT" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
 O9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A10 | "Biên LN ròng (%)" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -94,7 +94,7 @@ F11 | =IF(AVERAGE(R27:U27)<>0, F8 * 1000000 / AVERAGE(R27:U27), 0) | {"borderBot
 K11 | "% TT LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M11 | 0 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
-N11 | "Dự phóng · YoY các quý (F), sửa riêng từng quý ở dòng TT" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
+N11 | "Dự phóng · YoY, sửa riêng ở dòng TT" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
 O11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A12 | "P/E (Vietstock)" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -721,88 +721,240 @@ S51 | =IF(AND(ISNUMBER($A51), ISNUMBER(S31)), $A51 * S31, "-") | {"backColor":"#
 T51 | =IF(AND(ISNUMBER($A51), ISNUMBER(T31)), $A51 * T31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U51 | =IF(AND(ISNUMBER($A51), ISNUMBER(U31)), $A51 * U31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 cf rowState:active {"backColor":"#EEF6FF"} rows 0+53 cols 0+30
+cf A21 formula =TRUE {"backColor":"#E2E8F0"}
+cf A4 formula =TRUE {"backColor":"#E2E8F0"}
+cf A40 formula =TRUE {"backColor":"#E2E8F0"}
+cf A41 formula =TRUE {"backColor":"#E2E8F0"}
+cf A44 formula =TRUE {"backColor":"#FEF3C7"}
+cf A45 formula =TRUE {"backColor":"#FEF3C7"}
+cf A46 formula =TRUE {"backColor":"#FEF3C7"}
+cf A47 formula =TRUE {"backColor":"#FEF3C7"}
 cf B16 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf B17 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf B21 formula =TRUE {"backColor":"#F1F5F9"}
+cf B22 formula =TRUE {"backColor":"#F1F5F9"}
 cf B35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf B36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf B4 formula =TRUE {"backColor":"#F1F5F9"}
+cf B40 formula =TRUE {"backColor":"#F1F5F9"}
+cf B41 formula =TRUE {"backColor":"#F1F5F9"}
+cf B44 formula =TRUE {"backColor":"#FEF3C7"}
+cf B45 formula =TRUE {"backColor":"#FEF3C7"}
+cf B46 formula =TRUE {"backColor":"#FEF3C7"}
+cf B47 formula =TRUE {"backColor":"#FEF3C7"}
 cf C16 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf C17 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf C22 formula =TRUE {"backColor":"#F1F5F9"}
 cf C35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf C36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf C4 formula =TRUE {"backColor":"#F1F5F9"}
+cf C41 formula =TRUE {"backColor":"#F1F5F9"}
+cf C44 formula =TRUE {"backColor":"#FEF3C7"}
+cf C45 formula =TRUE {"backColor":"#FEF3C7"}
+cf C46 formula =TRUE {"backColor":"#FEF3C7"}
+cf C47 formula =TRUE {"backColor":"#FEF3C7"}
 cf D16 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf D17 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf D22 formula =TRUE {"backColor":"#F1F5F9"}
 cf D35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf D36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf D4 formula =TRUE {"backColor":"#F1F5F9"}
+cf D41 formula =TRUE {"backColor":"#F1F5F9"}
+cf D44 formula =TRUE {"backColor":"#FEF3C7"}
+cf D45 formula =TRUE {"backColor":"#FEF3C7"}
+cf D46 formula =TRUE {"backColor":"#FEF3C7"}
+cf D47 formula =TRUE {"backColor":"#FEF3C7"}
 cf E16 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf E17 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf E22 formula =TRUE {"backColor":"#F1F5F9"}
 cf E35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf E36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf E4 formula =TRUE {"backColor":"#F1F5F9"}
+cf E41 formula =TRUE {"backColor":"#F1F5F9"}
+cf E44 formula =TRUE {"backColor":"#FEF3C7"}
+cf E45 formula =TRUE {"backColor":"#FEF3C7"}
+cf E46 formula =TRUE {"backColor":"#FEF3C7"}
+cf E47 formula =TRUE {"backColor":"#FEF3C7"}
 cf F16 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf F17 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf F21 formula =TRUE {"backColor":"#F1F5F9"}
+cf F22 formula =TRUE {"backColor":"#F1F5F9"}
 cf F28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf F29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf F35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf F36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf F4 formula =TRUE {"backColor":"#FCE7F3"}
+cf F40 formula =TRUE {"backColor":"#F1F5F9"}
+cf F41 formula =TRUE {"backColor":"#F1F5F9"}
+cf F44 formula =TRUE {"backColor":"#FEF3C7"}
+cf F45 formula =TRUE {"backColor":"#FEF3C7"}
+cf F46 formula =TRUE {"backColor":"#FEF3C7"}
+cf F47 formula =TRUE {"backColor":"#FEF3C7"}
+cf G22 formula =TRUE {"backColor":"#F1F5F9"}
 cf G28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf G29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf G35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf G36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf G41 formula =TRUE {"backColor":"#F1F5F9"}
+cf G44 formula =TRUE {"backColor":"#FEF3C7"}
+cf G45 formula =TRUE {"backColor":"#FEF3C7"}
+cf G46 formula =TRUE {"backColor":"#FEF3C7"}
+cf G47 formula =TRUE {"backColor":"#FEF3C7"}
+cf H22 formula =TRUE {"backColor":"#F1F5F9"}
 cf H28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf H29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf H35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf H36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf H41 formula =TRUE {"backColor":"#F1F5F9"}
+cf H44 formula =TRUE {"backColor":"#FEF3C7"}
+cf H45 formula =TRUE {"backColor":"#FEF3C7"}
+cf H46 formula =TRUE {"backColor":"#FEF3C7"}
+cf H47 formula =TRUE {"backColor":"#FEF3C7"}
+cf I22 formula =TRUE {"backColor":"#F1F5F9"}
 cf I28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf I29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf I35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf I36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf I41 formula =TRUE {"backColor":"#F1F5F9"}
+cf I44 formula =TRUE {"backColor":"#FEF3C7"}
+cf I45 formula =TRUE {"backColor":"#FEF3C7"}
+cf I46 formula =TRUE {"backColor":"#FEF3C7"}
+cf I47 formula =TRUE {"backColor":"#FEF3C7"}
+cf J21 formula =TRUE {"backColor":"#F1F5F9"}
+cf J22 formula =TRUE {"backColor":"#F1F5F9"}
 cf J28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf J29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf J35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf J36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf J40 formula =TRUE {"backColor":"#F1F5F9"}
+cf J41 formula =TRUE {"backColor":"#F1F5F9"}
+cf J44 formula =TRUE {"backColor":"#FEF3C7"}
+cf J45 formula =TRUE {"backColor":"#FEF3C7"}
+cf J46 formula =TRUE {"backColor":"#FEF3C7"}
+cf J47 formula =TRUE {"backColor":"#FEF3C7"}
+cf K22 formula =TRUE {"backColor":"#F1F5F9"}
 cf K28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf K29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf K35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf K36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf K4 formula =TRUE {"backColor":"#E2E8F0"}
+cf K41 formula =TRUE {"backColor":"#F1F5F9"}
+cf K44 formula =TRUE {"backColor":"#FEF3C7"}
+cf K45 formula =TRUE {"backColor":"#FEF3C7"}
+cf K46 formula =TRUE {"backColor":"#FEF3C7"}
+cf K47 formula =TRUE {"backColor":"#FEF3C7"}
+cf L22 formula =TRUE {"backColor":"#F1F5F9"}
 cf L28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf L29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf L35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf L36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf L41 formula =TRUE {"backColor":"#F1F5F9"}
+cf L44 formula =TRUE {"backColor":"#FEF3C7"}
+cf L45 formula =TRUE {"backColor":"#FEF3C7"}
+cf L46 formula =TRUE {"backColor":"#FEF3C7"}
+cf L47 formula =TRUE {"backColor":"#FEF3C7"}
+cf M10 formula =TRUE {"backColor":"#FEF9C3"}
+cf M11 formula =TRUE {"backColor":"#FEF9C3"}
+cf M22 formula =TRUE {"backColor":"#F1F5F9"}
 cf M28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf M29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf M35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf M36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf M41 formula =TRUE {"backColor":"#F1F5F9"}
+cf M44 formula =TRUE {"backColor":"#FEF3C7"}
+cf M45 formula =TRUE {"backColor":"#FEF3C7"}
+cf M46 formula =TRUE {"backColor":"#FEF3C7"}
+cf M47 formula =TRUE {"backColor":"#FEF3C7"}
+cf M5 formula =TRUE {"backColor":"#FEF9C3"}
+cf M6 formula =TRUE {"backColor":"#FEF9C3"}
+cf M7 formula =TRUE {"backColor":"#F1F5F9"}
+cf M8 formula =TRUE {"backColor":"#F1F5F9"}
+cf M9 formula =TRUE {"backColor":"#FEF9C3"}
+cf N21 formula =TRUE {"backColor":"#F1F5F9"}
+cf N22 formula =TRUE {"backColor":"#F1F5F9"}
 cf N28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf N29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf N35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf N36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf N4 formula =TRUE {"backColor":"#E2E8F0"}
+cf N40 formula =TRUE {"backColor":"#F1F5F9"}
+cf N41 formula =TRUE {"backColor":"#F1F5F9"}
+cf N44 formula =TRUE {"backColor":"#FEF3C7"}
+cf N45 formula =TRUE {"backColor":"#FEF3C7"}
+cf N46 formula =TRUE {"backColor":"#FEF3C7"}
+cf N47 formula =TRUE {"backColor":"#FEF3C7"}
+cf O22 formula =TRUE {"backColor":"#F1F5F9"}
 cf O28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf O29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf O35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf O36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf O41 formula =TRUE {"backColor":"#F1F5F9"}
+cf O44 formula =TRUE {"backColor":"#FEF3C7"}
+cf O45 formula =TRUE {"backColor":"#FEF3C7"}
+cf O46 formula =TRUE {"backColor":"#FEF3C7"}
+cf O47 formula =TRUE {"backColor":"#FEF3C7"}
+cf P22 formula =TRUE {"backColor":"#F1F5F9"}
 cf P28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf P29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf P35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf P36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf P41 formula =TRUE {"backColor":"#F1F5F9"}
+cf P44 formula =TRUE {"backColor":"#FEF3C7"}
+cf P45 formula =TRUE {"backColor":"#FEF3C7"}
+cf P46 formula =TRUE {"backColor":"#FEF3C7"}
+cf P47 formula =TRUE {"backColor":"#FEF3C7"}
+cf Q22 formula =TRUE {"backColor":"#F1F5F9"}
 cf Q28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf Q29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf Q35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf Q36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf Q41 formula =TRUE {"backColor":"#F1F5F9"}
+cf Q44 formula =TRUE {"backColor":"#FEF3C7"}
+cf Q45 formula =TRUE {"backColor":"#FEF3C7"}
+cf Q46 formula =TRUE {"backColor":"#FEF3C7"}
+cf Q47 formula =TRUE {"backColor":"#FEF3C7"}
+cf R21 formula =TRUE {"backColor":"#FCE7F3"}
+cf R22 formula =TRUE {"backColor":"#FCE7F3"}
 cf R28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf R29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf R35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf R36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf R35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf R36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf R40 formula =TRUE {"backColor":"#FCE7F3"}
+cf R41 formula =TRUE {"backColor":"#FCE7F3"}
+cf R44 formula =TRUE {"backColor":"#FEF3C7"}
+cf R45 formula =TRUE {"backColor":"#FEF3C7"}
+cf R46 formula =TRUE {"backColor":"#FEF3C7"}
+cf R47 formula =TRUE {"backColor":"#FEF3C7"}
+cf S22 formula =TRUE {"backColor":"#FCE7F3"}
 cf S28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf S29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf S35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf S36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf S35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf S36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf S41 formula =TRUE {"backColor":"#FCE7F3"}
+cf S44 formula =TRUE {"backColor":"#FEF3C7"}
+cf S45 formula =TRUE {"backColor":"#FEF3C7"}
+cf S46 formula =TRUE {"backColor":"#FEF3C7"}
+cf S47 formula =TRUE {"backColor":"#FEF3C7"}
+cf T22 formula =TRUE {"backColor":"#FCE7F3"}
 cf T28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf T29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf T35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf T36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf T35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf T36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf T41 formula =TRUE {"backColor":"#FCE7F3"}
+cf T44 formula =TRUE {"backColor":"#FEF3C7"}
+cf T45 formula =TRUE {"backColor":"#FEF3C7"}
+cf T46 formula =TRUE {"backColor":"#FEF3C7"}
+cf T47 formula =TRUE {"backColor":"#FEF3C7"}
+cf U22 formula =TRUE {"backColor":"#FCE7F3"}
 cf U28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf U29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf U35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-cf U36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+cf U35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf U36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf U41 formula =TRUE {"backColor":"#FCE7F3"}
+cf U44 formula =TRUE {"backColor":"#FEF3C7"}
+cf U45 formula =TRUE {"backColor":"#FEF3C7"}
+cf U46 formula =TRUE {"backColor":"#FEF3C7"}
+cf U47 formula =TRUE {"backColor":"#FEF3C7"}
 spans A21+2x1 B21+1x4 B40+1x4 F21+1x4 F40+1x4 J21+1x4 J40+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N10+1x3 N11+1x3 N21+1x4 N4+1x3 N40+1x4 N5+1x3 N6+1x3 N7+1x3 N8+1x3 N9+1x3 R21+1x4 R40+1x4
 rowHeights [[0,50],[3,60],[20,30],[21,50],[39,30],[40,50]]
 colWidths [[0,150],[1,110],[2,110],[3,110],[4,110],[5,110],[6,110],[7,110],[8,110],[9,110],[10,110],[11,110],[12,110],[13,110],[14,110],[15,110],[16,110],[17,110],[18,110],[19,110],[20,110]]

@@ -20,10 +20,10 @@ const COMMON_INPUT_NOTES: StockProfile['inputNotes'] = {
   max52W: { kind: 'actual', text: 'Thực tế (Vietstock)' },
   min52W: { kind: 'actual', text: 'Thực tế (Vietstock)' },
   // Forecast quarters (F) = same quarter last year × (1 + %), unless the quarter has its own % typed in its growth row
-  revenueGrowth: { kind: 'forecast', text: 'Dự phóng · YoY các quý (F), sửa riêng từng quý ở dòng TT' },
+  revenueGrowth: { kind: 'forecast', text: 'Dự phóng · YoY, sửa riêng ở dòng TT' },
   // Gross profit of forecast quarters = revenue × %
   grossMargin: { kind: 'forecast', text: 'Dự phóng · biên LN gộp các quý (F)' },
-  netProfitGrowth: { kind: 'forecast', text: 'Dự phóng · YoY các quý (F), sửa riêng từng quý ở dòng TT' },
+  netProfitGrowth: { kind: 'forecast', text: 'Dự phóng · YoY, sửa riêng ở dòng TT' },
 }
 
 /** For profiles whose gross profit row is reported only, never forecast */
