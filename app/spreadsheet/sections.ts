@@ -252,7 +252,9 @@ export function buildQuarterlyTable(
 
 /**
  * Annual cells computed from the quarterly table: always for the profile's
- * sum rows, and for forecast years also net profit, EPS, P/E and ROS.
+ * sum rows; for forecast years also revenue and net profit (sum of the 4
+ * quarters, so a year in progress combines reported and forecast quarters),
+ * EPS (net profit / average shares of the 4 quarters), P/E and ROS.
  */
 export function linkAnnualToQuarterly(
   ctx: SheetContext,
@@ -281,9 +283,16 @@ export function linkAnnualToQuarterly(
     // Historical years keep the reported figures
     if (!yearQuarters.some(q => q.isForecast)) continue
 
+    sumOfQuarters('revenue')
     sumOfQuarters('netProfit')
 
-    sumOfQuarters('eps')
+    // Weighted by quarter, as basic EPS uses the average number of shares of the year
+    const shares = GC.Spread.Sheets.CalcEngine.rangeToFormula(
+      sheet.getRange(quarterlyRows.shares!, quarterCols[0]!, 1, 4)
+    )
+    const profit = getCellAddr(GC, sheet, annualRows.netProfit!, annualCol)
+    sheet.setFormula(annualRows.eps!, annualCol, `IF(AVERAGE(${shares})<>0, ${profit} * 1000000 / AVERAGE(${shares}), 0)`)
+    sheet.setFormatter(annualRows.eps!, annualCol, '#,##0')
     applyBorder(GC, sheet, annualRows.eps!, annualCol)
 
     const epsAddr = getCellAddr(GC, sheet, annualRows.eps!, annualCol)

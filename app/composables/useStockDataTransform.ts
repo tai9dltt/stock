@@ -286,7 +286,8 @@ export function buildAnalysisState(
   const saved = data.analysis;
   if (saved) {
     // Shares per quarter are the only per-period figures the user enters
-    if (saved.sharesByQuarter) state.quarterlyData = { outstandingShares: structuredClone(saved.sharesByQuarter) };
+    const overrides = sharesOverrides(saved.sharesByQuarter, saved.outstandingShares);
+    if (overrides) state.quarterlyData = { outstandingShares: overrides };
     if (saved.peScenarios?.length) state.peScenarios = [...saved.peScenarios];
     if (saved.outstandingShares && !state.outstandingShares) state.outstandingShares = saved.outstandingShares;
     if (saved.currentPrice && !state.currentPrice) state.currentPrice = saved.currentPrice;
@@ -356,11 +357,29 @@ export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): Save
     grossMargin: state.grossMargin,
     netProfitGrowth: state.netProfitGrowth,
     peScenarios: state.peScenarios.length > 0 ? state.peScenarios : null,
-    sharesByQuarter: state.quarterlyData['outstandingShares'] ?? null,
+    sharesByQuarter: sharesOverrides(state.quarterlyData['outstandingShares'], state.outstandingShares),
     currentPrice: state.currentPrice || null,
     outstandingShares: state.outstandingShares || null,
     max52W: state.max52W || null,
     min52W: state.min52W || null,
     ...plan,
   };
+}
+
+/**
+ * Quarters whose share count differs from the default (the current outstanding
+ * shares). Equal values are defaults the sheet showed, not user edits; keeping
+ * them would freeze old counts, e.g. MBB before its stock dividend.
+ */
+function sharesOverrides(
+  sharesByQuarter: Record<string, Record<string, number>> | null | undefined,
+  defaultShares: number | null | undefined
+): Record<string, Record<string, number>> | null {
+  const result: Record<string, Record<string, number>> = {};
+  for (const [year, quarters] of Object.entries(sharesByQuarter ?? {})) {
+    for (const [quarter, shares] of Object.entries(quarters ?? {})) {
+      if (shares !== defaultShares) (result[year] ??= {})[quarter] = shares;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : null;
 }

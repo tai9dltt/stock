@@ -98,3 +98,30 @@ describe('nextForecastYear', () => {
     expect(nextForecastYear(annual, quarterly, [])).toBe('2027')
   })
 })
+
+describe('shares per quarter', () => {
+  const crawled = { metrics: { REVENUE_NET: { '2025_Q1': '100' } }, yearlyMetrics: {} }
+  const plan = { noteHtml: '', entryPrice: null, targetPrice: null, stopLoss: null }
+
+  it('saves only quarters that differ from the current share count', () => {
+    const state = buildAnalysisState('MBB', crawled, null, '2026-10-03')
+    state.outstandingShares = 10_000
+    state.quarterlyData['outstandingShares'] = { 2025: { Q1: 8_000, Q2: 10_000 }, 2026: { Q1: 10_000 } }
+
+    expect(toSavePayload(state, plan).sharesByQuarter).toEqual({ 2025: { Q1: 8_000 } })
+  })
+
+  it('ignores share counts saved as defaults, so forecasts use the current count', () => {
+    // Older saves stored every quarter, all equal to the share count at that time
+    const analysis = {
+      ...toSavePayload(buildAnalysisState('MBB', crawled, null, ''), plan),
+      outstandingShares: 8_000,
+      sharesByQuarter: { 2026: { Q1: 8_000, Q2: 8_000 }, 2025: { Q4: 7_500 } },
+    }
+    const live = { lastPrice: 1, outstandingShares: 10_000, listedShares: 0, min52W: 0, max52W: 0, vol52W: 0 }
+    const state = buildAnalysisState('MBB', { ...crawled, analysis }, live, '2026-10-03')
+
+    expect(state.outstandingShares).toBe(10_000)
+    expect(state.quarterlyData['outstandingShares']).toEqual({ 2025: { Q4: 7_500 } })
+  })
+})

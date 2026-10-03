@@ -15,7 +15,7 @@ B5 | 36023122 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin",
 C5 | 38683848 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D5 | 41152219 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 E5 | 51610117 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F5 | =E5 * (1 + M9) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F5 | =R21 + S21 + T21 + U21 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K5 | "Giá cổ phiếu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M5 | 25000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -60,7 +60,7 @@ B10 | 4328 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 C10 | 4265 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D10 | 4284 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 E10 | 3980 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F10 | =R27 + S27 + T27 + U27 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F10 | =IF(AVERAGE(R24:U24)<>0, F7 * 1000000 / AVERAGE(R24:U24), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K10 | "% NIM" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M10 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
@@ -202,26 +202,26 @@ S23 | =O23 * (1 + M11) | {"borderBottom":"thin","borderLeft":"thin","borderRight
 T23 | =P23 * (1 + M11) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 U23 | =Q23 * (1 + M11) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
 A24 | "KL CP lưu hành" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-B24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-C24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-D24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-E24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-F24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-G24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-H24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-I24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-J24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-K24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-L24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-M24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-N24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-O24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-P24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-Q24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-R24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-S24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-T24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-U24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+B24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+C24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+D24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+E24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+F24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+G24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+H24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+I24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+J24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+K24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+L24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+M24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+N24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+O24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+P24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+Q24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+R24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+S24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+T24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+U24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
 A25 | "Biên LN ròng (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B25 | =IF(B21<>0, B23/B21, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 C25 | =IF(C21<>0, C23/C21, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
@@ -302,10 +302,10 @@ N28 | 4516 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 O28 | 4331 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 P28 | 4051 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 Q28 | 3980 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
-R28 | =SUM(O27:R27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-S28 | =SUM(P27:S27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-T28 | =SUM(Q27:T27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-U28 | =SUM(R27:U27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
+R28 | =IF(R24<>0, SUM(O23:R23) * 1000000 / R24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+S28 | =IF(S24<>0, SUM(P23:S23) * 1000000 / S24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+T28 | =IF(T24<>0, SUM(Q23:T23) * 1000000 / T24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+U28 | =IF(U24<>0, SUM(R23:U23) * 1000000 / U24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
 A29 | "P/E" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B29 | 8.38 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 C29 | 5.73 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
@@ -323,10 +323,10 @@ N29 | 5.34 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 O29 | 5.96 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 P29 | 6.47 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 Q29 | 6.36 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
-R29 | =IF(SUM(O27:R27) <> 0, M5 / SUM(O27:R27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-S29 | =IF(SUM(P27:S27) <> 0, M5 / SUM(P27:S27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-T29 | =IF(SUM(Q27:T27) <> 0, M5 / SUM(Q27:T27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-U29 | =IF(SUM(R27:U27) <> 0, M5 / SUM(R27:U27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
+R29 | =IF(R28<>0, M5 / R28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+S29 | =IF(S28<>0, M5 / S28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+T29 | =IF(T28<>0, M5 / T28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+U29 | =IF(U28<>0, M5 / U28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
 A30 | "ROE (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B30 | 0.0702 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 C30 | 0.067 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}

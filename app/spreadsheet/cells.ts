@@ -145,13 +145,18 @@ export function quarterlyEps(): Renderer {
   }
 }
 
-function lastFourQuartersEps(cell: CellContext): string {
+/** This quarter and the 3 before it, e.g. "F27:I27" */
+function lastFourQuarters(cell: CellContext, key: RowKey): string {
   return cell.GC.Spread.Sheets.CalcEngine.rangeToFormula(
-    cell.sheet.getRange(rowOf(cell, 'eps'), cell.col - 3, 1, 4)
+    cell.sheet.getRange(rowOf(cell, key), cell.col - 3, 1, 4)
   )
 }
 
-/** Trailing 4-quarter EPS: reported for historical quarters, else SUM of the last 4 quarterly EPS */
+/**
+ * Trailing 4-quarter EPS: reported for historical quarters, else
+ * net profit of the last 4 quarters (million VND) × 1,000,000 / this quarter's shares.
+ * (Adding up quarterly EPS would mix share counts before and after stock dividends.)
+ */
 export function trailingEps(): Renderer {
   return (cell) => {
     // Vietstock reports TTM EPS under both 'epsTtm' and 'eps'
@@ -160,7 +165,12 @@ export function trailingEps(): Renderer {
     if (!cell.isForecast && reportedTtm !== undefined) {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'epsTtm'), cell.col, reportedTtm, { format: AMOUNT, border: true })
     } else if (cell.col >= 4) {
-      setFormula(cell, 'epsTtm', `SUM(${lastFourQuartersEps(cell)})`, AMOUNT)
+      const sharesAddr = addrOf(cell, 'shares')
+      setFormula(
+        cell, 'epsTtm',
+        `IF(${sharesAddr}<>0, SUM(${lastFourQuarters(cell, 'netProfit')}) * 1000000 / ${sharesAddr}, 0)`,
+        AMOUNT
+      )
     }
     border(cell, 'epsTtm')
   }
@@ -177,8 +187,8 @@ export function quarterlyPe(reportedInForecast: boolean): Renderer {
     if (isPresent(pe) && (reportedInForecast || !cell.isForecast)) {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'pe'), cell.col, pe, { format: '0.00', border: true })
     } else if (cell.isForecast && cell.col >= 4) {
-      const eps = lastFourQuartersEps(cell)
-      setFormula(cell, 'pe', `IF(SUM(${eps}) <> 0, ${cell.refs.currentPrice} / SUM(${eps}), 0)`, '0.00')
+      const epsTtm = addrOf(cell, 'epsTtm')
+      setFormula(cell, 'pe', `IF(${epsTtm}<>0, ${cell.refs.currentPrice} / ${epsTtm}, 0)`, '0.00')
     }
     border(cell, 'pe')
   }

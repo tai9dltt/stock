@@ -16,8 +16,8 @@ B5 | 36023122 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin",
 C5 | 38683848 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D5 | 41152219 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 E5 | 51610117 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F5 | =E5 * (1 + M9) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G5 | =F5 * (1 + M9) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F5 | =R21 + S21 + T21 + U21 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G5 | =V21 + W21 + X21 + Y21 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K5 | "Giá cổ phiếu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M5 | 25000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -66,8 +66,8 @@ B10 | 4328 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 C10 | 4265 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D10 | 4284 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 E10 | 3980 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F10 | =R27 + S27 + T27 + U27 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G10 | =V27 + W27 + X27 + Y27 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F10 | =IF(AVERAGE(R24:U24)<>0, F7 * 1000000 / AVERAGE(R24:U24), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G10 | =IF(AVERAGE(V24:Y24)<>0, G7 * 1000000 / AVERAGE(V24:Y24), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K10 | "% NIM" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M10 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
@@ -234,26 +234,26 @@ W23 | =S23 * (1 + M11) | {"borderBottom":"thin","borderLeft":"thin","borderRight
 X23 | =T23 * (1 + M11) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 Y23 | =U23 * (1 + M11) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
 A24 | "KL CP lưu hành" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-B24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-C24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-D24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-E24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-F24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-G24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-H24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-I24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-J24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-K24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-L24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-M24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-N24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-O24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-P24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-Q24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
-R24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-S24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-T24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-U24 | 8054999909 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+B24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+C24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+D24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+E24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+F24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+G24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+H24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+I24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+J24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+K24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+L24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+M24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+N24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+O24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+P24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+Q24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
+R24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+S24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+T24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+U24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","locked":false}
 V24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
 W24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
 X24 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -350,14 +350,14 @@ N28 | 4516 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 O28 | 4331 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 P28 | 4051 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 Q28 | 3980 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
-R28 | =SUM(O27:R27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-S28 | =SUM(P27:S27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-T28 | =SUM(Q27:T27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-U28 | =SUM(R27:U27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
-V28 | =SUM(S27:V27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-W28 | =SUM(T27:W27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-X28 | =SUM(U27:X27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-Y28 | =SUM(V27:Y27) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
+R28 | =IF(R24<>0, SUM(O23:R23) * 1000000 / R24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+S28 | =IF(S24<>0, SUM(P23:S23) * 1000000 / S24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+T28 | =IF(T24<>0, SUM(Q23:T23) * 1000000 / T24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+U28 | =IF(U24<>0, SUM(R23:U23) * 1000000 / U24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
+V28 | =IF(V24<>0, SUM(S23:V23) * 1000000 / V24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+W28 | =IF(W24<>0, SUM(T23:W23) * 1000000 / W24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+X28 | =IF(X24<>0, SUM(U23:X23) * 1000000 / X24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+Y28 | =IF(Y24<>0, SUM(V23:Y23) * 1000000 / Y24, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
 A29 | "P/E" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B29 | 8.38 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 C29 | 5.73 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
@@ -375,14 +375,14 @@ N29 | 5.34 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 O29 | 5.96 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 P29 | 6.47 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 Q29 | 6.36 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
-R29 | =IF(SUM(O27:R27) <> 0, M5 / SUM(O27:R27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-S29 | =IF(SUM(P27:S27) <> 0, M5 / SUM(P27:S27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-T29 | =IF(SUM(Q27:T27) <> 0, M5 / SUM(Q27:T27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-U29 | =IF(SUM(R27:U27) <> 0, M5 / SUM(R27:U27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
-V29 | =IF(SUM(S27:V27) <> 0, M5 / SUM(S27:V27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-W29 | =IF(SUM(T27:W27) <> 0, M5 / SUM(T27:W27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-X29 | =IF(SUM(U27:X27) <> 0, M5 / SUM(U27:X27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-Y29 | =IF(SUM(V27:Y27) <> 0, M5 / SUM(V27:Y27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
+R29 | =IF(R28<>0, M5 / R28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+S29 | =IF(S28<>0, M5 / S28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+T29 | =IF(T28<>0, M5 / T28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+U29 | =IF(U28<>0, M5 / U28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
+V29 | =IF(V28<>0, M5 / V28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+W29 | =IF(W28<>0, M5 / W28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+X29 | =IF(X28<>0, M5 / X28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+Y29 | =IF(Y28<>0, M5 / Y28, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
 A30 | "ROE (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B30 | 0.0702 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 C30 | 0.067 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}

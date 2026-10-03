@@ -15,7 +15,7 @@ B5 | 6335823 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","
 C5 | 7157693 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D5 | 8529280 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 E5 | 12930737 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F5 | =E5 * (1 + M9) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F5 | =R23 + S23 + T23 + U23 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K5 | "Giá cổ phiếu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M5 | 25000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -69,7 +69,7 @@ B11 | 1427 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 C11 | 1531 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D11 | 1772 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 E11 | 2053 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F11 | =R30 + S30 + T30 + U30 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F11 | =IF(AVERAGE(R27:U27)<>0, F8 * 1000000 / AVERAGE(R27:U27), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K11 | "% TT LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M11 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
@@ -335,10 +335,10 @@ N31 | 1707 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 O31 | 1669 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 P31 | 1912 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 Q31 | 2053 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
-R31 | =SUM(O30:R30) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-S31 | =SUM(P30:S30) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-T31 | =SUM(Q30:T30) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-U31 | =SUM(R30:U30) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
+R31 | =IF(R27<>0, SUM(O26:R26) * 1000000 / R27, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+S31 | =IF(S27<>0, SUM(P26:S26) * 1000000 / S27, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+T31 | =IF(T27<>0, SUM(Q26:T26) * 1000000 / T27, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+U31 | =IF(U27<>0, SUM(R26:U26) * 1000000 / U27, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
 A32 | "P/E" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B32 | 11.56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 C32 | 6.06 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
@@ -356,10 +356,10 @@ N32 | 15.24 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","b
 O32 | 14.8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 P32 | 20.17 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 Q32 | 14.74 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
-R32 | =IF(SUM(O30:R30) <> 0, M5 / SUM(O30:R30), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-S32 | =IF(SUM(P30:S30) <> 0, M5 / SUM(P30:S30), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-T32 | =IF(SUM(Q30:T30) <> 0, M5 / SUM(Q30:T30), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-U32 | =IF(SUM(R30:U30) <> 0, M5 / SUM(R30:U30), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
+R32 | =IF(R31<>0, M5 / R31, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+S32 | =IF(S31<>0, M5 / S31, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+T32 | =IF(T31<>0, M5 / T31, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+U32 | =IF(U31<>0, M5 / U31, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00"}
 A33 | "ROE (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B33 | 0.0482 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 C33 | 0.0286 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
