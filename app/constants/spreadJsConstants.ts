@@ -14,7 +14,9 @@ export const SPREADJS_COLORS = {
   INPUT: '#FEF9C3', // editable inputs
   DISPLAY: '#F1F5F9',
   /** Every other row of the tables, to follow a row across many columns */
-  STRIPE: '#EEF2F6', // read-only inputs
+  STRIPE: '#EEF2F6',
+  /** Outline of the same period last year as the selected cell */
+  COMPARISON: '#F59E0B', // read-only inputs
   DEFAULT_HIGHLIGHT: '#FEF3C7', // default P/E row in the valuation table
   TEXT_RED: '#B91C1C', // emphasized row labels
   TITLE: '#0F172A',

@@ -139,4 +139,16 @@ export interface AnalysisSheetLayout {
   valuationStartRow: number
   /** Quarterly growth rows, whose forecast cells take per-quarter growth */
   growthRows: Record<GrowthKind, number>
+  /** Data area of the annual and quarterly tables, for same-period comparisons */
+  periodTables: PeriodTable[]
+}
+
+/** Data cells of a table whose columns are periods */
+export interface PeriodTable {
+  firstRow: number
+  lastRow: number
+  firstCol: number
+  lastCol: number
+  /** Columns back to the same period a year earlier (1 for years, 4 for quarters) */
+  lag: number
 }

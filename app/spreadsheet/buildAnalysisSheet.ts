@@ -2,7 +2,7 @@
  * Build the whole analysis sheet for one stock.
  */
 
-import type { AnalysisSheetData, AnalysisSheetLayout, SheetContext } from './types'
+import type { AnalysisSheetData, AnalysisSheetLayout, PeriodTable, SheetContext } from './types'
 import { ANNUAL_TABLE, INPUT_AREA, QUARTERLY_TABLE, VALUATION_TABLE } from '~/constants/spreadJsConstants'
 import { detectStockType, STOCK_PROFILES } from './profiles'
 import {
@@ -30,10 +30,24 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     Math.max(0, ...Object.values(annual.colMap)) + 1,
     30
   )
+  const annualTable: PeriodTable = {
+    firstRow: ANNUAL_TABLE.START_ROW + 1,
+    lastRow: annual.lastRow,
+    firstCol: 1,
+    lastCol: Math.max(0, ...Object.values(annual.colMap)),
+    lag: 1,
+  }
+  const quarterlyTable: PeriodTable = {
+    firstRow: Math.min(...Object.values(quarterly.rows)),
+    lastRow: quarterly.lastRow,
+    firstCol: quarterly.cols[0]?.col ?? 1,
+    lastCol: quarterly.nextCol - 1,
+    lag: 4,
+  }
+
   // Last: stripes only fill cells that have no colour of their own
-  const annualFirstRow = ANNUAL_TABLE.START_ROW + 1
-  stripeRows(ctx, annualFirstRow, annual.lastRow, Math.max(0, ...Object.values(annual.colMap)))
-  stripeRows(ctx, Math.min(...Object.values(quarterly.rows)), quarterly.lastRow, quarterly.nextCol - 1)
+  stripeRows(ctx, annualTable.firstRow, annualTable.lastRow, annualTable.lastCol)
+  stripeRows(ctx, quarterlyTable.firstRow, quarterlyTable.lastRow, quarterlyTable.lastCol)
   stripeRows(ctx, valuationStartRow + 2, valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS, quarterly.nextCol - 1)
 
   applyFinalStyling(ctx, maxCol, valuationStartRow)
@@ -44,5 +58,14 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     sharesRow: quarterly.rows.shares!,
     valuationStartRow,
     growthRows: { revenue: quarterly.rows.revGrowth!, netProfit: quarterly.rows.profitGrowth! },
+    periodTables: [annualTable, quarterlyTable],
   }
+}
+
+/** The same cell one year earlier (same quarter last year), if it is in the table */
+export function samePeriodLastYear(layout: AnalysisSheetLayout, row: number, col: number): { row: number; col: number } | null {
+  const table = layout.periodTables.find(t =>
+    row >= t.firstRow && row <= t.lastRow && col >= t.firstCol && col <= t.lastCol)
+  if (!table || col - table.lag < table.firstCol) return null
+  return { row, col: col - table.lag }
 }

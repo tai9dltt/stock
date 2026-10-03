@@ -5,10 +5,12 @@
 
 import { shallowRef } from 'vue';
 import type { AnalysisSheetData, AnalysisSheetLayout, GrowthKind } from '~/spreadsheet/types';
-import { buildAnalysisSheet } from '~/spreadsheet/buildAnalysisSheet';
+import { buildAnalysisSheet, samePeriodLastYear } from '~/spreadsheet/buildAnalysisSheet';
 import { styleGrowthInput } from '~/spreadsheet/cells';
 import { getCellAddr } from '~/utils/spreadjs';
-import { INPUT_AREA, INPUT_FIELDS, inputRow, VALUATION_TABLE, type InputFieldName } from '~/constants/spreadJsConstants';
+import {
+  INPUT_AREA, INPUT_FIELDS, inputRow, SPREADJS_COLORS, VALUATION_TABLE, type InputFieldName,
+} from '~/constants/spreadJsConstants';
 import { extractInputValues, extractPeValues, extractSharesPerQuarter } from '~/composables/useStockDataTransform';
 
 export interface SheetEdits {
@@ -63,6 +65,29 @@ export function useAnalysisSheet() {
 
   const isReady = () => !!spread.value && !!GC;
 
+  // Outline on the cell one year before the selected one
+  let comparisonRule: any = null;
+
+  function showComparisonCell(sheet: any) {
+    const current = layout.value;
+    if (!current) return;
+    const cfs = sheet.conditionalFormats;
+    if (comparisonRule) cfs.removeRule(comparisonRule);
+    comparisonRule = null;
+
+    const target = samePeriodLastYear(current, sheet.getActiveRowIndex(), sheet.getActiveColumnIndex());
+    if (!target) return;
+
+    const border = new GC.Spread.Sheets.LineBorder(SPREADJS_COLORS.COMPARISON, GC.Spread.Sheets.LineStyle.thick);
+    const style = new GC.Spread.Sheets.Style();
+    style.borderLeft = border;
+    style.borderTop = border;
+    style.borderRight = border;
+    style.borderBottom = border;
+    // Borders only, so the cell keeps its colours
+    comparisonRule = cfs.addFormulaRule('=TRUE', style, [new GC.Spread.Sheets.Range(target.row, target.col, 1, 1)]);
+  }
+
   function render(data: AnalysisSheetData) {
     if (!isReady()) return;
 
@@ -105,6 +130,11 @@ export function useAnalysisSheet() {
         for (let c = info.col; c < info.col + info.colCount; c++) syncGrowthCell(sheet, r, c);
       }
     });
+
+    // Selecting a period cell outlines the same period a year earlier
+    comparisonRule = null;
+    sheet.unbind(GC.Spread.Sheets.Events.SelectionChanged);
+    sheet.bind(GC.Spread.Sheets.Events.SelectionChanged, () => showComparisonCell(sheet));
 
     sheet.resumeCalcService(false);
     workbook.resumePaint();

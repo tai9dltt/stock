@@ -84,3 +84,23 @@ describe('growth typed for a forecast quarter', () => {
     expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \* \(1 \+ T35\) \|/)
   })
 })
+
+describe('same period last year', () => {
+  it('points a quarter to the same quarter a year earlier, a year to the year before', async () => {
+    const { samePeriodLastYear } = await import('~/spreadsheet/buildAnalysisSheet')
+    const { sheet } = createFakeSheet()
+    const layout = buildAnalysisSheet({ GC: FakeGC, spread: createFakeSpread(), sheet }, load('DGW', DGW))
+    const [annual, quarterly] = layout.periodTables
+
+    // Quarterly: 4 columns back; nothing before the first year
+    expect(samePeriodLastYear(layout, quarterly!.firstRow + 3, quarterly!.firstCol + 6))
+      .toEqual({ row: quarterly!.firstRow + 3, col: quarterly!.firstCol + 2 })
+    expect(samePeriodLastYear(layout, quarterly!.firstRow, quarterly!.firstCol + 3)).toBeNull()
+    // Annual: the column before
+    expect(samePeriodLastYear(layout, annual!.firstRow, 3)).toEqual({ row: annual!.firstRow, col: 2 })
+    expect(samePeriodLastYear(layout, annual!.firstRow, 1)).toBeNull()
+    // Outside the tables (labels, input area)
+    expect(samePeriodLastYear(layout, quarterly!.firstRow, 0)).toBeNull()
+    expect(samePeriodLastYear(layout, 8, 12)).toBeNull()
+  })
+})
