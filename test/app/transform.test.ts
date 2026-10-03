@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildAnalysisState, nextForecastYear, overlayAnnualMetrics, overlayQuarterlyMetrics, toSavePayload,
+  buildAnalysisState, nextForecastYear, overlayAnnualMetrics, overlayQuarterlyMetrics, sharesOverrides, toSavePayload,
 } from '~/composables/useStockDataTransform'
 
 describe('metric overlay priority', () => {
@@ -125,5 +125,18 @@ describe('shares per quarter', () => {
 
     expect(state.outstandingShares).toBe(10_000)
     expect(state.quarterlyData['outstandingShares']).toEqual({ 2025: { Q4: 7_500 } })
+  })
+
+  it('keeps only typed counts from the sheet, so a new share count reaches the other quarters', () => {
+    const state = buildAnalysisState('MBB', crawled, null, '2026-10-03')
+    state.outstandingShares = 10_000
+    // The sheet shows every quarter; only 2026 Q2 was typed
+    const shown = { 2026: { Q1: 10_000, Q2: 9_000, Q3: 10_000, Q4: 10_000 } }
+    state.quarterlyData['outstandingShares'] = sharesOverrides(shown, state.quarterlyData, state.outstandingShares) ?? {}
+    expect(state.quarterlyData['outstandingShares']).toEqual({ 2026: { Q2: 9_000 } })
+
+    // The share count changes later: nothing else is frozen at 10,000
+    state.outstandingShares = 11_000
+    expect(toSavePayload(state, plan).sharesByQuarter).toEqual({ 2026: { Q2: 9_000 } })
   })
 })

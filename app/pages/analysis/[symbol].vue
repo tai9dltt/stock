@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
 import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
 import type { InputFieldName } from '~/constants/spreadJsConstants';
-import { withForecastYearQuarters } from '~/composables/useStockDataTransform';
+import { sharesOverrides, withForecastYearQuarters } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
 import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
 import { preloadGoogleCharts } from '~/utils/googleCharts';
@@ -94,9 +94,22 @@ const initWorkbook = async (spread: any) => {
 };
 
 let renderTimer: ReturnType<typeof setTimeout> | null = null;
+// Set while state takes a value the sheet already shows (a cell the user typed)
+let sheetShowsState = false;
 const scheduleRender = () => {
+  if (sheetShowsState) return;
   if (renderTimer) clearTimeout(renderTimer);
   renderTimer = setTimeout(renderSheet, 100);
+};
+
+/** Change state to match the sheet, without rebuilding the sheet */
+const syncFromSheet = (change: () => void) => {
+  sheetShowsState = true;
+  change();
+  // State watchers run before the next tick
+  nextTick(() => {
+    sheetShowsState = false;
+  });
 };
 
 // Rebuild the sheet when a stock is (re)loaded or its figures change.
@@ -169,6 +182,14 @@ sheet.onGrowthEdited((kind, period, value) => {
   state.value.growthOverrides[kind] = value === null ? others : { ...others, [period]: value };
 });
 
+/** From the sheet: P/E scenarios or shares per quarter typed, kept over re-renders */
+sheet.onTableEdited(({ peValues, sharesPerQuarter }) => syncFromSheet(() => {
+  const s = state.value;
+  if (peValues) s.peScenarios = peValues;
+  // Only the counts the user typed; the others keep following their defaults
+  if (sharesPerQuarter) s.quarterlyData['outstandingShares'] = sharesOverrides(sharesPerQuarter, s.quarterlyData, s.outstandingShares) ?? {};
+}));
+
 // ============ ACTIONS ============
 
 const loadAnalysis = async () => {
@@ -183,8 +204,9 @@ const loadAnalysis = async () => {
   }
 };
 
+// New figures; unsaved assumptions and trading plan stay as they are
 const refreshData = async () => {
-  if (await analysis.crawl()) await loadAnalysis();
+  if (await analysis.crawl()) await analysis.load({ keepInputs: true });
 };
 
 const addYear = () => {

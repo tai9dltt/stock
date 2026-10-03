@@ -10,10 +10,12 @@ import type { StockData } from '~/types';
 import type { TradingPlan } from '~/composables/useStockDataTransform';
 import { crawlStockData, fetchTradingInfo, getStockData, saveStockAnalysis } from '~/services';
 import {
-  buildAnalysisState, createEmptyAnalysisState, nextForecastYear, toSavePayload,
+  buildAnalysisState, createEmptyAnalysisState, nextForecastYear, sharesOverrides, toSavePayload,
 } from '~/composables/useStockDataTransform';
 
 export type { TradingPlan } from '~/composables/useStockDataTransform';
+
+const NO_PLAN: TradingPlan = { noteHtml: '', entryPrice: null, targetPrice: null, stopLoss: null };
 
 export function useStockAnalysis(symbol: Ref<string>) {
   const toast = useToast();
@@ -39,7 +41,12 @@ export function useStockAnalysis(symbol: Ref<string>) {
     }
   }
 
-  async function load() {
+  /**
+   * Load the stock. With `keepInputs` (after a crawl) the figures are the new
+   * ones but the assumptions, overrides and added years the user has not
+   * saved yet are kept; "Đặt lại" still goes back to the saved analysis.
+   */
+  async function load(options: { keepInputs?: boolean } = {}) {
     if (!symbol.value) return;
 
     loadingStore.show('Đang tải dữ liệu...');
@@ -51,9 +58,23 @@ export function useStockAnalysis(symbol: Ref<string>) {
       const tradingInfo = await fetchLiveTradingInfo();
       const today = new Date().toISOString().split('T')[0]!;
 
-      state.value = buildAnalysisState(symbol.value, response.data, tradingInfo, today);
+      const loaded = buildAnalysisState(symbol.value, response.data, tradingInfo, today);
+      savedState = copy(loaded);
+      if (options.keepInputs) {
+        // The current inputs, read back as if they had been saved
+        const { symbol: _symbol, forecastYears, ...inputs } = toSavePayload(state.value, NO_PLAN);
+        const kept = buildAnalysisState(symbol.value, {
+          ...response.data,
+          analysis: { ...response.data.analysis, ...inputs },
+        }, tradingInfo, today);
+        for (const year of forecastYears) {
+          if (!kept.forecastYears.includes(year)) kept.forecastYears.push(year);
+        }
+        state.value = kept;
+      } else {
+        state.value = loaded;
+      }
       savedAnalysis.value = response.data.analysis ?? null;
-      keepSavedState();
     } catch (error) {
       console.error(error);
     } finally {
@@ -109,7 +130,11 @@ export function useStockAnalysis(symbol: Ref<string>) {
     if (edits) {
       Object.assign(s, edits.inputs);
       if (edits.peValues) s.peScenarios = edits.peValues;
-      if (edits.sharesPerQuarter) s.quarterlyData['outstandingShares'] = edits.sharesPerQuarter;
+      // Only the counts the user typed: the others keep following their
+      // defaults (derived per quarter, or the current outstanding shares)
+      if (edits.sharesPerQuarter) {
+        s.quarterlyData['outstandingShares'] = sharesOverrides(edits.sharesPerQuarter, s.quarterlyData, s.outstandingShares) ?? {};
+      }
     }
 
     loadingStore.show('Đang lưu dữ liệu...');

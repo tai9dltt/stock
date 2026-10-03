@@ -340,17 +340,19 @@ export function applyGrowthHighlightRange(
 
   const cfs = sheet.conditionalFormats
   const range = [new GC.Spread.Sheets.Range(row, startCol, 1, colCount)]
-  const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
+  // Numbers only: an empty growth ("") counts as greater than any number.
+  // Relative to the first cell of the range, like Excel.
+  const cell = relativeAddr(row, startCol)
   // Background only: the cell keeps its own borders
   // Green for > 20%
   const greenStyle = new GC.Spread.Sheets.Style()
   greenStyle.backColor = '#C6EFCE'
-  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${cell}>0.2)`, greenStyle, range)
 
   // Pink for < 0
   const pinkStyle = new GC.Spread.Sheets.Style()
   pinkStyle.backColor = '#FFC7CE'
-  cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${cell}<0)`, pinkStyle, range)
 }
 
 /** Column letters, e.g. 0 → "A", 26 → "AA" */

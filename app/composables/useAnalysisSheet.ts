@@ -26,6 +26,9 @@ export interface SheetEdits {
 /** A forecast quarter's growth was typed (value) or cleared (null) */
 type GrowthEditedCallback = (kind: GrowthKind, period: string, value: number | null) => void;
 
+/** P/E scenarios or shares per quarter were typed: their current values */
+type TableEditedCallback = (edits: Pick<SheetEdits, 'peValues' | 'sharesPerQuarter'>) => void;
+
 export function useAnalysisSheet() {
   let GC: any = null;
   const spread = shallowRef<any>(null);
@@ -33,6 +36,7 @@ export function useAnalysisSheet() {
   const INPUT_COL = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
   let onInputEdited: ((field: InputFieldName, value: number) => void) | null = null;
   let onGrowthEdited: GrowthEditedCallback | null = null;
+  let onTableEdited: TableEditedCallback | null = null;
 
   const GROWTH_INPUT: Record<GrowthKind, InputFieldName> = {
     revenue: 'revenueGrowth', grossMargin: 'grossMargin', netProfit: 'netProfitGrowth',
@@ -97,14 +101,36 @@ export function useAnalysisSheet() {
   // Labels of the P/E ladder levels of the rendered stock
   let peLabels = new Map<number, string>();
 
+  const isPeCell = (current: AnalysisSheetLayout, row: number, col: number) => {
+    const first = current.valuationStartRow + 2;
+    return col === 0 && row >= first && row < first + VALUATION_TABLE.TOTAL_ROWS;
+  };
+  const isSharesCell = (current: AnalysisSheetLayout, row: number, col: number) =>
+    row === current.sharesRow && current.quarterlyCols.some(c => c.col === col);
+
   /** A P/E scenario was typed: label it if it is a ladder level, else plain */
   function relabelPeCell(sheet: any, row: number, col: number) {
     const current = layout.value;
-    if (!current || col !== 0) return;
-    const first = current.valuationStartRow + 2;
-    if (row < first || row >= first + VALUATION_TABLE.TOTAL_ROWS) return;
+    if (!current || !isPeCell(current, row, col)) return;
     const value = sheet.getValue(row, col);
     sheet.setFormatter(row, col, peFormat(typeof value === 'number' ? value : undefined, peLabels));
+  }
+
+  /**
+   * P/E scenarios and shares typed into the sheet go to the page state right
+   * away, so a re-render (add a year, apply an input, ...) keeps them.
+   */
+  function reportTableEdits(sheet: any, cells: Array<[row: number, col: number]>) {
+    const current = layout.value;
+    if (!current || !onTableEdited) return;
+    const edits: Pick<SheetEdits, 'peValues' | 'sharesPerQuarter'> = {};
+    if (cells.some(([r, c]) => isPeCell(current, r, c))) {
+      edits.peValues = extractPeValues(sheet, current.valuationStartRow + 2, VALUATION_TABLE.TOTAL_ROWS);
+    }
+    if (cells.some(([r, c]) => isSharesCell(current, r, c))) {
+      edits.sharesPerQuarter = extractSharesPerQuarter(sheet, current.sharesRow, current.quarterlyCols);
+    }
+    if (edits.peValues || edits.sharesPerQuarter) onTableEdited(edits);
   }
 
   function render(data: AnalysisSheetData) {
@@ -143,16 +169,20 @@ export function useAnalysisSheet() {
     sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number }) => {
       syncGrowthCell(sheet, info.row, info.col);
       relabelPeCell(sheet, info.row, info.col);
+      reportTableEdits(sheet, [[info.row, info.col]]);
     });
     // Delete key, paste and fill change ranges instead of single values
     sheet.unbind(GC.Spread.Sheets.Events.RangeChanged);
     sheet.bind(GC.Spread.Sheets.Events.RangeChanged, (_event: unknown, info: { row: number; col: number; rowCount: number; colCount: number }) => {
+      const cells: Array<[number, number]> = [];
       for (let r = info.row; r < info.row + info.rowCount; r++) {
         for (let c = info.col; c < info.col + info.colCount; c++) {
           syncGrowthCell(sheet, r, c);
           relabelPeCell(sheet, r, c);
+          cells.push([r, c]);
         }
       }
+      reportTableEdits(sheet, cells);
     });
 
     // Selecting a period cell outlines the same period a year earlier
@@ -251,6 +281,9 @@ export function useAnalysisSheet() {
     },
     onGrowthEdited: (callback: GrowthEditedCallback) => {
       onGrowthEdited = callback;
+    },
+    onTableEdited: (callback: TableEditedCallback) => {
+      onTableEdited = callback;
     },
   };
 }

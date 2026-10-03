@@ -746,12 +746,12 @@ cf A4 formula =TRUE {"backColor":"#E2E8F0"}
 cf A51 formula =TRUE {"backColor":"#E2E8F0"}
 cf A52 formula =TRUE {"backColor":"#E2E8F0"}
 cf A53 formula =TRUE {"backColor":"#E2E8F0"}
-cf B14 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf B15 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf B14 formula =AND(ISNUMBER(B14), B14<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B14), B14>0.2) {"backColor":"#C6EFCE"}
+cf B15 formula =AND(ISNUMBER(B15), B15<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B15), B15>0.2) {"backColor":"#C6EFCE"}
 cf B19 formula =TRUE {"backColor":"#F1F5F9"}
 cf B20 formula =TRUE {"backColor":"#F1F5F9"}
-cf B32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf B33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf B32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf B33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf B37 formula =TRUE {"backColor":"#F1F5F9"}
 cf B38 formula =TRUE {"backColor":"#F1F5F9"}
 cf B4 formula =TRUE {"backColor":"#F1F5F9"}
@@ -763,11 +763,11 @@ cf B55 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formu
 cf B56 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf B57 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf B58 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
-cf C14 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf C15 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf C14 formula =AND(ISNUMBER(B14), B14<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B14), B14>0.2) {"backColor":"#C6EFCE"}
+cf C15 formula =AND(ISNUMBER(B15), B15<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B15), B15>0.2) {"backColor":"#C6EFCE"}
 cf C20 formula =TRUE {"backColor":"#F1F5F9"}
-cf C32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf C33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf C32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf C33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf C38 formula =TRUE {"backColor":"#F1F5F9"}
 cf C4 formula =TRUE {"backColor":"#F1F5F9"}
 cf C52 formula =TRUE {"backColor":"#E2E8F0"}
@@ -777,11 +777,11 @@ cf C55 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formu
 cf C56 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf C57 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf C58 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
-cf D14 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf D15 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf D14 formula =AND(ISNUMBER(B14), B14<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B14), B14>0.2) {"backColor":"#C6EFCE"}
+cf D15 formula =AND(ISNUMBER(B15), B15<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B15), B15>0.2) {"backColor":"#C6EFCE"}
 cf D20 formula =TRUE {"backColor":"#F1F5F9"}
-cf D32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf D33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf D32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf D33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf D38 formula =TRUE {"backColor":"#F1F5F9"}
 cf D4 formula =TRUE {"backColor":"#F1F5F9"}
 cf D52 formula =TRUE {"backColor":"#E2E8F0"}
@@ -791,11 +791,11 @@ cf D55 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formu
 cf D56 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf D57 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf D58 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
-cf E14 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf E15 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf E14 formula =AND(ISNUMBER(B14), B14<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B14), B14>0.2) {"backColor":"#C6EFCE"}
+cf E15 formula =AND(ISNUMBER(B15), B15<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B15), B15>0.2) {"backColor":"#C6EFCE"}
 cf E20 formula =TRUE {"backColor":"#F1F5F9"}
-cf E32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf E33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf E32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf E33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf E38 formula =TRUE {"backColor":"#F1F5F9"}
 cf E4 formula =TRUE {"backColor":"#F1F5F9"}
 cf E52 formula =TRUE {"backColor":"#E2E8F0"}
@@ -805,13 +805,13 @@ cf E55 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formu
 cf E56 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf E57 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf E58 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
-cf F14 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf F15 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf F14 formula =AND(ISNUMBER(B14), B14<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B14), B14>0.2) {"backColor":"#C6EFCE"}
+cf F15 formula =AND(ISNUMBER(B15), B15<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B15), B15>0.2) {"backColor":"#C6EFCE"}
 cf F19 formula =TRUE {"backColor":"#F1F5F9"}
 cf F20 formula =TRUE {"backColor":"#F1F5F9"}
 cf F25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf F32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf F33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf F32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf F33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf F37 formula =TRUE {"backColor":"#F1F5F9"}
 cf F38 formula =TRUE {"backColor":"#F1F5F9"}
 cf F4 formula =TRUE {"backColor":"#FCE7F3"}
@@ -824,43 +824,43 @@ cf F57 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formu
 cf F58 formula =AND(ISNUMBER(B54), M5>0, B54<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B54), M5>0, B54>=M5, B54<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf G20 formula =TRUE {"backColor":"#F1F5F9"}
 cf G25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf G32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf G33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf G32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf G33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf G38 formula =TRUE {"backColor":"#F1F5F9"}
 cf H20 formula =TRUE {"backColor":"#F1F5F9"}
 cf H25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf H32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf H33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf H32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf H33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf H38 formula =TRUE {"backColor":"#F1F5F9"}
 cf I20 formula =TRUE {"backColor":"#F1F5F9"}
 cf I25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf I32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf I33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf I32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf I33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf I38 formula =TRUE {"backColor":"#F1F5F9"}
 cf J19 formula =TRUE {"backColor":"#F1F5F9"}
 cf J20 formula =TRUE {"backColor":"#F1F5F9"}
 cf J25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf J32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf J33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf J32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf J33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf J37 formula =TRUE {"backColor":"#F1F5F9"}
 cf J38 formula =TRUE {"backColor":"#F1F5F9"}
 cf K20 formula =TRUE {"backColor":"#F1F5F9"}
 cf K25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf K32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf K33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf K32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf K33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf K38 formula =TRUE {"backColor":"#F1F5F9"}
 cf K4 formula =TRUE {"backColor":"#E2E8F0"}
 cf L20 formula =TRUE {"backColor":"#F1F5F9"}
 cf L25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf L32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf L33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf L32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf L33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf L38 formula =TRUE {"backColor":"#F1F5F9"}
 cf M10 formula =TRUE {"backColor":"#FEF9C3"}
 cf M11 formula =TRUE {"backColor":"#FEF9C3"}
 cf M20 formula =TRUE {"backColor":"#F1F5F9"}
 cf M25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf M32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf M33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf M32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf M33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf M38 formula =TRUE {"backColor":"#F1F5F9"}
 cf M5 formula =TRUE {"backColor":"#FEF9C3"}
 cf M6 formula =TRUE {"backColor":"#FEF9C3"}
@@ -870,47 +870,47 @@ cf M9 formula =TRUE {"backColor":"#FEF9C3"}
 cf N19 formula =TRUE {"backColor":"#F1F5F9"}
 cf N20 formula =TRUE {"backColor":"#F1F5F9"}
 cf N25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf N32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf N33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf N32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf N33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf N37 formula =TRUE {"backColor":"#F1F5F9"}
 cf N38 formula =TRUE {"backColor":"#F1F5F9"}
 cf N4 formula =TRUE {"backColor":"#E2E8F0"}
 cf O20 formula =TRUE {"backColor":"#F1F5F9"}
 cf O25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf O32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf O33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf O32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf O33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf O38 formula =TRUE {"backColor":"#F1F5F9"}
 cf P20 formula =TRUE {"backColor":"#F1F5F9"}
 cf P25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf P32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf P33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf P32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf P33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf P38 formula =TRUE {"backColor":"#F1F5F9"}
 cf Q20 formula =TRUE {"backColor":"#F1F5F9"}
 cf Q25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf Q32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
-cf Q33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
+cf Q32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"}
+cf Q33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"}
 cf Q38 formula =TRUE {"backColor":"#F1F5F9"}
 cf R19 formula =TRUE {"backColor":"#FCE7F3"}
 cf R20 formula =TRUE {"backColor":"#FCE7F3"}
 cf R25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf R32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
-cf R33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf R32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf R33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf R37 formula =TRUE {"backColor":"#FCE7F3"}
 cf R38 formula =TRUE {"backColor":"#FCE7F3"}
 cf S20 formula =TRUE {"backColor":"#FCE7F3"}
 cf S25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf S32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
-cf S33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf S32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf S33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf S38 formula =TRUE {"backColor":"#FCE7F3"}
 cf T20 formula =TRUE {"backColor":"#FCE7F3"}
 cf T25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf T32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
-cf T33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf T32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf T33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf T38 formula =TRUE {"backColor":"#FCE7F3"}
 cf U20 formula =TRUE {"backColor":"#FCE7F3"}
 cf U25 formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, (F25-B25)/ABS(B25)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F25), ISNUMBER(B25), B25<>0, F25<B25) {"backColor":"#FFC7CE"}
-cf U32 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
-cf U33 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf U32 formula =AND(ISNUMBER(B32), B32<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B32), B32>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
+cf U33 formula =AND(ISNUMBER(B33), B33<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B33), B33>0.2) {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U38 formula =TRUE {"backColor":"#FCE7F3"}
 spans A19+2x1 B19+1x4 B37+1x4 B51+1x5 F19+1x4 F37+1x4 J19+1x4 J37+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N10+1x3 N11+1x3 N19+1x4 N37+1x4 N4+1x3 N5+1x3 N6+1x3 N7+1x3 N8+1x3 N9+1x3 R19+1x4 R37+1x4
 rowHeights [[0,50],[3,60],[18,30],[19,50],[36,30],[37,50]]

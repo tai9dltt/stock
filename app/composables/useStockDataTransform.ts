@@ -379,7 +379,7 @@ export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): Save
  * defaults the sheet showed, not user edits; keeping them would freeze old
  * counts, e.g. MBB before its stock dividend.
  */
-function sharesOverrides(
+export function sharesOverrides(
   sharesByQuarter: Record<string, Record<string, number>> | null | undefined,
   quarterlyData: Record<string, any>,
   currentShares: number,
