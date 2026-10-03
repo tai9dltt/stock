@@ -2,6 +2,8 @@
  * Types for building the analysis spreadsheet.
  */
 
+import type { InputFieldName as InputField } from '~/constants/spreadJsConstants'
+
 export type StockType = 'industrial' | 'bank' | 'securities'
 
 /** SpreadJS module, workbook and the sheet being built */
@@ -71,14 +73,7 @@ export interface RowSpec {
   render: (cell: CellContext) => void
 }
 
-export type InputField =
-  | 'currentPrice'
-  | 'outstandingShares'
-  | 'max52W'
-  | 'min52W'
-  | 'revenueGrowth'
-  | 'grossMargin'
-  | 'netProfitGrowth'
+export type { InputField }
 
 /** Note next to an input: whether it is market data or a forecast assumption */
 export interface InputNote {

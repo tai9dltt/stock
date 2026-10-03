@@ -1,16 +1,16 @@
 positions shares=23 valuation=36 cols=[{"year":"2022","quarter":"Q1","col":1,"isForecast":false},{"year":"2022","quarter":"Q2","col":2,"isForecast":false},{"year":"2022","quarter":"Q3","col":3,"isForecast":false},{"year":"2022","quarter":"Q4","col":4,"isForecast":false},{"year":"2023","quarter":"Q1","col":5,"isForecast":false},{"year":"2023","quarter":"Q2","col":6,"isForecast":false},{"year":"2023","quarter":"Q3","col":7,"isForecast":false},{"year":"2023","quarter":"Q4","col":8,"isForecast":false},{"year":"2024","quarter":"Q1","col":9,"isForecast":false},{"year":"2024","quarter":"Q2","col":10,"isForecast":false},{"year":"2024","quarter":"Q3","col":11,"isForecast":false},{"year":"2024","quarter":"Q4","col":12,"isForecast":false},{"year":"2025","quarter":"Q1","col":13,"isForecast":false},{"year":"2025","quarter":"Q2","col":14,"isForecast":false},{"year":"2025","quarter":"Q3","col":15,"isForecast":false},{"year":"2025","quarter":"Q4","col":16,"isForecast":false},{"year":"2026","quarter":"Q1","col":17,"isForecast":true},{"year":"2026","quarter":"Q2","col":18,"isForecast":true},{"year":"2026","quarter":"Q3","col":19,"isForecast":true},{"year":"2026","quarter":"Q4","col":20,"isForecast":true}]
-A1 | "MBB" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#FF0000","hAlign":"center"}
-C1 | "TẦM SOÁT CỔ PHIẾU NGÂN HÀNG" | {"font":"bold 11pt Calibri","foreColor":"#0000FF","hAlign":"center"}
+A1 | "MBB" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#007F45","hAlign":"center"}
+C1 | "TẦM SOÁT CỔ PHIẾU NGÂN HÀNG" | {"font":"bold 11pt Calibri","foreColor":"#0F172A","hAlign":"center"}
 E1 | "NGÀY" | {"font":"bold 11pt Calibri"}
 F1 | date:2026-10-02T03:00:00.000Z | {"formatter":"dd/mm/yyyy"}
-A4 | "Chỉ số" | {"backColor":"#cffc03","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
-B4 | "2022\n01/01-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-C4 | "2023\n01/01-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-D4 | "2024\n01/01-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-E4 | "2025\n01/01-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-F4 | "2026 (F)\n01/01-31/12" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-K4 | "Ngày: 02/10/2026" | {"backColor":"#D9E1F2","font":"bold 11pt Calibri","hAlign":"left"}
-N4 | "Loại số liệu" | {"backColor":"#D9E1F2","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
+A4 | "Chỉ số" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+B4 | "2022\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+C4 | "2023\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+D4 | "2024\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+E4 | "2025\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+F4 | "2026 (F)\n01/01-31/12" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+K4 | "Ngày: 02/10/2026" | {"backColor":"#E2E8F0","font":"bold 11pt Calibri","hAlign":"left"}
+N4 | "Loại số liệu" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 O4 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P4 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A5 | "Thu nhập lãi thuần" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -21,8 +21,8 @@ E5 | 51610117 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin",
 F5 | =R21 + S21 + T21 + U21 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K5 | "Giá cổ phiếu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M5 | 25000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-N5 | "Thực tế · dùng tính P/E" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+M5 | 25000 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+N5 | "Thực tế · dùng tính P/E" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"left"}
 O5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A6 | "Chi phí hoạt động" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -33,8 +33,8 @@ E6 | =N22 + O22 + P22 + Q22 | {"borderBottom":"thin","borderLeft":"thin","border
 F6 | =R22 + S22 + T22 + U22 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K6 | "Số lượng CP lưu hành" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M6 | 500000000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-N6 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+M6 | 500000000 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+N6 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"left"}
 O6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A7 | "LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -45,8 +45,8 @@ E7 | 26778939 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin",
 F7 | =R23 + S23 + T23 + U23 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K7 | "Giá cao nhất 52T" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M7 | 32000 | {"backColor":"#E2EFDA","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-N7 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+M7 | 32000 | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+N7 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"left"}
 O7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A8 | "Biên LN ròng (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -57,8 +57,8 @@ E8 | =IF(E5<>0, E7/E5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRi
 F8 | =IF(F5<>0, F7/F5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 K8 | "Giá thấp nhất 52T" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M8 | 20000 | {"backColor":"#E2EFDA","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-N8 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+M8 | 20000 | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+N8 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"left"}
 O8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A9 | "ROA (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -69,8 +69,8 @@ E9 | 0.01657354676169844 | {"borderBottom":"thin","borderLeft":"thin","borderRig
 F9 | null | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 K9 | "% TT Thu nhập lãi" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M9 | 0.25 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
-N9 | "Dự phóng · tăng trưởng YoY theo quý" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#FF1493","hAlign":"left"}
+M9 | 0.25 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+N9 | "Dự phóng · tăng trưởng YoY theo quý" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
 O9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A10 | "EPS (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -81,8 +81,8 @@ E10 | 3980 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 F10 | =IF(AVERAGE(R24:U24)<>0, F7 * 1000000 / AVERAGE(R24:U24), 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 K10 | "% NIM" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M10 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
-N10 | "Không dùng cho loại cổ phiếu này" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+M10 | 0 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+N10 | "Không dùng cho loại cổ phiếu này" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"left"}
 O10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A11 | "P/E (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -93,8 +93,8 @@ E11 | 6.36 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 F11 | =IF(F10<>0, M5 / F10, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 K11 | "% TT LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-M11 | 0.2 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
-N11 | "Dự phóng · tăng trưởng YoY theo quý" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#FF1493","hAlign":"left"}
+M11 | 0.2 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+N11 | "Dự phóng · tăng trưởng YoY theo quý" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
 O11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A12 | "ROE (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -109,59 +109,59 @@ C13 | 0.024700000000000003 | {"borderBottom":"thin","borderLeft":"thin","borderR
 D13 | 0.0218 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E13 | 0.0195 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F13 | null | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-A14 | "TT Thu nhập lãi (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#e02926"}
+A14 | "TT Thu nhập lãi (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B14 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 C14 | =IF(B5<>0, (C5-B5)/B5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 D14 | =IF(C5<>0, (D5-C5)/C5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E14 | =IF(D5<>0, (E5-D5)/D5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F14 | =IF(E5<>0, (F5-E5)/E5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-A15 | "TT LNST (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#e02926"}
+A15 | "TT LNST (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B15 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 C15 | =IF(B7<>0, (C7-B7)/B7, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 D15 | =IF(C7<>0, (D7-C7)/C7, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E15 | =IF(D7<>0, (E7-D7)/D7, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F15 | =IF(E7<>0, (F7-E7)/E7, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-A19 | "Niên độ \nChỉ số" | {"backColor":"#cffc03","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-B19 | "2022" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+A19 | "Niên độ \nChỉ số" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+B19 | "2022" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 C19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 D19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 E19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-F19 | "2023" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+F19 | "2023" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 G19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 H19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 I19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-J19 | "2024" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+J19 | "2024" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 K19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 L19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-N19 | "2025" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+N19 | "2025" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 O19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 Q19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-R19 | "2026" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+R19 | "2026" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center"}
 S19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 T19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 U19 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-B20 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-C20 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-D20 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-E20 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-F20 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-G20 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-H20 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-I20 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-J20 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-K20 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-L20 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-M20 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-N20 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-O20 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-P20 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-Q20 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-R20 | "Q1 (F)\n01/01-31/03" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-S20 | "Q2 (F)\n01/04-30/06" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-T20 | "Q3 (F)\n01/07-30/09" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-U20 | "Q4 (F)\n01/10-31/12" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+B20 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+C20 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+D20 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+E20 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+F20 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+G20 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+H20 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+I20 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+J20 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+K20 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+L20 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+M20 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+N20 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+O20 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+P20 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+Q20 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+R20 | "Q1 (F)\n01/01-31/03" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+S20 | "Q2 (F)\n01/04-30/06" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+T20 | "Q3 (F)\n01/07-30/09" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+U20 | "Q4 (F)\n01/10-31/12" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
 A21 | "Thu nhập lãi thuần" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B21 | 8385485 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C21 | 8969406 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -204,7 +204,7 @@ R22 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop
 S22 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 T22 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 U22 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0"}
-A23 | "LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#e02926"}
+A23 | "LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B23 | 4546209 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C23 | 4623202 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 D23 | 4879193 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -393,7 +393,7 @@ R31 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop
 S31 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 T31 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 U31 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-A32 | "TT Thu nhập lãi (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#e02926"}
+A32 | "TT Thu nhập lãi (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B32 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 C32 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 D32 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -414,7 +414,7 @@ R32 | =IF(N21<>0, (R21-N21)/N21, 0) | {"borderBottom":"thin","borderLeft":"thin"
 S32 | =IF(O21<>0, (S21-O21)/O21, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 T32 | =IF(P21<>0, (T21-P21)/P21, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 U32 | =IF(Q21<>0, (U21-Q21)/Q21, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00%"}
-A33 | "TT LNST (%)" | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#e02926"}
+A33 | "TT LNST (%)" | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B33 | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 C33 | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 D33 | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
@@ -435,48 +435,48 @@ R33 | =IF(N23<>0, (R23-N23)/N23, 0) | {"borderBottom":"double","borderLeft":"thi
 S33 | =IF(O23<>0, (S23-O23)/O23, 0) | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 T33 | =IF(P23<>0, (T23-P23)/P23, 0) | {"borderBottom":"double","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 U33 | =IF(Q23<>0, (U23-Q23)/Q23, 0) | {"borderBottom":"double","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"0.00%"}
-A37 | "Niên độ:" | {"backColor":"#cffc03","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
-B37 | "2022" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+A37 | "Niên độ:" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+B37 | "2022" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 C37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 D37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 E37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-F37 | "2023" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+F37 | "2023" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 G37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 H37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 I37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-J37 | "2024" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+J37 | "2024" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 K37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 L37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-N37 | "2025" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+N37 | "2025" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 O37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 Q37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-R37 | "2026" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+R37 | "2026" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center"}
 S37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 T37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 U37 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin"}
-A38 | "Giả sử P/E:" | {"backColor":"#cffc03","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
-B38 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-C38 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-D38 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-E38 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-F38 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-G38 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-H38 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-I38 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-J38 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-K38 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-L38 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-M38 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-N38 | "Q1\n01/01-31/03" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-O38 | "Q2\n01/04-30/06" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-P38 | "Q3\n01/07-30/09" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-Q38 | "Q4\n01/10-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-R38 | "Q1 (F)\n01/01-31/03" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-S38 | "Q2 (F)\n01/04-30/06" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-T38 | "Q3 (F)\n01/07-30/09" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-U38 | "Q4 (F)\n01/10-31/12" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+A38 | "Giả sử P/E:" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+B38 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+C38 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+D38 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+E38 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+F38 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+G38 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+H38 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+I38 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+J38 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+K38 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+L38 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+M38 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+N38 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+O38 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+P38 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+Q38 | "Q4\n01/10-31/12" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+R38 | "Q1 (F)\n01/01-31/03" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+S38 | "Q2 (F)\n01/04-30/06" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+T38 | "Q3 (F)\n01/07-30/09" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+U38 | "Q4 (F)\n01/10-31/12" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
 A39 | 5.96 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
 B39 | =IF(AND(ISNUMBER($A39), ISNUMBER(B28)), $A39 * B28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C39 | =IF(AND(ISNUMBER($A39), ISNUMBER(C28)), $A39 * C28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -519,27 +519,27 @@ R40 | =IF(AND(ISNUMBER($A40), ISNUMBER(R28)), $A40 * R28, "-") | {"borderBottom"
 S40 | =IF(AND(ISNUMBER($A40), ISNUMBER(S28)), $A40 * S28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T40 | =IF(AND(ISNUMBER($A40), ISNUMBER(T28)), $A40 * T28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U40 | =IF(AND(ISNUMBER($A40), ISNUMBER(U28)), $A40 * U28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A41 | 6.36 | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
-B41 | =IF(AND(ISNUMBER($A41), ISNUMBER(B28)), $A41 * B28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-C41 | =IF(AND(ISNUMBER($A41), ISNUMBER(C28)), $A41 * C28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-D41 | =IF(AND(ISNUMBER($A41), ISNUMBER(D28)), $A41 * D28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-E41 | =IF(AND(ISNUMBER($A41), ISNUMBER(E28)), $A41 * E28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-F41 | =IF(AND(ISNUMBER($A41), ISNUMBER(F28)), $A41 * F28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-G41 | =IF(AND(ISNUMBER($A41), ISNUMBER(G28)), $A41 * G28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-H41 | =IF(AND(ISNUMBER($A41), ISNUMBER(H28)), $A41 * H28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-I41 | =IF(AND(ISNUMBER($A41), ISNUMBER(I28)), $A41 * I28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-J41 | =IF(AND(ISNUMBER($A41), ISNUMBER(J28)), $A41 * J28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-K41 | =IF(AND(ISNUMBER($A41), ISNUMBER(K28)), $A41 * K28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-L41 | =IF(AND(ISNUMBER($A41), ISNUMBER(L28)), $A41 * L28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-M41 | =IF(AND(ISNUMBER($A41), ISNUMBER(M28)), $A41 * M28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-N41 | =IF(AND(ISNUMBER($A41), ISNUMBER(N28)), $A41 * N28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-O41 | =IF(AND(ISNUMBER($A41), ISNUMBER(O28)), $A41 * O28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-P41 | =IF(AND(ISNUMBER($A41), ISNUMBER(P28)), $A41 * P28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-Q41 | =IF(AND(ISNUMBER($A41), ISNUMBER(Q28)), $A41 * Q28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-R41 | =IF(AND(ISNUMBER($A41), ISNUMBER(R28)), $A41 * R28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-S41 | =IF(AND(ISNUMBER($A41), ISNUMBER(S28)), $A41 * S28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-T41 | =IF(AND(ISNUMBER($A41), ISNUMBER(T28)), $A41 * T28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-U41 | =IF(AND(ISNUMBER($A41), ISNUMBER(U28)), $A41 * U28, "-") | {"backColor":"#FFE4E1","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+A41 | 6.36 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
+B41 | =IF(AND(ISNUMBER($A41), ISNUMBER(B28)), $A41 * B28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+C41 | =IF(AND(ISNUMBER($A41), ISNUMBER(C28)), $A41 * C28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+D41 | =IF(AND(ISNUMBER($A41), ISNUMBER(D28)), $A41 * D28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+E41 | =IF(AND(ISNUMBER($A41), ISNUMBER(E28)), $A41 * E28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+F41 | =IF(AND(ISNUMBER($A41), ISNUMBER(F28)), $A41 * F28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+G41 | =IF(AND(ISNUMBER($A41), ISNUMBER(G28)), $A41 * G28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+H41 | =IF(AND(ISNUMBER($A41), ISNUMBER(H28)), $A41 * H28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+I41 | =IF(AND(ISNUMBER($A41), ISNUMBER(I28)), $A41 * I28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+J41 | =IF(AND(ISNUMBER($A41), ISNUMBER(J28)), $A41 * J28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+K41 | =IF(AND(ISNUMBER($A41), ISNUMBER(K28)), $A41 * K28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+L41 | =IF(AND(ISNUMBER($A41), ISNUMBER(L28)), $A41 * L28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+M41 | =IF(AND(ISNUMBER($A41), ISNUMBER(M28)), $A41 * M28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+N41 | =IF(AND(ISNUMBER($A41), ISNUMBER(N28)), $A41 * N28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+O41 | =IF(AND(ISNUMBER($A41), ISNUMBER(O28)), $A41 * O28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+P41 | =IF(AND(ISNUMBER($A41), ISNUMBER(P28)), $A41 * P28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+Q41 | =IF(AND(ISNUMBER($A41), ISNUMBER(Q28)), $A41 * Q28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+R41 | =IF(AND(ISNUMBER($A41), ISNUMBER(R28)), $A41 * R28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+S41 | =IF(AND(ISNUMBER($A41), ISNUMBER(S28)), $A41 * S28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+T41 | =IF(AND(ISNUMBER($A41), ISNUMBER(T28)), $A41 * T28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+U41 | =IF(AND(ISNUMBER($A41), ISNUMBER(U28)), $A41 * U28, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 A42 | 8.3 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
 B42 | =IF(AND(ISNUMBER($A42), ISNUMBER(B28)), $A42 * B28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C42 | =IF(AND(ISNUMBER($A42), ISNUMBER(C28)), $A42 * C28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -687,7 +687,7 @@ R48 | =IF(AND(ISNUMBER($A48), ISNUMBER(R28)), $A48 * R28, "-") | {"borderBottom"
 S48 | =IF(AND(ISNUMBER($A48), ISNUMBER(S28)), $A48 * S28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T48 | =IF(AND(ISNUMBER($A48), ISNUMBER(T28)), $A48 * T28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U48 | =IF(AND(ISNUMBER($A48), ISNUMBER(U28)), $A48 * U28, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"double","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-cf rowState:active {"backColor":"#E3F2FD"} rows 0+50 cols 0+30
+cf rowState:active {"backColor":"#EEF6FF"} rows 0+50 cols 0+30
 cf B14 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf B15 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf B32 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}

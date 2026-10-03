@@ -6,7 +6,7 @@
 import { shallowRef } from 'vue';
 import type { AnalysisSheetData, AnalysisSheetLayout } from '~/spreadsheet/types';
 import { buildAnalysisSheet } from '~/spreadsheet/buildAnalysisSheet';
-import { INPUT_AREA, VALUATION_TABLE } from '~/constants/spreadJsConstants';
+import { INPUT_AREA, INPUT_FIELDS, inputRow, VALUATION_TABLE, type InputFieldName } from '~/constants/spreadJsConstants';
 import { extractInputValues, extractPeValues, extractSharesPerQuarter } from '~/composables/useStockDataTransform';
 
 export interface SheetEdits {
@@ -19,6 +19,8 @@ export function useAnalysisSheet() {
   let GC: any = null;
   const spread = shallowRef<any>(null);
   const layout = shallowRef<AnalysisSheetLayout | null>(null);
+  const INPUT_COL = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
+  let onInputEdited: ((field: InputFieldName, value: number) => void) | null = null;
 
   async function init(spreadInstance: any) {
     if (!GC) {
@@ -57,10 +59,23 @@ export function useAnalysisSheet() {
     sheet.setColumnCount(100);
 
     layout.value = buildAnalysisSheet({ GC, spread: workbook, sheet }, data);
-    console.log(`Stock type: ${layout.value.stockType}`);
+
+    // Report edits the user makes directly in the input cells
+    sheet.unbind(GC.Spread.Sheets.Events.ValueChanged);
+    sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number; newValue: unknown }) => {
+      if (info.col !== INPUT_COL || !onInputEdited) return;
+      const field = INPUT_FIELDS.find(f => inputRow(f) === info.row);
+      if (field) onInputEdited(field, Number(info.newValue) || 0);
+    });
 
     sheet.resumeCalcService(false);
     workbook.resumePaint();
+  }
+
+  /** Write an input value into its cell; formulas that use it recalculate */
+  function setInput(field: InputFieldName, value: number) {
+    if (!isReady()) return;
+    spread.value.getSheet(0)?.setValue(inputRow(field), INPUT_COL, value);
   }
 
   /**
@@ -109,5 +124,15 @@ export function useAnalysisSheet() {
     return edits;
   }
 
-  return { init, isReady, render, readEdits, exportExcel };
+  return {
+    init,
+    isReady,
+    render,
+    readEdits,
+    exportExcel,
+    setInput,
+    onInputEdited: (callback: (field: InputFieldName, value: number) => void) => {
+      onInputEdited = callback;
+    },
+  };
 }

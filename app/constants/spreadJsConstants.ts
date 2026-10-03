@@ -4,16 +4,20 @@
  */
 
 // ============ COLORS ============
+// Muted palette matching the app (slate neutrals); forecasts are the one accent
 export const SPREADJS_COLORS = {
-  SELECTED: '#E3F2FD',
-  HEADER: '#cffc03',
-  FORECAST: '#FF1493',
-  HISTORICAL: '#70AD47',
-  INPUT: '#FFF2CC',
-  DISPLAY: '#E2EFDA',
-  DEFAULT_HIGHLIGHT: '#FFE4E1',
-  TEXT_RED: '#e02926',
-  NOTE: '#6B7280',
+  SELECTED: '#EEF6FF', // row highlight on select
+  HEADER: '#E2E8F0', // "Chỉ số" / "Niên độ" corner cells, input header
+  HISTORICAL: '#F1F5F9', // reported period headers
+  FORECAST: '#FCE7F3', // forecast period headers (F)
+  FORECAST_TEXT: '#9D174D', // text on forecast headers and forecast notes
+  INPUT: '#FEF9C3', // editable inputs
+  DISPLAY: '#F1F5F9', // read-only inputs
+  DEFAULT_HIGHLIGHT: '#FEF3C7', // default P/E row in the valuation table
+  TEXT_RED: '#B91C1C', // emphasized row labels
+  TITLE: '#0F172A',
+  SYMBOL: '#007F45',
+  NOTE: '#64748B',
 };
 
 // ============ YEAR DETECTION ============
@@ -32,6 +36,22 @@ export const YEAR_DETECTION_METRICS = [
 ];
 
 // ============ INPUT AREA ============
+/** Input rows below the date header (INPUT_AREA.ROW_START), in sheet order */
+export const INPUT_FIELDS = [
+  'currentPrice',
+  'outstandingShares',
+  'max52W',
+  'min52W',
+  'revenueGrowth',
+  'grossMargin',
+  'netProfitGrowth',
+] as const;
+
+export type InputFieldName = (typeof INPUT_FIELDS)[number];
+
+/** Sheet row of an input value */
+export const inputRow = (field: InputFieldName) => INPUT_AREA.ROW_START + 1 + INPUT_FIELDS.indexOf(field);
+
 export const INPUT_AREA = {
   COL: 10, // Column K
   ROW_START: 3,

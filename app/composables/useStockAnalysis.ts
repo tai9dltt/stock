@@ -65,7 +65,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
     try {
       const response = await crawlStockData(symbol.value);
       if (response.success) {
-        toast.add({ title: 'Đã cập nhật', description: 'Crawled data successfully', color: 'success' });
+        toast.add({ title: 'Đã cập nhật', description: 'Đã tải số liệu mới nhất từ Vietstock', color: 'success' });
         return true;
       }
       toast.add({ title: 'Lỗi', description: response.error || 'Không thể crawl dữ liệu', color: 'error' });

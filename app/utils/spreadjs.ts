@@ -8,15 +8,7 @@
  * - Range-based conditional formatting (2 rules per row vs per cell)
  */
 
-// Color constants
-export const COLORS = {
-  SELECTED: '#E3F2FD', // Light blue for selected row
-  HEADER: '#1976D2',
-  FORECAST: '#FF1493',
-  HISTORICAL: '#70AD47',
-  INPUT: '#FFF2CC',
-  DISPLAY: '#E2EFDA',
-}
+import { SPREADJS_COLORS } from '~/constants/spreadJsConstants'
 
 // ============ CACHED BORDER SINGLETONS ============
 
@@ -126,7 +118,7 @@ export function setDivisionFormula(
 export function applyRowHighlightOnSelect(
   GC: any,
   sheet: any, // GC.Spread.Sheets.Worksheet
-  rowColor: string = COLORS.SELECTED,
+  rowColor: string = SPREADJS_COLORS.SELECTED,
   startRowOffset: number = 0,
   columnCount?: number,
   startColumnIndex: number = 0

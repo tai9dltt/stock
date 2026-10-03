@@ -8,7 +8,7 @@ import type {
   SheetContext, StockProfile,
 } from './types'
 import {
-  ANNUAL_TABLE, INPUT_AREA, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
+  ANNUAL_TABLE, INPUT_AREA, inputRow, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
 } from '~/constants/spreadJsConstants'
 import {
   applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, getCellAddr, getDoubleBorder,
@@ -18,7 +18,11 @@ import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } f
 
 const HEADER_STYLE = { bold: true, align: 'center' as const, border: true }
 
-const periodColor = (forecast: boolean) => (forecast ? SPREADJS_COLORS.FORECAST : SPREADJS_COLORS.HISTORICAL)
+/** Header of a period column: forecasts get the accent colour */
+const periodStyle = (forecast: boolean) =>
+  forecast
+    ? { bg: SPREADJS_COLORS.FORECAST, color: SPREADJS_COLORS.FORECAST_TEXT }
+    : { bg: SPREADJS_COLORS.HISTORICAL }
 
 /** Lay rows out top to bottom starting at firstRow */
 function layoutRows(specs: RowSpec[], firstRow: number): RowMap {
@@ -45,8 +49,8 @@ export function buildTitleSection(ctx: SheetContext, profile: StockProfile, symb
   const { GC, sheet } = ctx
 
   sheet.setRowHeight(0, 50)
-  setCell(GC, sheet, 0, 2, profile.title, { bold: true, color: '#0000FF', align: 'center' })
-  setCell(GC, sheet, 0, 0, symbol, { bold: true, color: '#FF0000', align: 'center', border: true })
+  setCell(GC, sheet, 0, 2, profile.title, { bold: true, color: SPREADJS_COLORS.TITLE, align: 'center' })
+  setCell(GC, sheet, 0, 0, symbol, { bold: true, color: SPREADJS_COLORS.SYMBOL, align: 'center', border: true })
   setCell(GC, sheet, 0, 4, 'NGÀY', { bold: true })
   setCell(GC, sheet, 0, 5, new Date(), { format: 'dd/mm/yyyy' })
 }
@@ -78,12 +82,12 @@ export function buildInputSection(
     sheet.getRange(row, noteCol, 1, INPUT_AREA.NOTE_SPAN).setBorder(getThinBorder(GC), { all: true })
   }
 
-  const inputRow = (
-    row: number,
+  const writeInput = (
     field: InputField,
     value: number,
     { editable = false, format = '#,##0', bg = SPREADJS_COLORS.INPUT } = {}
   ) => {
+    const row = inputRow(field)
     setCell(GC, sheet, row, col, labels[field], { bold: true, align: 'left' })
     sheet.addSpan(row, col, 1, 2)
     sheet.getRange(row, col, 1, 2).setBorder(getThinBorder(GC), { all: true })
@@ -93,30 +97,30 @@ export function buildInputSection(
 
     const note = profile.inputNotes[field]
     noteCell(row, note.text, note.kind === 'forecast'
-      ? { bold: true, color: SPREADJS_COLORS.FORECAST }
+      ? { bold: true, color: SPREADJS_COLORS.FORECAST_TEXT }
       : { color: SPREADJS_COLORS.NOTE })
   }
 
   const formattedDate = data.tradingDate ? data.tradingDate.split('-').reverse().join('/') : ''
-  setCell(GC, sheet, startRow, col, `Ngày: ${formattedDate}`, { bold: true, align: 'left', bg: '#D9E1F2' })
+  setCell(GC, sheet, startRow, col, `Ngày: ${formattedDate}`, { bold: true, align: 'left', bg: SPREADJS_COLORS.HEADER })
   sheet.addSpan(startRow, col, 1, 3)
-  noteCell(startRow, 'Loại số liệu', { bold: true, bg: '#D9E1F2' })
+  noteCell(startRow, 'Loại số liệu', { bold: true, bg: SPREADJS_COLORS.HEADER })
 
-  inputRow(startRow + 1, 'currentPrice', data.currentPrice || 0, { editable: true })
-  inputRow(startRow + 2, 'outstandingShares', data.outstandingShares || 0, { editable: true })
-  inputRow(startRow + 3, 'max52W', data.max52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
-  inputRow(startRow + 4, 'min52W', data.min52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
-  inputRow(startRow + 5, 'revenueGrowth', data.revenueGrowth || 0, { editable: true, format: '0.00%' })
-  inputRow(startRow + 6, 'grossMargin', data.grossMargin || 0, { editable: true, format: '0.00%' })
-  inputRow(startRow + 7, 'netProfitGrowth', data.netProfitGrowth || 0, { editable: true, format: '0.00%' })
+  writeInput('currentPrice', data.currentPrice || 0, { editable: true })
+  writeInput('outstandingShares', data.outstandingShares || 0, { editable: true })
+  writeInput('max52W', data.max52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
+  writeInput('min52W', data.min52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
+  writeInput('revenueGrowth', data.revenueGrowth || 0, { editable: true, format: '0.00%' })
+  writeInput('grossMargin', data.grossMargin || 0, { editable: true, format: '0.00%' })
+  writeInput('netProfitGrowth', data.netProfitGrowth || 0, { editable: true, format: '0.00%' })
 
-  const ref = (row: number) => getCellAddr(GC, sheet, row, valueCol)
+  const ref = (field: InputField) => getCellAddr(GC, sheet, inputRow(field), valueCol)
   return {
-    currentPrice: ref(startRow + 1),
-    outstandingShares: ref(startRow + 2),
-    revenueGrowth: ref(startRow + 5),
-    grossMargin: ref(startRow + 6),
-    netProfitGrowth: ref(startRow + 7),
+    currentPrice: ref('currentPrice'),
+    outstandingShares: ref('outstandingShares'),
+    revenueGrowth: ref('revenueGrowth'),
+    grossMargin: ref('grossMargin'),
+    netProfitGrowth: ref('netProfitGrowth'),
   }
 }
 
@@ -151,7 +155,7 @@ export function buildAnnualTable(
     sheet.setColumnWidth(col, ANNUAL_TABLE.COLUMN_WIDTH)
     setCell(GC, sheet, startRow, col, `${year}${forecast ? ' (F)' : ''}\n01/01-31/12`, {
       ...HEADER_STYLE,
-      bg: periodColor(forecast),
+      ...periodStyle(forecast),
     })
     sheet.getCell(startRow, col).wordWrap(true)
   }
@@ -215,7 +219,7 @@ export function buildQuarterlyTable(
   for (const year of years) {
     const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
 
-    setCell(GC, sheet, startRow, nextCol, year, { ...HEADER_STYLE, bg: periodColor(isYearForecast) })
+    setCell(GC, sheet, startRow, nextCol, year, { ...HEADER_STYLE, ...periodStyle(isYearForecast) })
     sheet.addSpan(startRow, nextCol, 1, 4)
     sheet.getRange(startRow, nextCol, 1, 4).setBorder(getThinBorder(GC), { all: true })
 
@@ -227,7 +231,7 @@ export function buildQuarterlyTable(
       sheet.setColumnWidth(nextCol, QUARTERLY_TABLE.COLUMN_WIDTH)
       setCell(GC, sheet, startRow + 1, nextCol, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[i]}`, {
         ...HEADER_STYLE,
-        bg: periodColor(isForecast),
+        ...periodStyle(isForecast),
       })
       sheet.getCell(startRow + 1, nextCol).wordWrap(true)
 
@@ -391,7 +395,7 @@ export function buildValuationTable(
     const firstCol = yearCols[0]!.col
     const forecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
 
-    setCell(GC, sheet, startRow, firstCol, year, { ...HEADER_STYLE, bg: periodColor(forecast) })
+    setCell(GC, sheet, startRow, firstCol, year, { ...HEADER_STYLE, ...periodStyle(forecast) })
     if (yearCols.length > 1) sheet.addSpan(startRow, firstCol, 1, yearCols.length)
     sheet.getRange(startRow, firstCol, 1, yearCols.length).setBorder(getThinBorder(GC), { all: true })
   }
@@ -401,7 +405,7 @@ export function buildValuationTable(
     const qIdx = parseInt(quarter.replace('Q', '')) - 1
     setCell(GC, sheet, startRow + 1, col, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[qIdx]}`, {
       ...HEADER_STYLE,
-      bg: periodColor(isForecast),
+      ...periodStyle(isForecast),
     })
     sheet.getCell(startRow + 1, col).wordWrap(true)
     sheet.setRowHeight(startRow + 1, 50)

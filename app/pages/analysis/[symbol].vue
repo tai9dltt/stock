@@ -2,7 +2,8 @@
 import { ref, watch, onMounted, computed, defineAsyncComponent, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
-import { detectStockType } from '~/spreadsheet/profiles';
+import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
+import type { InputFieldName } from '~/constants/spreadJsConstants';
 import { withForecastYearQuarters } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
 import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
@@ -82,19 +83,41 @@ const initWorkbook = async (spread: any) => {
 };
 
 let renderTimer: ReturnType<typeof setTimeout> | null = null;
-watch(
-  [
-    () => state.value.annualData,
-    () => state.value.quarterlyData,
-    () => state.value.currentPrice,
-    () => state.value.tradingDate,
-  ],
-  () => {
-    if (renderTimer) clearTimeout(renderTimer);
-    renderTimer = setTimeout(renderSheet, 100);
-  },
-  { deep: true },
-);
+const scheduleRender = () => {
+  if (renderTimer) clearTimeout(renderTimer);
+  renderTimer = setTimeout(renderSheet, 100);
+};
+
+// Rebuild the sheet when a stock is (re)loaded or its figures change.
+// Inputs are not watched: they are written into their cells (see updateInput).
+watch(() => state.value, scheduleRender);
+watch([() => state.value.annualData, () => state.value.quarterlyData], scheduleRender, { deep: true });
+
+// ============ INPUTS (assumptions form ⇄ sheet input cells) ============
+
+const profile = computed(() => STOCK_PROFILES[stockType.value]);
+const assumptionValues = computed(() => ({
+  currentPrice: state.value.currentPrice,
+  outstandingShares: state.value.outstandingShares,
+  revenueGrowth: state.value.revenueGrowth,
+  grossMargin: state.value.grossMargin,
+  netProfitGrowth: state.value.netProfitGrowth,
+}));
+
+const applyInput = (field: InputFieldName, value: number) => {
+  state.value[field] = value;
+  // Quarters without their own share count use this one, so they need a rebuild
+  if (field === 'outstandingShares') scheduleRender();
+};
+
+/** From the form: update the state and the input cell (formulas recalculate) */
+const updateInput = (field: InputFieldName, value: number) => {
+  applyInput(field, value);
+  if (field !== 'outstandingShares') sheet.setInput(field, value);
+};
+
+/** From the sheet: the user typed into an input cell */
+sheet.onInputEdited(applyInput);
 
 // ============ ACTIONS ============
 
@@ -139,6 +162,30 @@ const exportExcel = async () => {
   }
 };
 
+const secondaryActions = computed(() => [
+  {
+    label: 'Cập nhật dữ liệu',
+    title: 'Tải báo cáo tài chính mới nhất từ Vietstock',
+    icon: 'i-lucide-refresh-cw',
+    loading: false,
+    onClick: refreshData,
+  },
+  {
+    label: 'Thêm năm',
+    title: 'Thêm một năm dự phóng vào bảng tính',
+    icon: 'i-lucide-calendar-plus',
+    loading: false,
+    onClick: addYear,
+  },
+  {
+    label: 'Xuất Excel',
+    title: 'Tải bảng tính về dạng .xlsx',
+    icon: 'i-lucide-file-spreadsheet',
+    loading: isExporting.value,
+    onClick: exportExcel,
+  },
+]);
+
 const handleGlobalSave = () => {
   if (!tradingNoteRef.value) return;
   analysis.save(tradingNoteRef.value.getTradingData(), sheet.readEdits());
@@ -180,6 +227,14 @@ useHead({
     </div>
 
     <main class="page-content space-y-6">
+      <AnalysisAssumptionsForm
+        v-show="activeTab === '0'"
+        :values="assumptionValues"
+        :labels="profile.inputLabels"
+        :notes="profile.inputNotes"
+        @update="updateInput"
+      />
+
       <!-- SpreadJS Area -->
       <UCard v-show="activeTab === '0'" class="overflow-hidden" :ui="{ body: 'p-2 sm:p-3' }">
         <ClientOnly>
@@ -210,53 +265,29 @@ useHead({
       </UCard>
     </main>
 
-    <!-- Fixed Bottom Bar -->
+    <!-- Fixed bottom bar: secondary actions on the left (icons only on phones), save on the right -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-100 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 shadow-lg flex justify-center"
+      class="fixed bottom-0 left-0 right-0 z-100 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 flex justify-center"
     >
-      <div class="w-full max-w-screen-2xl flex justify-between px-3 md:px-4">
-        <div class="flex gap-2">
+      <div class="w-full max-w-screen-2xl flex items-center justify-between gap-2 px-3 md:px-4">
+        <div class="flex gap-1 sm:gap-2">
           <UButton
-            color="primary"
-            variant="soft"
-            size="md"
-            class="cursor-pointer"
-            icon="i-lucide-arrow-down-to-line"
-            @click="refreshData"
+            v-for="action in secondaryActions"
+            :key="action.label"
+            color="neutral"
+            variant="outline"
+            :icon="action.icon"
+            :loading="action.loading"
+            :aria-label="action.label"
+            :title="action.title"
+            @click="action.onClick"
           >
-            Crawl
-          </UButton>
-          <UButton
-            color="primary"
-            variant="soft"
-            size="md"
-            class="cursor-pointer"
-            icon="i-lucide-plus"
-            @click="addYear"
-          >
-            Add Year
-          </UButton>
-          <UButton
-            color="primary"
-            variant="soft"
-            size="md"
-            class="cursor-pointer"
-            icon="i-lucide-file-spreadsheet"
-            :loading="isExporting"
-            @click="exportExcel"
-          >
-            Export Excel
+            <span class="hidden sm:inline">{{ action.label }}</span>
           </UButton>
         </div>
 
-        <UButton
-          color="primary"
-          size="md"
-          icon="i-lucide-save"
-          class="save-btn-floating"
-          @click="handleGlobalSave"
-        >
-          Save
+        <UButton color="primary" icon="i-lucide-save" class="px-4" @click="handleGlobalSave">
+          Lưu
         </UButton>
       </div>
     </div>
@@ -271,14 +302,5 @@ useHead({
 
 .analysis-page {
   padding-bottom: 100px;
-}
-
-.save-btn-floating {
-  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
-  transition: transform 0.2s ease;
-}
-
-.save-btn-floating:hover {
-  transform: translateY(-2px);
 }
 </style>
