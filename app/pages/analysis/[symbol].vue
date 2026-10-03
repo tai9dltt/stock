@@ -248,7 +248,18 @@ useHead({
           :content="false"
           variant="link"
           size="md"
-          :ui="{ list: 'border-none p-0', trigger: 'cursor-pointer px-3 py-2.5' }"
+          :ui="{
+            list: 'border-none p-0 gap-1',
+            // Underline drawn inside the tab, so the card edge does not cut it
+            indicator: 'hidden',
+            trigger: [
+              'cursor-pointer px-4 py-3 rounded-t-lg text-sm font-medium text-gray-600 dark:text-gray-400',
+              'hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white',
+              'data-[state=active]:font-semibold data-[state=active]:bg-primary-50 dark:data-[state=active]:bg-primary-950/40',
+              'data-[state=active]:shadow-[inset_0_-3px_0_var(--ui-primary)]',
+            ].join(' '),
+            leadingIcon: 'size-5',
+          }"
         />
       </template>
     </AnalysisStockSummaryBar>

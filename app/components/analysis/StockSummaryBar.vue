@@ -35,7 +35,7 @@ const metrics = computed(() => {
 
 <template>
   <section
-    class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 md:px-5 pt-4 md:pt-5"
+    class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden px-4 md:px-5 pt-4 md:pt-5"
     :class="{ 'pb-4 md:pb-5': !$slots.tabs }"
     aria-label="Tóm tắt cổ phiếu"
   >
@@ -90,7 +90,7 @@ const metrics = computed(() => {
     </div>
 
     <!-- Page tabs, attached to the bottom edge of the card -->
-    <div v-if="$slots.tabs" class="mt-3 -mb-px border-t border-gray-100 dark:border-gray-800">
+    <div v-if="$slots.tabs" class="mt-3 border-t border-gray-100 dark:border-gray-800">
       <slot name="tabs" />
     </div>
   </section>
