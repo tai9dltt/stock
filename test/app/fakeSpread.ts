@@ -113,6 +113,9 @@ export function createFakeSheet() {
       addCellValueRule(op: string, value: unknown, _v2: unknown, style: Style, ranges: Range[]) {
         cfRules.push({ kind: 'cellValue', op, value, style: { ...style }, ranges })
       },
+      addFormulaRule(formula: string, style: Style, ranges: Range[]) {
+        cfRules.push({ kind: 'formula', value: ` ${formula}`, style: { ...style }, ranges })
+      },
       addRowStateRule(state: string, style: Style, ranges: Range[]) {
         cfRules.push({ kind: `rowState:${state}`, style: { ...style }, ranges })
       },

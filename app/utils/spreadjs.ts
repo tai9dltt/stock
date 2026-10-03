@@ -281,15 +281,13 @@ export function setQuarterlySumFormula(
  * @param row - Row index
  * @param startCol - Starting column index
  * @param colCount - Number of columns to cover
- * @param greenAbove - Values above this are green (default 20%)
  */
 export function applyGrowthHighlightRange(
   GC: any,
   sheet: any,
   row: number,
   startCol: number,
-  colCount: number,
-  greenAbove: number = 0.2
+  colCount: number
 ): void {
   if (colCount <= 0) return
 
@@ -298,14 +296,14 @@ export function applyGrowthHighlightRange(
   const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
   const border = getThinBorder(GC)
 
-  // Green above the threshold
+  // Green for > 20%
   const greenStyle = new GC.Spread.Sheets.Style()
   greenStyle.backColor = '#C6EFCE'
   greenStyle.borderLeft = border
   greenStyle.borderTop = border
   greenStyle.borderRight = border
   greenStyle.borderBottom = border
-  cfs.addCellValueRule(operators.greaterThan, greenAbove, null, greenStyle, range)
+  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
 
   // Pink for < 0
   const pinkStyle = new GC.Spread.Sheets.Style()
@@ -315,4 +313,51 @@ export function applyGrowthHighlightRange(
   pinkStyle.borderRight = border
   pinkStyle.borderBottom = border
   cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
+}
+
+/** Relative A1 address, e.g. (25, 5) → "F26" */
+function relativeAddr(row: number, col: number): string {
+  let name = ''
+  for (let n = col + 1; n > 0; n = Math.floor((n - 1) / 26)) {
+    name = String.fromCharCode(65 + ((n - 1) % 26)) + name
+  }
+  return `${name}${row + 1}`
+}
+
+/**
+ * Colour a row by its change against `lag` columns earlier (4 = same quarter
+ * last year): green when it grew by more than `greenAbove` (relative, 0.1 =
+ * +10%), red when it fell. Cells without a number on either side stay plain.
+ */
+export function applyYoyChangeHighlight(
+  GC: any,
+  sheet: any,
+  row: number,
+  startCol: number,
+  colCount: number,
+  greenAbove: number = 0.1,
+  lag: number = 4
+): void {
+  if (colCount <= 0 || startCol - lag < 0) return
+
+  const range = [new GC.Spread.Sheets.Range(row, startCol, 1, colCount)]
+  // Relative to the first cell of the range, like Excel
+  const curr = relativeAddr(row, startCol)
+  const prev = relativeAddr(row, startCol - lag)
+  const bothNumbers = `ISNUMBER(${curr}), ISNUMBER(${prev}), ${prev}<>0`
+  const border = getThinBorder(GC)
+
+  const style = (backColor: string) => {
+    const s = new GC.Spread.Sheets.Style()
+    s.backColor = backColor
+    s.borderLeft = border
+    s.borderTop = border
+    s.borderRight = border
+    s.borderBottom = border
+    return s
+  }
+
+  const cfs = sheet.conditionalFormats
+  cfs.addFormulaRule(`=AND(${bothNumbers}, (${curr}-${prev})/ABS(${prev})>${greenAbove})`, style('#C6EFCE'), range)
+  cfs.addFormulaRule(`=AND(${bothNumbers}, ${curr}<${prev})`, style('#FFC7CE'), range)
 }

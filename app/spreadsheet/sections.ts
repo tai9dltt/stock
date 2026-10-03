@@ -11,7 +11,7 @@ import {
   ANNUAL_TABLE, INPUT_AREA, inputRow, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
 } from '~/constants/spreadJsConstants'
 import {
-  applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, getCellAddr, getDoubleBorder,
+  applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getDoubleBorder,
   getThinBorder, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
 import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
@@ -277,9 +277,12 @@ export function buildQuarterlyTable(
 
   if (cols.length > 0) {
     highlightGrowthRows(ctx, rows, cols[0]!.col, cols.length)
-    // Gross and net margins: green above 10%, red when negative
-    for (const margin of [rows.grossMargin, rows.netMargin, rows.netProfitMargin]) {
-      if (margin !== undefined) applyGrowthHighlightRange(GC, sheet, margin, cols[0]!.col, cols.length, 0.1)
+    // Gross and net margins against the same quarter last year:
+    // green when up more than 10%, red when down
+    if (cols.length > 4) {
+      for (const margin of [rows.grossMargin, rows.netMargin, rows.netProfitMargin]) {
+        if (margin !== undefined) applyYoyChangeHighlight(GC, sheet, margin, cols[4]!.col, cols.length - 4)
+      }
     }
   }
 
