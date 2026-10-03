@@ -274,7 +274,7 @@ useHead({
             :aria-expanded="showAssumptions"
             aria-controls="assumptions-form"
             title="Hiện / ẩn giả định dự phóng và định giá"
-            class="shrink-0"
+            class="ml-auto shrink-0"
             @click="() => { showAssumptions = !showAssumptions }"
           >
             Giả định
