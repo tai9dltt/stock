@@ -91,7 +91,7 @@ useHead({ title: 'Danh sách phân tích' });
 </script>
 
 <template>
-  <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-6 md:py-8">
+  <div class="max-w-screen-2xl mx-auto px-3 md:px-4 py-6 md:py-8">
     <!-- Page header -->
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
       <div>

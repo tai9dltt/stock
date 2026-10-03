@@ -161,7 +161,7 @@ useHead({
 </script>
 
 <template>
-  <div class="analysis-page max-w-screen-2xl mx-auto px-4 md:px-6 py-4 md:py-6">
+  <div class="analysis-page max-w-screen-2xl mx-auto px-3 md:px-4 py-4 md:py-6">
     <AnalysisStockSummaryBar
       :symbol="stockSymbol"
       :stock-type="stockType"
@@ -181,7 +181,7 @@ useHead({
 
     <main class="page-content space-y-6">
       <!-- SpreadJS Area -->
-      <UCard v-show="activeTab === '0'" class="p-0 overflow-hidden">
+      <UCard v-show="activeTab === '0'" class="overflow-hidden" :ui="{ body: 'p-2 sm:p-3' }">
         <ClientOnly>
           <div class="h-[700px] w-full">
             <GcSpreadSheets
@@ -193,7 +193,7 @@ useHead({
       </UCard>
 
       <!-- Chart View -->
-      <UCard v-if="chartTabOpened" v-show="activeTab === '1'" class="p-4">
+      <UCard v-if="chartTabOpened" v-show="activeTab === '1'" :ui="{ body: 'p-2 sm:p-3' }">
         <AnalysisChartView
           :quarterly-data="state.quarterlyData"
           :annual-data="state.annualData"
@@ -202,7 +202,7 @@ useHead({
       </UCard>
 
       <!-- Trading Note -->
-      <UCard>
+      <UCard :ui="{ body: 'p-3 sm:p-4' }">
         <AnalysisTradingNote
           ref="tradingNoteRef"
           :note-html="noteHtml"
@@ -212,9 +212,9 @@ useHead({
 
     <!-- Fixed Bottom Bar -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-100 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4 shadow-lg flex justify-center"
+      class="fixed bottom-0 left-0 right-0 z-100 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 shadow-lg flex justify-center"
     >
-      <div class="w-full flex justify-between px-3">
+      <div class="w-full max-w-screen-2xl flex justify-between px-3 md:px-4">
         <div class="flex gap-2">
           <UButton
             color="primary"

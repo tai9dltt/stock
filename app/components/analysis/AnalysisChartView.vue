@@ -388,7 +388,7 @@ const sections = computed(() => [
 </script>
 
 <template>
-  <div class="chart-view p-4">
+  <div class="chart-view py-2">
     <div v-if="hasData" class="space-y-8">
       <div v-for="section in sections" :key="section.title">
         <h3 class="text-lg font-semibold mb-1 text-gray-700 dark:text-gray-300">

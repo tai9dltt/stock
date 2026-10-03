@@ -23,7 +23,7 @@ const isListPage = computed(() => route.path === '/analysis');
     <header
       class="sticky top-0 z-50 h-14 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-gray-200 dark:border-gray-800"
     >
-      <div class="h-full max-w-screen-2xl mx-auto px-4 md:px-6 flex items-center gap-4">
+      <div class="h-full max-w-screen-2xl mx-auto px-3 md:px-4 flex items-center gap-4">
         <NuxtLink to="/analysis" class="flex items-center gap-2 shrink-0">
           <span class="flex items-center justify-center size-8 rounded-lg bg-primary-500 text-white">
             <UIcon name="i-lucide-chart-candlestick" class="size-5" />
