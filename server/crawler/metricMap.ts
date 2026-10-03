@@ -42,6 +42,8 @@ export const METRIC_MAP: Record<string, string> = {
   'Vốn chủ sở hữu': 'EQUITY',
   'Vốn góp của chủ sở hữu': 'PAID_IN_CAPITAL',
   'Lợi ích của CĐ thiểu số': 'MINORITY_INTEREST',
+  // Banks: equity is "Vốn và các quỹ"
+  'Vốn và các quỹ': 'EQUITY',
 
   // ===== RATIOS =====
   'EPS 4 quý': 'EPS_TTM',
@@ -95,6 +97,7 @@ export const METRIC_MAP: Record<string, string> = {
 // Vietstock group names to our component codes
 export const COMPONENT_MAP: Record<string, string> = {
   'Kết quả kinh doanh': 'income_statement',
+  'Báo cáo tình hình tài chính': 'balance_sheet',
   'Cân đối kế toán': 'balance_sheet',
   'Chỉ số tài chính': 'ratios',
 }

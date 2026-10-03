@@ -155,6 +155,24 @@ describe('parseFinanceInfoPages', () => {
     expect(valueOf(data, 2025, 1, 'EPS_TTM')).toBe(3)
   })
 
+  it('reads the balance sheet under its current name (regression: it was skipped)', () => {
+    const data = parseFinanceInfoPages('quarter', [
+      page([quarter(2026, 2, 1)], {
+        'Báo cáo tình hình tài chính': [
+          { Name: 'Tổng tài sản ', Value1: 12_537_467 },
+          { Name: 'Vốn chủ sở hữu', Value1: 3_758_705 },
+          { Name: 'Lợi ích của CĐ thiểu số', Value1: null },
+        ],
+      }),
+      // Banks call equity "Vốn và các quỹ"
+      page([quarter(2026, 1, 1)], { 'Báo cáo tình hình tài chính': [{ Name: 'Vốn và các quỹ', Value1: 156_762_644 }] }),
+    ])
+
+    expect(valueOf(data, 2026, 2, 'TOTAL_ASSETS')).toBe(12_537_467)
+    expect(valueOf(data, 2026, 2, 'EQUITY')).toBe(3_758_705)
+    expect(valueOf(data, 2026, 1, 'EQUITY')).toBe(156_762_644)
+  })
+
   it('merges pages without duplicating periods or values', () => {
     const metrics = { 'Kết quả kinh doanh': [{ Name: 'Doanh thu thuần', Value1: 1 }] }
     const data = parseFinanceInfoPages('quarter', [

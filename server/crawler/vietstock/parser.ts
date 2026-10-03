@@ -25,7 +25,8 @@ export interface ParsedFinanceData {
   unmappedNames: string[]
 }
 
-const METRIC_GROUPS = ['Kết quả kinh doanh', 'Cân đối kế toán', 'Chỉ số tài chính']
+// The balance sheet group is now "Báo cáo tình hình tài chính" (was "Cân đối kế toán")
+const METRIC_GROUPS = ['Kết quả kinh doanh', 'Báo cáo tình hình tài chính', 'Cân đối kế toán', 'Chỉ số tài chính']
 
 /**
  * Parse Vietstock date format (YYYYMM or YYYYMMDD) to MySQL DATE.

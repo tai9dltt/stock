@@ -15,6 +15,7 @@ import {
   getThinBorder, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
 import { currentPe, distinctPe, peFormat, peLadder } from './peLadder'
+import { defaultShares } from './shares'
 import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
 
 const HEADER_STYLE = { bold: true, align: 'center' as const, border: true }
@@ -265,7 +266,10 @@ export function buildQuarterlyTable(
       GC, sheet, rows, refs, col, year, quarter, isForecast,
       prevYearCol: col - 4 >= 1 ? col - 4 : undefined,
       value: indicator => data.quarterlyData[indicator]?.[year]?.[quarter],
-      shares: savedShares !== undefined && savedShares !== null ? Number(savedShares) : data.outstandingShares,
+      // Entered by the user, else derived from equity / BVPS, else today's count
+      shares: savedShares !== undefined && savedShares !== null
+        ? Number(savedShares)
+        : defaultShares(data.quarterlyData, year, quarter, data.outstandingShares),
       growthOverride: kind => data.growthOverrides[kind]?.[`${year}_${quarter}`],
     }
     profile.quarterlyRows.forEach(spec => spec.render(cell))

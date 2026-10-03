@@ -121,6 +121,7 @@ export const QUARTERLY_INDICATOR_SOURCES: Record<string, string[]> = {
   currentAssets: ['CURRENT_ASSETS'],
   shortTermLiabilities: ['SHORT_TERM_LIABILITIES'],
   equity: ['EQUITY'],
+  minorityInterest: ['MINORITY_INTEREST'],
 };
 
 export const ANNUAL_INDICATOR_SOURCES: Record<string, string[]> = {

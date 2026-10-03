@@ -262,22 +262,22 @@ S26 | =O26 * (1 + S36) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLef
 T26 | =P26 * (1 + T36) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 U26 | =Q26 * (1 + U36) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 A27 | "KL CP lưu hành" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-C27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-D27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-E27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
-F27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-G27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-H27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-I27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
-J27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-K27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-L27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-M27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
-N27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-O27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-P27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
-Q27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
+B27 | 986199000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+C27 | 982773000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+D27 | 1479494000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+E27 | 1479944000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
+F27 | 1490100000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+G27 | 1489392000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+H27 | 1489803000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+I27 | 1490057000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
+J27 | 1490378000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+K27 | 1500561000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+L27 | 1500395000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+M27 | 1950858000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
+N27 | 1951189000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+O27 | 1952720000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+P27 | 2067082000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+Q27 | 2067465000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","locked":false}
 R27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
 S27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
 T27 | 500000000 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
