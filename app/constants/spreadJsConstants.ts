@@ -13,6 +13,7 @@ export const SPREADJS_COLORS = {
   DISPLAY: '#E2EFDA',
   DEFAULT_HIGHLIGHT: '#FFE4E1',
   TEXT_RED: '#e02926',
+  NOTE: '#6B7280',
 };
 
 // ============ YEAR DETECTION ============
@@ -35,6 +36,7 @@ export const INPUT_AREA = {
   COL: 10, // Column K
   ROW_START: 3,
   VALUE_COL_OFFSET: 2, // Values in COL + 2
+  NOTE_SPAN: 3, // Note ("actual" / "forecast") right of the values, over 3 columns
 };
 
 // ============ ANNUAL TABLE ============

@@ -4,7 +4,7 @@
  */
 
 import type {
-  AnalysisSheetData, CellContext, InputCellReferences, QuarterlyColumnInfo, RowMap, RowSpec,
+  AnalysisSheetData, CellContext, InputCellReferences, InputField, QuarterlyColumnInfo, RowMap, RowSpec,
   SheetContext, StockProfile,
 } from './types'
 import {
@@ -64,37 +64,51 @@ export function buildInputSection(
   const col = INPUT_AREA.COL
   const startRow = INPUT_AREA.ROW_START
   const valueCol = col + INPUT_AREA.VALUE_COL_OFFSET
+  const noteCol = valueCol + 1
   const labels = profile.inputLabels
 
   sheet.setColumnWidth(col, 180)
   sheet.setColumnWidth(col + 1, 100)
   sheet.setColumnWidth(valueCol, 120)
 
+  // Note column: spans several columns since quarterly columns below are narrow
+  const noteCell = (row: number, text: string, style: Parameters<typeof setCell>[5]) => {
+    setCell(GC, sheet, row, noteCol, text, { align: 'left', ...style })
+    sheet.addSpan(row, noteCol, 1, INPUT_AREA.NOTE_SPAN)
+    sheet.getRange(row, noteCol, 1, INPUT_AREA.NOTE_SPAN).setBorder(getThinBorder(GC), { all: true })
+  }
+
   const inputRow = (
     row: number,
-    label: string,
+    field: InputField,
     value: number,
     { editable = false, format = '#,##0', bg = SPREADJS_COLORS.INPUT } = {}
   ) => {
-    setCell(GC, sheet, row, col, label, { bold: true, align: 'left' })
+    setCell(GC, sheet, row, col, labels[field], { bold: true, align: 'left' })
     sheet.addSpan(row, col, 1, 2)
     sheet.getRange(row, col, 1, 2).setBorder(getThinBorder(GC), { all: true })
 
     setCell(GC, sheet, row, valueCol, value, { format, border: true, bg })
     if (editable) sheet.getCell(row, valueCol).locked(false)
+
+    const note = profile.inputNotes[field]
+    noteCell(row, note.text, note.kind === 'forecast'
+      ? { bold: true, color: SPREADJS_COLORS.FORECAST }
+      : { color: SPREADJS_COLORS.NOTE })
   }
 
   const formattedDate = data.tradingDate ? data.tradingDate.split('-').reverse().join('/') : ''
   setCell(GC, sheet, startRow, col, `Ngày: ${formattedDate}`, { bold: true, align: 'left', bg: '#D9E1F2' })
   sheet.addSpan(startRow, col, 1, 3)
+  noteCell(startRow, 'Loại số liệu', { bold: true, bg: '#D9E1F2' })
 
-  inputRow(startRow + 1, labels.currentPrice, data.currentPrice || 0, { editable: true })
-  inputRow(startRow + 2, labels.outstandingShares, data.outstandingShares || 0, { editable: true })
-  inputRow(startRow + 3, labels.max52W, data.max52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
-  inputRow(startRow + 4, labels.min52W, data.min52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
-  inputRow(startRow + 5, labels.revenueGrowth, data.revenueGrowth || 0, { editable: true, format: '0.00%' })
-  inputRow(startRow + 6, labels.grossMargin, data.grossMargin || 0, { editable: true, format: '0.00%' })
-  inputRow(startRow + 7, labels.netProfitGrowth, data.netProfitGrowth || 0, { editable: true, format: '0.00%' })
+  inputRow(startRow + 1, 'currentPrice', data.currentPrice || 0, { editable: true })
+  inputRow(startRow + 2, 'outstandingShares', data.outstandingShares || 0, { editable: true })
+  inputRow(startRow + 3, 'max52W', data.max52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
+  inputRow(startRow + 4, 'min52W', data.min52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
+  inputRow(startRow + 5, 'revenueGrowth', data.revenueGrowth || 0, { editable: true, format: '0.00%' })
+  inputRow(startRow + 6, 'grossMargin', data.grossMargin || 0, { editable: true, format: '0.00%' })
+  inputRow(startRow + 7, 'netProfitGrowth', data.netProfitGrowth || 0, { editable: true, format: '0.00%' })
 
   const ref = (row: number) => getCellAddr(GC, sheet, row, valueCol)
   return {

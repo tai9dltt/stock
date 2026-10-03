@@ -25,7 +25,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   const valuationStartRow = buildValuationTable(ctx, quarterly.cols, quarterly.rows, quarterly.lastRow, data)
 
   const maxCol = Math.max(
-    INPUT_AREA.COL + 3,
+    INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET + 1 + INPUT_AREA.NOTE_SPAN,
     quarterly.nextCol + 1,
     Math.max(0, ...Object.values(annual.colMap)) + 1,
     30

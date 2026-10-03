@@ -11,6 +11,9 @@ E4 | "2025\n01/01-31/12" | {"backColor":"#70AD47","borderBottom":"thin","borderL
 F4 | "2026 (F)\n01/01-31/12" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 G4 | "2027 (F)\n01/01-31/12" | {"backColor":"#FF1493","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 K4 | "Ngày: 02/10/2026" | {"backColor":"#D9E1F2","font":"bold 11pt Calibri","hAlign":"left"}
+N4 | "Loại số liệu" | {"backColor":"#D9E1F2","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
+O4 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P4 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A5 | "Doanh thu thuần" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B5 | 22028135 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C5 | 18817475 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -21,6 +24,9 @@ G5 | =V23 + W23 + X23 + Y23 | {"borderBottom":"thin","borderLeft":"thin","border
 K5 | "Giá cổ phiếu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M5 | 25000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+N5 | "Thực tế · dùng tính P/E" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+O5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A6 | "Lợi nhuận gộp" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B6 | =B24 + C24 + D24 + E24 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C6 | =F24 + G24 + H24 + I24 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -31,6 +37,9 @@ G6 | =V24 + W24 + X24 + Y24 | {"borderBottom":"thin","borderLeft":"thin","border
 K6 | "Số lượng CP lưu hành" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M6 | 500000000 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
+N6 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+O6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A7 | "LN từ HĐKD" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B7 | 868058 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C7 | 469338 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -41,6 +50,9 @@ G7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop"
 K7 | "Giá cao nhất 52T" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M7 | 32000 | {"backColor":"#E2EFDA","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+N7 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+O7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A8 | "LNST công ty mẹ" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B8 | 683783 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C8 | 354392 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -51,6 +63,9 @@ G8 | =V27 + W27 + X27 + Y27 | {"borderBottom":"thin","borderLeft":"thin","border
 K8 | "Giá thấp nhất 52T" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M8 | 20000 | {"backColor":"#E2EFDA","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+N8 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#6B7280","hAlign":"left"}
+O8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A9 | "Biên LN gộp (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B9 | =IF(B5<>0, B6/B5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 C9 | =IF(C5<>0, C6/C5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
@@ -61,6 +76,9 @@ G9 | =IF(G5<>0, G6/G5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRi
 K9 | "% TT Doanh thu" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M9 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+N9 | "Dự phóng · tăng trưởng YoY theo quý" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#FF1493","hAlign":"left"}
+O9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A10 | "Biên LN ròng (%)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B10 | =IF(B5<>0, B8/B5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 C10 | =IF(C5<>0, C8/C5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
@@ -71,6 +89,9 @@ G10 | =IF(G5<>0, G8/G5, 0) | {"borderBottom":"thin","borderLeft":"thin","borderR
 K10 | "% Biên LN gộp" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M10 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+N10 | "Dự phóng · biên LN gộp các quý (F)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#FF1493","hAlign":"left"}
+O10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A11 | "EPS (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B11 | 5421 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C11 | 2123 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -81,6 +102,9 @@ G11 | =IF(AVERAGE(V28:Y28)<>0, G8 * 1000000 / AVERAGE(V28:Y28), 0) | {"borderBot
 K11 | "% TT LNST" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M11 | 0 | {"backColor":"#FFF2CC","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+N11 | "Dự phóng · tăng trưởng YoY theo quý" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#FF1493","hAlign":"left"}
+O11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
+P11 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 A12 | "P/E (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 B12 | 6.96 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
 C12 | 24.63 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
@@ -883,7 +907,7 @@ cf X35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"th
 cf X36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf Y35 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 cf Y36 cellValue<0 {"backColor":"#FFC7CE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"} ; cellValue>0.2 {"backColor":"#C6EFCE","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-spans A21+2x1 B21+1x4 B40+1x4 F21+1x4 F40+1x4 J21+1x4 J40+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N21+1x4 N40+1x4 R21+1x4 R40+1x4 V21+1x4 V40+1x4
+spans A21+2x1 B21+1x4 B40+1x4 F21+1x4 F40+1x4 J21+1x4 J40+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N10+1x3 N11+1x3 N21+1x4 N4+1x3 N40+1x4 N5+1x3 N6+1x3 N7+1x3 N8+1x3 N9+1x3 R21+1x4 R40+1x4 V21+1x4 V40+1x4
 rowHeights [[0,50],[3,60],[20,30],[21,50],[39,30],[40,50]]
 colWidths [[0,150],[1,110],[2,110],[3,110],[4,110],[5,110],[6,110],[7,110],[8,110],[9,110],[10,110],[11,110],[12,110],[13,110],[14,110],[15,110],[16,110],[17,110],[18,110],[19,110],[20,110],[21,110],[22,110],[23,110],[24,110]]
 meta {"autoFitColumn":0,"columnCount":30,"rowCount":53,"frozenColumnCount":1}

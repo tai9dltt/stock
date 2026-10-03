@@ -71,18 +71,26 @@ export interface RowSpec {
   render: (cell: CellContext) => void
 }
 
+export type InputField =
+  | 'currentPrice'
+  | 'outstandingShares'
+  | 'max52W'
+  | 'min52W'
+  | 'revenueGrowth'
+  | 'grossMargin'
+  | 'netProfitGrowth'
+
+/** Note next to an input: whether it is market data or a forecast assumption */
+export interface InputNote {
+  text: string
+  kind: 'actual' | 'forecast' | 'unused'
+}
+
 export interface StockProfile {
   type: StockType
   title: string
-  inputLabels: {
-    currentPrice: string
-    outstandingShares: string
-    max52W: string
-    min52W: string
-    revenueGrowth: string
-    grossMargin: string
-    netProfitGrowth: string
-  }
+  inputLabels: Record<InputField, string>
+  inputNotes: Record<InputField, InputNote>
   /** A quarter with any of these indicators is actual data, not a forecast */
   actualDataIndicators: string[]
   annualRows: RowSpec[]

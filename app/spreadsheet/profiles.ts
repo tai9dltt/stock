@@ -5,7 +5,7 @@
  * insurance) means adding a profile here.
  */
 
-import type { RowSpec, StockProfile, StockType } from './types'
+import type { InputNote, RowSpec, StockProfile, StockType } from './types'
 import {
   amount, assetReturn, forecastGrossProfit, growth, projectedAmount, quarterlyEps, quarterlyPe,
   ratio, reported, shares, trailingEps,
@@ -13,6 +13,21 @@ import {
 
 const AMOUNT = '#,##0'
 const PERCENT = '0.00%'
+
+const COMMON_INPUT_NOTES: StockProfile['inputNotes'] = {
+  currentPrice: { kind: 'actual', text: 'Thực tế · dùng tính P/E' },
+  outstandingShares: { kind: 'actual', text: 'Thực tế (Vietstock)' },
+  max52W: { kind: 'actual', text: 'Thực tế (Vietstock)' },
+  min52W: { kind: 'actual', text: 'Thực tế (Vietstock)' },
+  // Forecast quarters (F) = same quarter last year × (1 + %)
+  revenueGrowth: { kind: 'forecast', text: 'Dự phóng · tăng trưởng YoY theo quý' },
+  // Gross profit of forecast quarters = revenue × %
+  grossMargin: { kind: 'forecast', text: 'Dự phóng · biên LN gộp các quý (F)' },
+  netProfitGrowth: { kind: 'forecast', text: 'Dự phóng · tăng trưởng YoY theo quý' },
+}
+
+/** For profiles whose gross profit row is reported only, never forecast */
+const UNUSED_GROSS_MARGIN: InputNote = { kind: 'unused', text: 'Không dùng cho loại cổ phiếu này' }
 
 const COMMON_INPUT_LABELS = {
   currentPrice: 'Giá cổ phiếu',
@@ -55,6 +70,7 @@ const industrial: StockProfile = {
   type: 'industrial',
   title: 'TẦM SOÁT CỔ PHIẾU',
   inputLabels: COMMON_INPUT_LABELS,
+  inputNotes: COMMON_INPUT_NOTES,
   actualDataIndicators: ['netRevenue'],
   annualSumOfQuarters: ['grossProfit'],
   annualRows: [
@@ -100,6 +116,7 @@ const bank: StockProfile = {
     revenueGrowth: '% TT Thu nhập lãi',
     grossMargin: '% NIM',
   },
+  inputNotes: { ...COMMON_INPUT_NOTES, grossMargin: UNUSED_GROSS_MARGIN },
   actualDataIndicators: ['netInterestIncome', 'totalAssets'],
   annualSumOfQuarters: ['operatingExpenses'],
   annualRows: [
@@ -143,6 +160,7 @@ const securities: StockProfile = {
   type: 'securities',
   title: 'TẦM SOÁT CỔ PHIẾU CHỨNG KHOÁN',
   inputLabels: COMMON_INPUT_LABELS,
+  inputNotes: { ...COMMON_INPUT_NOTES, grossMargin: UNUSED_GROSS_MARGIN },
   actualDataIndicators: ['netRevenue', 'netProfit'],
   annualSumOfQuarters: ['grossProfit'],
   annualRows: [
