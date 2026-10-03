@@ -353,13 +353,18 @@ export function applyGrowthHighlightRange(
   cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
 }
 
-/** Relative A1 address, e.g. (25, 5) → "F26" */
-function relativeAddr(row: number, col: number): string {
+/** Column letters, e.g. 0 → "A", 26 → "AA" */
+export function columnName(col: number): string {
   let name = ''
   for (let n = col + 1; n > 0; n = Math.floor((n - 1) / 26)) {
     name = String.fromCharCode(65 + ((n - 1) % 26)) + name
   }
-  return `${name}${row + 1}`
+  return name
+}
+
+/** Relative A1 address, e.g. (25, 5) → "F26" */
+export function relativeAddr(row: number, col: number): string {
+  return `${columnName(col)}${row + 1}`
 }
 
 /**

@@ -7,3 +7,11 @@ A45 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","bord
 A46 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
 A47 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
 A48 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A51 | "Độ nhạy giá mục tiêu" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
+A52 | "" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri"}
+A53 | "TT LNST \\ P/E" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+A54 | -0.1 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+A55 | 0 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+A56 | 0.1 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+A57 | 0.2 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+A58 | 0.3 | {"borderBottom":"undefined","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}

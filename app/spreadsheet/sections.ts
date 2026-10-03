@@ -455,13 +455,13 @@ export function buildValuationTable(
 
 // ─── Final touches ──────────────────────────────────────────────────
 
-export function applyFinalStyling(ctx: SheetContext, maxCol: number, valuationStartRow: number): void {
+export function applyFinalStyling(ctx: SheetContext, maxCol: number, lastRow: number): void {
   const { GC, spread, sheet } = ctx
 
   sheet.autoFitColumn(0)
   sheet.setColumnWidth(0, 150)
   sheet.setColumnCount(Math.max(maxCol, 30))
-  sheet.setRowCount(valuationStartRow + VALUATION_TABLE.TOTAL_ROWS + 4)
+  sheet.setRowCount(lastRow + 4)
   sheet.frozenColumnCount(1)
   // No grid outside the tables: empty cells stay blank
   sheet.options.gridline = { showVerticalGridline: false, showHorizontalGridline: false }

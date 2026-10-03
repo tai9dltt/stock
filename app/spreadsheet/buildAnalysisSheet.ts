@@ -12,6 +12,7 @@ import {
   applyFinalStyling, buildAnnualTable, buildInputSection, buildQuarterlyTable, buildTitleSection,
   buildValuationTable, linkAnnualToQuarterly, stripeRows,
 } from './sections'
+import { buildSensitivityTable } from './sensitivity'
 
 export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): AnalysisSheetLayout {
   const stockType = detectStockType(data.symbol, data.annualData, data.quarterlyData)
@@ -26,6 +27,8 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   linkAnnualToQuarterly(ctx, profile, annual.colMap, annual.rows, quarterly.cols, quarterly.rows, refs)
 
   const valuationStartRow = buildValuationTable(ctx, quarterly.cols, quarterly.rows, quarterly.lastRow, data)
+  const valuationLastRow = valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS
+  const sensitivity = buildSensitivityTable(ctx, data, refs, quarterly.cols, quarterly.rows, valuationLastRow)
 
   const maxCol = Math.max(
     INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET + 1 + INPUT_AREA.NOTE_SPAN,
@@ -51,14 +54,14 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   // Last: stripes only fill cells that have no colour of their own
   stripeRows(ctx, annualTable.firstRow, annualTable.lastRow, annualTable.lastCol)
   stripeRows(ctx, quarterlyTable.firstRow, quarterlyTable.lastRow, quarterlyTable.lastCol)
-  stripeRows(ctx, valuationStartRow + 2, valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS, quarterly.nextCol - 1)
+  stripeRows(ctx, valuationStartRow + 2, valuationLastRow, quarterly.nextCol - 1)
+  if (sensitivity) stripeRows(ctx, sensitivity.firstDataRow, sensitivity.lastRow, sensitivity.lastCol)
 
   // Frames: each table outlined, a line under its headers
   const { GC, sheet } = ctx
   const underHeader = (row: number, lastCol: number) =>
     sheet.getRange(row, 0, 1, lastCol + 1).setBorder(getSeparatorBorder(GC), { bottom: true })
   const quarterlyHeaderRow = quarterlyTable.firstRow - 2
-  const valuationLastRow = valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS
 
   underHeader(ANNUAL_TABLE.START_ROW, annualTable.lastCol)
   outlineRange(GC, sheet, ANNUAL_TABLE.START_ROW, 0, annualTable.lastRow - ANNUAL_TABLE.START_ROW + 1, annualTable.lastCol + 1)
@@ -73,7 +76,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     .setBorder(getSeparatorBorder(GC), { bottom: true })
   outlineRange(GC, sheet, INPUT_AREA.ROW_START, INPUT_AREA.COL, inputLastRow - INPUT_AREA.ROW_START + 1, inputLastCol - INPUT_AREA.COL + 1)
 
-  applyFinalStyling(ctx, maxCol, valuationStartRow)
+  applyFinalStyling(ctx, maxCol, sensitivity?.lastRow ?? valuationLastRow)
 
   return {
     stockType,

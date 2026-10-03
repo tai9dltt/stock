@@ -723,11 +723,70 @@ R51 | =IF(AND(ISNUMBER($A51), ISNUMBER(R31)), $A51 * R31, "-") | {"backColor":"#
 S51 | =IF(AND(ISNUMBER($A51), ISNUMBER(S31)), $A51 * S31, "-") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T51 | =IF(AND(ISNUMBER($A51), ISNUMBER(T31)), $A51 * T31, "-") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U51 | =IF(AND(ISNUMBER($A51), ISNUMBER(U31)), $A51 * U31, "-") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-cf rowState:active {"backColor":"#EEF6FF"} rows 0+53 cols 0+30
+A54 | "Độ nhạy giá mục tiêu" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
+B54 | "Giá = EPS 4 quý Q2/2026 × (1 + TT LNST 4 quý tới) × P/E" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"left"}
+C54 | {"borderTop":"undefined"}
+D54 | {"borderTop":"undefined"}
+E54 | {"borderTop":"undefined"}
+F54 | {"borderTop":"undefined"}
+G54 | {"borderRight":"undefined","borderTop":"undefined"}
+A55 | "" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri"}
+B55 | "hiện tại" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
+C55 | "thấp nhất" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
+D55 | "vùng thấp" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
+E55 | "trung vị" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
+F55 | "vùng cao" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
+G55 | "cao nhất" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
+A56 | "TT LNST \\ P/E" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+B56 | 6.59 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+C56 | 6.96 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+D56 | 12.24 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+E56 | 15.82 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+F56 | 19.76 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+G56 | 30.05 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+A57 | -0.1 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+B57 | =S31 * (1 + $A57) * B$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C57 | =S31 * (1 + $A57) * C$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D57 | =S31 * (1 + $A57) * D$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E57 | =S31 * (1 + $A57) * E$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F57 | =S31 * (1 + $A57) * F$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G57 | =S31 * (1 + $A57) * G$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+A58 | 0 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+B58 | =S31 * (1 + $A58) * B$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C58 | =S31 * (1 + $A58) * C$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D58 | =S31 * (1 + $A58) * D$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E58 | =S31 * (1 + $A58) * E$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F58 | =S31 * (1 + $A58) * F$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G58 | =S31 * (1 + $A58) * G$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+A59 | 0.1 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+B59 | =S31 * (1 + $A59) * B$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C59 | =S31 * (1 + $A59) * C$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D59 | =S31 * (1 + $A59) * D$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E59 | =S31 * (1 + $A59) * E$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F59 | =S31 * (1 + $A59) * F$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G59 | =S31 * (1 + $A59) * G$56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+A60 | 0.2 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+B60 | =S31 * (1 + $A60) * B$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C60 | =S31 * (1 + $A60) * C$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D60 | =S31 * (1 + $A60) * D$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E60 | =S31 * (1 + $A60) * E$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F60 | =S31 * (1 + $A60) * F$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G60 | =S31 * (1 + $A60) * G$56 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+A61 | 0.3 | {"borderBottom":"undefined","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+B61 | =S31 * (1 + $A61) * B$56 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C61 | =S31 * (1 + $A61) * C$56 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D61 | =S31 * (1 + $A61) * D$56 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E61 | =S31 * (1 + $A61) * E$56 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F61 | =S31 * (1 + $A61) * F$56 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G61 | =S31 * (1 + $A61) * G$56 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+cf rowState:active {"backColor":"#EEF6FF"} rows 0+64 cols 0+30
 cf A21 formula =TRUE {"backColor":"#E2E8F0"}
 cf A4 formula =TRUE {"backColor":"#E2E8F0"}
 cf A40 formula =TRUE {"backColor":"#E2E8F0"}
 cf A41 formula =TRUE {"backColor":"#E2E8F0"}
+cf A54 formula =TRUE {"backColor":"#E2E8F0"}
+cf A55 formula =TRUE {"backColor":"#E2E8F0"}
+cf A56 formula =TRUE {"backColor":"#E2E8F0"}
 cf B16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf B17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf B21 formula =TRUE {"backColor":"#F1F5F9"}
@@ -737,6 +796,14 @@ cf B36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf B4 formula =TRUE {"backColor":"#F1F5F9"}
 cf B40 formula =TRUE {"backColor":"#F1F5F9"}
 cf B41 formula =TRUE {"backColor":"#F1F5F9"}
+cf B54 formula =TRUE {"backColor":"#E2E8F0"}
+cf B55 formula =TRUE {"backColor":"#E2E8F0"}
+cf B56 formula =TRUE {"backColor":"#E2E8F0"}
+cf B57 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf B58 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf B59 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf B60 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf B61 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf C16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf C17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf C22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -744,6 +811,13 @@ cf C35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf C36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf C4 formula =TRUE {"backColor":"#F1F5F9"}
 cf C41 formula =TRUE {"backColor":"#F1F5F9"}
+cf C55 formula =TRUE {"backColor":"#E2E8F0"}
+cf C56 formula =TRUE {"backColor":"#E2E8F0"}
+cf C57 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf C58 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf C59 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf C60 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf C61 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf D16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf D17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf D22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -751,6 +825,13 @@ cf D35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf D36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf D4 formula =TRUE {"backColor":"#F1F5F9"}
 cf D41 formula =TRUE {"backColor":"#F1F5F9"}
+cf D55 formula =TRUE {"backColor":"#E2E8F0"}
+cf D56 formula =TRUE {"backColor":"#E2E8F0"}
+cf D57 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf D58 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf D59 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf D60 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf D61 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf E16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf E17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf E22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -758,6 +839,13 @@ cf E35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf E36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf E4 formula =TRUE {"backColor":"#F1F5F9"}
 cf E41 formula =TRUE {"backColor":"#F1F5F9"}
+cf E55 formula =TRUE {"backColor":"#E2E8F0"}
+cf E56 formula =TRUE {"backColor":"#E2E8F0"}
+cf E57 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf E58 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf E59 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf E60 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf E61 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf F16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf F17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf F21 formula =TRUE {"backColor":"#F1F5F9"}
@@ -769,12 +857,26 @@ cf F36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf F4 formula =TRUE {"backColor":"#FCE7F3"}
 cf F40 formula =TRUE {"backColor":"#F1F5F9"}
 cf F41 formula =TRUE {"backColor":"#F1F5F9"}
+cf F55 formula =TRUE {"backColor":"#E2E8F0"}
+cf F56 formula =TRUE {"backColor":"#E2E8F0"}
+cf F57 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf F58 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf F59 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf F60 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf F61 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf G22 formula =TRUE {"backColor":"#F1F5F9"}
 cf G26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"}
 cf G29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf G35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf G36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf G41 formula =TRUE {"backColor":"#F1F5F9"}
+cf G55 formula =TRUE {"backColor":"#E2E8F0"}
+cf G56 formula =TRUE {"backColor":"#E2E8F0"}
+cf G57 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf G58 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf G59 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf G60 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf G61 formula =AND(ISNUMBER(B57), M5>0, B57<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, B57>=M5, B57<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf H22 formula =TRUE {"backColor":"#F1F5F9"}
 cf H26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"}
 cf H29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
@@ -874,7 +976,7 @@ cf U29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1
 cf U35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U41 formula =TRUE {"backColor":"#FCE7F3"}
-spans A21+2x1 B21+1x4 B40+1x4 F21+1x4 F40+1x4 J21+1x4 J40+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N10+1x3 N11+1x3 N21+1x4 N4+1x3 N40+1x4 N5+1x3 N6+1x3 N7+1x3 N8+1x3 N9+1x3 R21+1x4 R40+1x4
+spans A21+2x1 B21+1x4 B40+1x4 B54+1x6 F21+1x4 F40+1x4 J21+1x4 J40+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N10+1x3 N11+1x3 N21+1x4 N4+1x3 N40+1x4 N5+1x3 N6+1x3 N7+1x3 N8+1x3 N9+1x3 R21+1x4 R40+1x4
 rowHeights [[0,50],[3,60],[20,30],[21,50],[39,30],[40,50]]
 colWidths [[0,150],[1,110],[2,110],[3,110],[4,110],[5,110],[6,110],[7,110],[8,110],[9,110],[10,110],[11,110],[12,110],[13,110],[14,110],[15,110],[16,110],[17,110],[18,110],[19,110],[20,110]]
-meta {"autoFitColumn":0,"columnCount":30,"rowCount":53,"frozenColumnCount":1}
+meta {"autoFitColumn":0,"columnCount":30,"rowCount":64,"frozenColumnCount":1}
