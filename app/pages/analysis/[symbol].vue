@@ -240,18 +240,20 @@ useHead({
       :figures="summary"
       :price-date="state.tradingDate"
       :loading="isLoading"
-    />
+    >
+      <template #tabs>
+        <UTabs
+          v-model="activeTab"
+          :items="tabItems"
+          :content="false"
+          variant="link"
+          size="md"
+          :ui="{ list: 'border-none p-0', trigger: 'cursor-pointer px-3 py-2.5' }"
+        />
+      </template>
+    </AnalysisStockSummaryBar>
 
-    <div class="flex items-center justify-end mt-4 mb-4">
-      <UTabs
-        v-model="activeTab"
-        :items="tabItems"
-        :ui="{ label: 'cursor-pointer' }"
-        class="w-full sm:w-[320px]"
-      />
-    </div>
-
-    <main class="page-content space-y-6">
+    <main class="page-content space-y-6 mt-4">
       <AnalysisAssumptionsForm
         :key="formKey"
         v-show="activeTab === '0'"
