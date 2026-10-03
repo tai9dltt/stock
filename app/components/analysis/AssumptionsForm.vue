@@ -13,6 +13,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   /** Apply the changed fields to the sheet */
   apply: [changes: Partial<Record<EditableField, number>>];
+  /** Replace the P/E scenarios with a ladder from the P/E history */
+  regeneratePe: [];
 }>();
 
 const PERCENT = { style: 'percent', maximumFractionDigits: 2 } as const;
@@ -21,6 +23,7 @@ const INTEGER = { maximumFractionDigits: 0 } as const;
 const groups = computed(() => [
   {
     title: 'Giả định dự phóng',
+    regeneratePe: false,
     hint: 'Áp dụng cho các quý (F)',
     fields: (['revenueGrowth', 'grossMargin', 'netProfitGrowth'] as const).map(field => ({
       field,
@@ -31,6 +34,7 @@ const groups = computed(() => [
   },
   {
     title: 'Định giá',
+    regeneratePe: true,
     hint: 'Giá dùng để tính P/E và giá mục tiêu',
     fields: [
       { field: 'currentPrice' as const, format: INTEGER, step: 100, disabled: false },
@@ -119,6 +123,19 @@ const reset = () => {
             />
           </UFormField>
         </div>
+        <UButton
+          v-if="group.regeneratePe"
+          type="button"
+          color="neutral"
+          variant="link"
+          size="xs"
+          icon="i-lucide-refresh-ccw"
+          class="mt-2 px-0"
+          title="Bỏ các P/E đang có, tạo lại theo P/E 5 năm gần nhất: thấp nhất, vùng thấp, trung vị, vùng cao, cao nhất và P/E hiện tại"
+          @click="emit('regeneratePe')"
+        >
+          Tạo lại thang P/E theo lịch sử 5 năm
+        </UButton>
       </fieldset>
     </div>
 

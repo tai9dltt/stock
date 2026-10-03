@@ -67,6 +67,13 @@ describe.each([
     addYear(state)
     await expect(build(state)).toMatchFileSnapshot(`__snapshots__/sheet-${symbol}-add-year.txt`)
   })
+
+  it('builds the P/E ladder when no scenarios are saved', async () => {
+    const state = load(symbol, response)
+    state.peScenarios = []
+    const valuation = build(state).split('\n').filter(line => /^A(4\d|5\d) \|/.test(line))
+    await expect(valuation.join('\n')).toMatchFileSnapshot(`__snapshots__/pe-ladder-${symbol}.txt`)
+  })
 })
 
 describe('growth typed for a forecast quarter', () => {

@@ -14,6 +14,7 @@ import {
   applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getSeparatorBorder,
   getThinBorder, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
+import { currentPe, distinctPe, peFormat, peLadder } from './peLadder'
 import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
 
 const HEADER_STYLE = { bold: true, align: 'center' as const, border: true }
@@ -353,42 +354,15 @@ export function linkAnnualToQuarterly(
 
 // ─── Valuation table ────────────────────────────────────────────────
 
-/** P/E scenarios: saved by the user, else recent reported P/E + forecast P/E + defaults */
-function resolvePeScenarios(
-  ctx: SheetContext,
-  quarterlyCols: QuarterlyColumnInfo[],
-  quarterlyRows: RowMap,
-  data: AnalysisSheetData,
-  defaultPE: number
-): number[] {
-  if (data.peScenarios.length > 0) return data.peScenarios
-
-  const byPeriod = (a: QuarterlyColumnInfo, b: QuarterlyColumnInfo) =>
-    parseInt(a.year) - parseInt(b.year) || parseInt(a.quarter.slice(1)) - parseInt(b.quarter.slice(1))
-  const isValidPe = (v: unknown) => v !== undefined && v !== null && !isNaN(Number(v)) && Number(v) > 0
-  const round2 = (v: unknown) => Math.round(Number(v) * 100) / 100
-
-  const lastHistorical = quarterlyCols.filter(q => !q.isForecast).sort((a, b) => byPeriod(b, a)).slice(0, 3)
-  const firstForecast = quarterlyCols.filter(q => q.isForecast).sort(byPeriod).slice(0, 3)
-
-  const values: number[] = []
-
-  for (const q of lastHistorical.reverse()) {
-    const pe = data.quarterlyData['pe']?.[q.year]?.[q.quarter]
-    if (isValidPe(pe)) values.push(round2(pe))
-  }
-
-  for (const q of firstForecast) {
-    const pe = ctx.sheet.getValue(quarterlyRows.pe!, q.col)
-    values.push(isValidPe(pe) ? round2(pe) : defaultPE)
-  }
-
-  if (values.length < 6) {
-    const defaults = [9, 11, 12, 13, 14, 5, 4]
-    while (values.length < 7) values.push(defaults[values.length] || 10)
-  }
-
-  return values
+/**
+ * P/E scenarios: the user's saved values (without repeats), else a ladder
+ * from the stock's P/E history. Values matching a ladder level get its label.
+ */
+function resolvePeScenarios(data: AnalysisSheetData): { values: number[]; labels: Map<number, string> } {
+  const ladder = peLadder(data)
+  const labels = new Map(ladder.filter(l => l.label).map(l => [l.value, l.label]))
+  const values = data.peScenarios.length > 0 ? distinctPe(data.peScenarios) : ladder.map(l => l.value)
+  return { values, labels }
 }
 
 /**
@@ -407,9 +381,8 @@ export function buildValuationTable(
   const startRow = quarterlyLastRow + 4
   const totalRows = VALUATION_TABLE.TOTAL_ROWS
 
-  const lastPe = data.annualData['pe']?.[(currentYear - 1).toString()] || data.annualData['pe']?.[(currentYear - 2).toString()] || 10
-  const defaultPE = parseFloat(String(lastPe)) || 10
-  const peScenarios = resolvePeScenarios(ctx, quarterlyCols, quarterlyRows, data, defaultPE)
+  const { values: peScenarios, labels: peLabels } = resolvePeScenarios(data)
+  const current = currentPe(data)
 
   // Year headers
   sheet.setRowHeight(startRow, 30)
@@ -436,7 +409,9 @@ export function buildValuationTable(
 
   const labelStyle = { bold: true, border: true, align: 'center' as const, bg: SPREADJS_COLORS.HEADER }
   setCell(GC, sheet, startRow, 0, 'Niên độ:', labelStyle)
-  setCell(GC, sheet, startRow + 1, 0, 'Giả sử P/E:', labelStyle)
+  // Ladder levels come from the reported P/E of the last 5 years
+  setCell(GC, sheet, startRow + 1, 0, 'Giả sử P/E\n(lịch sử 5 năm)', labelStyle)
+  sheet.getCell(startRow + 1, 0).wordWrap(true)
 
   // Scenario rows
   const endCol = quarterlyCols.length > 0 ? quarterlyCols[quarterlyCols.length - 1]!.col + 1 : 1
@@ -445,10 +420,11 @@ export function buildValuationTable(
     const row = startRow + 2 + r
     const pe = peScenarios[r]
 
-    setCell(GC, sheet, row, 0, pe, { border: true, align: 'center', format: '0.00' })
+    setCell(GC, sheet, row, 0, pe, { border: true, align: 'left', format: peFormat(pe, peLabels) })
     sheet.getCell(row, 0).locked(false)
 
-    if (pe !== undefined && Math.abs(pe - defaultPE) < 0.01) {
+    // The current P/E
+    if (pe !== undefined && current !== null && Math.abs(pe - current) < 0.01) {
       sheet.getRange(row, 0, 1, endCol).backColor(SPREADJS_COLORS.DEFAULT_HIGHLIGHT)
     }
 

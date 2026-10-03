@@ -1,0 +1,9 @@
+A40 | 4.48 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · vùng thấp\"","hAlign":"left","locked":false}
+A41 | 5.58 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · trung vị\"","hAlign":"left","locked":false}
+A42 | 6.28 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · hiện tại\"","hAlign":"left","locked":false}
+A43 | 8.38 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · cao nhất\"","hAlign":"left","locked":false}
+A44 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A45 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A46 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A47 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A48 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}

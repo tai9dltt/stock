@@ -7,6 +7,7 @@ import { shallowRef } from 'vue';
 import type { AnalysisSheetData, AnalysisSheetLayout, GrowthKind } from '~/spreadsheet/types';
 import { buildAnalysisSheet, samePeriodLastYear } from '~/spreadsheet/buildAnalysisSheet';
 import { styleGrowthInput } from '~/spreadsheet/cells';
+import { peFormat, peLadder } from '~/spreadsheet/peLadder';
 import { getCellAddr } from '~/utils/spreadjs';
 import {
   INPUT_AREA, INPUT_FIELDS, inputRow, SPREADJS_COLORS, VALUATION_TABLE, type InputFieldName,
@@ -88,8 +89,22 @@ export function useAnalysisSheet() {
     comparisonRule = cfs.addFormulaRule('=TRUE', style, [new GC.Spread.Sheets.Range(target.row, target.col, 1, 1)]);
   }
 
+  // Labels of the P/E ladder levels of the rendered stock
+  let peLabels = new Map<number, string>();
+
+  /** A P/E scenario was typed: label it if it is a ladder level, else plain */
+  function relabelPeCell(sheet: any, row: number, col: number) {
+    const current = layout.value;
+    if (!current || col !== 0) return;
+    const first = current.valuationStartRow + 2;
+    if (row < first || row >= first + VALUATION_TABLE.TOTAL_ROWS) return;
+    const value = sheet.getValue(row, col);
+    sheet.setFormatter(row, col, peFormat(typeof value === 'number' ? value : undefined, peLabels));
+  }
+
   function render(data: AnalysisSheetData) {
     if (!isReady()) return;
+    peLabels = new Map(peLadder(data).filter(l => l.label).map(l => [l.value, l.label]));
 
     const workbook = spread.value;
     workbook.suspendPaint();
@@ -122,12 +137,16 @@ export function useAnalysisSheet() {
     });
     sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number }) => {
       syncGrowthCell(sheet, info.row, info.col);
+      relabelPeCell(sheet, info.row, info.col);
     });
     // Delete key, paste and fill change ranges instead of single values
     sheet.unbind(GC.Spread.Sheets.Events.RangeChanged);
     sheet.bind(GC.Spread.Sheets.Events.RangeChanged, (_event: unknown, info: { row: number; col: number; rowCount: number; colCount: number }) => {
       for (let r = info.row; r < info.row + info.rowCount; r++) {
-        for (let c = info.col; c < info.col + info.colCount; c++) syncGrowthCell(sheet, r, c);
+        for (let c = info.col; c < info.col + info.colCount; c++) {
+          syncGrowthCell(sheet, r, c);
+          relabelPeCell(sheet, r, c);
+        }
       }
     });
 

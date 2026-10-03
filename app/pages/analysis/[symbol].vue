@@ -122,6 +122,17 @@ const applyAssumptions = (changes: Partial<Record<InputFieldName, number>>) => {
   toast.add({ title: 'Đã áp dụng giả định', description: 'Bảng tính đã được tính lại', color: 'success' });
 };
 
+/** Replace the P/E scenarios with the ladder from the P/E history (saved on "Lưu") */
+const regeneratePe = () => {
+  state.value.peScenarios = [];
+  renderSheet();
+  toast.add({
+    title: 'Đã tạo lại thang P/E',
+    description: 'Theo P/E 5 năm gần nhất và P/E hiện tại. Bấm Lưu để giữ lại.',
+    color: 'success',
+  });
+};
+
 /** From the sheet: the user typed into an input cell */
 sheet.onInputEdited(applyInput);
 
@@ -292,6 +303,7 @@ useHead({
         :labels="profile.inputLabels"
         :notes="profile.inputNotes"
         @apply="applyAssumptions"
+        @regenerate-pe="regeneratePe"
       />
 
       <!-- SpreadJS Area -->

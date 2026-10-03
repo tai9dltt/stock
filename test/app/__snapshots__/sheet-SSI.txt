@@ -492,7 +492,7 @@ R40 | "2026" | {"backColor":"#FCE7F3","borderBottom":"thin","borderLeft":"thin",
 S40 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined"}
 T40 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined"}
 U40 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"undefined"}
-A41 | "Giả sử P/E:" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+A41 | "Giả sử P/E\n(lịch sử 5 năm)" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 B41 | "Q1\n01/01-31/03" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 C41 | "Q2\n01/04-30/06" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 D41 | "Q3\n01/07-30/09" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
@@ -513,7 +513,7 @@ R41 | "Q1 (F)\n01/01-31/03" | {"backColor":"#FCE7F3","borderBottom":"undefined",
 S41 | "Q2 (F)\n01/04-30/06" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
 T41 | "Q3 (F)\n01/07-30/09" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
 U41 | "Q4 (F)\n01/10-31/12" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
-A42 | 14.8 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
+A42 | 6.06 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · thấp nhất\"","hAlign":"left","locked":false}
 B42 | =IF(AND(ISNUMBER($A42), ISNUMBER(B31)), $A42 * B31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C42 | =IF(AND(ISNUMBER($A42), ISNUMBER(C31)), $A42 * C31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 D42 | =IF(AND(ISNUMBER($A42), ISNUMBER(D31)), $A42 * D31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -534,112 +534,112 @@ R42 | =IF(AND(ISNUMBER($A42), ISNUMBER(R31)), $A42 * R31, "-") | {"borderBottom"
 S42 | =IF(AND(ISNUMBER($A42), ISNUMBER(S31)), $A42 * S31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T42 | =IF(AND(ISNUMBER($A42), ISNUMBER(T31)), $A42 * T31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U42 | =IF(AND(ISNUMBER($A42), ISNUMBER(U31)), $A42 * U31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A43 | 20.17 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
-B43 | =IF(AND(ISNUMBER($A43), ISNUMBER(B31)), $A43 * B31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-C43 | =IF(AND(ISNUMBER($A43), ISNUMBER(C31)), $A43 * C31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-D43 | =IF(AND(ISNUMBER($A43), ISNUMBER(D31)), $A43 * D31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-E43 | =IF(AND(ISNUMBER($A43), ISNUMBER(E31)), $A43 * E31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-F43 | =IF(AND(ISNUMBER($A43), ISNUMBER(F31)), $A43 * F31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-G43 | =IF(AND(ISNUMBER($A43), ISNUMBER(G31)), $A43 * G31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-H43 | =IF(AND(ISNUMBER($A43), ISNUMBER(H31)), $A43 * H31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-I43 | =IF(AND(ISNUMBER($A43), ISNUMBER(I31)), $A43 * I31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-J43 | =IF(AND(ISNUMBER($A43), ISNUMBER(J31)), $A43 * J31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-K43 | =IF(AND(ISNUMBER($A43), ISNUMBER(K31)), $A43 * K31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-L43 | =IF(AND(ISNUMBER($A43), ISNUMBER(L31)), $A43 * L31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-M43 | =IF(AND(ISNUMBER($A43), ISNUMBER(M31)), $A43 * M31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-N43 | =IF(AND(ISNUMBER($A43), ISNUMBER(N31)), $A43 * N31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-O43 | =IF(AND(ISNUMBER($A43), ISNUMBER(O31)), $A43 * O31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-P43 | =IF(AND(ISNUMBER($A43), ISNUMBER(P31)), $A43 * P31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-Q43 | =IF(AND(ISNUMBER($A43), ISNUMBER(Q31)), $A43 * Q31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-R43 | =IF(AND(ISNUMBER($A43), ISNUMBER(R31)), $A43 * R31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-S43 | =IF(AND(ISNUMBER($A43), ISNUMBER(S31)), $A43 * S31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-T43 | =IF(AND(ISNUMBER($A43), ISNUMBER(T31)), $A43 * T31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-U43 | =IF(AND(ISNUMBER($A43), ISNUMBER(U31)), $A43 * U31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A44 | 14.74 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
-B44 | =IF(AND(ISNUMBER($A44), ISNUMBER(B31)), $A44 * B31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-C44 | =IF(AND(ISNUMBER($A44), ISNUMBER(C31)), $A44 * C31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-D44 | =IF(AND(ISNUMBER($A44), ISNUMBER(D31)), $A44 * D31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-E44 | =IF(AND(ISNUMBER($A44), ISNUMBER(E31)), $A44 * E31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-F44 | =IF(AND(ISNUMBER($A44), ISNUMBER(F31)), $A44 * F31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-G44 | =IF(AND(ISNUMBER($A44), ISNUMBER(G31)), $A44 * G31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-H44 | =IF(AND(ISNUMBER($A44), ISNUMBER(H31)), $A44 * H31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-I44 | =IF(AND(ISNUMBER($A44), ISNUMBER(I31)), $A44 * I31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-J44 | =IF(AND(ISNUMBER($A44), ISNUMBER(J31)), $A44 * J31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-K44 | =IF(AND(ISNUMBER($A44), ISNUMBER(K31)), $A44 * K31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-L44 | =IF(AND(ISNUMBER($A44), ISNUMBER(L31)), $A44 * L31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-M44 | =IF(AND(ISNUMBER($A44), ISNUMBER(M31)), $A44 * M31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-N44 | =IF(AND(ISNUMBER($A44), ISNUMBER(N31)), $A44 * N31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-O44 | =IF(AND(ISNUMBER($A44), ISNUMBER(O31)), $A44 * O31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-P44 | =IF(AND(ISNUMBER($A44), ISNUMBER(P31)), $A44 * P31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-Q44 | =IF(AND(ISNUMBER($A44), ISNUMBER(Q31)), $A44 * Q31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-R44 | =IF(AND(ISNUMBER($A44), ISNUMBER(R31)), $A44 * R31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-S44 | =IF(AND(ISNUMBER($A44), ISNUMBER(S31)), $A44 * S31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-T44 | =IF(AND(ISNUMBER($A44), ISNUMBER(T31)), $A44 * T31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-U44 | =IF(AND(ISNUMBER($A44), ISNUMBER(U31)), $A44 * U31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A45 | 14.74 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
-B45 | =IF(AND(ISNUMBER($A45), ISNUMBER(B31)), $A45 * B31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-C45 | =IF(AND(ISNUMBER($A45), ISNUMBER(C31)), $A45 * C31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-D45 | =IF(AND(ISNUMBER($A45), ISNUMBER(D31)), $A45 * D31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-E45 | =IF(AND(ISNUMBER($A45), ISNUMBER(E31)), $A45 * E31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-F45 | =IF(AND(ISNUMBER($A45), ISNUMBER(F31)), $A45 * F31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-G45 | =IF(AND(ISNUMBER($A45), ISNUMBER(G31)), $A45 * G31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-H45 | =IF(AND(ISNUMBER($A45), ISNUMBER(H31)), $A45 * H31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-I45 | =IF(AND(ISNUMBER($A45), ISNUMBER(I31)), $A45 * I31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-J45 | =IF(AND(ISNUMBER($A45), ISNUMBER(J31)), $A45 * J31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-K45 | =IF(AND(ISNUMBER($A45), ISNUMBER(K31)), $A45 * K31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-L45 | =IF(AND(ISNUMBER($A45), ISNUMBER(L31)), $A45 * L31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-M45 | =IF(AND(ISNUMBER($A45), ISNUMBER(M31)), $A45 * M31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-N45 | =IF(AND(ISNUMBER($A45), ISNUMBER(N31)), $A45 * N31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-O45 | =IF(AND(ISNUMBER($A45), ISNUMBER(O31)), $A45 * O31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-P45 | =IF(AND(ISNUMBER($A45), ISNUMBER(P31)), $A45 * P31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-Q45 | =IF(AND(ISNUMBER($A45), ISNUMBER(Q31)), $A45 * Q31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-R45 | =IF(AND(ISNUMBER($A45), ISNUMBER(R31)), $A45 * R31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-S45 | =IF(AND(ISNUMBER($A45), ISNUMBER(S31)), $A45 * S31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-T45 | =IF(AND(ISNUMBER($A45), ISNUMBER(T31)), $A45 * T31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-U45 | =IF(AND(ISNUMBER($A45), ISNUMBER(U31)), $A45 * U31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A46 | 14.74 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
-B46 | =IF(AND(ISNUMBER($A46), ISNUMBER(B31)), $A46 * B31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-C46 | =IF(AND(ISNUMBER($A46), ISNUMBER(C31)), $A46 * C31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-D46 | =IF(AND(ISNUMBER($A46), ISNUMBER(D31)), $A46 * D31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-E46 | =IF(AND(ISNUMBER($A46), ISNUMBER(E31)), $A46 * E31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-F46 | =IF(AND(ISNUMBER($A46), ISNUMBER(F31)), $A46 * F31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-G46 | =IF(AND(ISNUMBER($A46), ISNUMBER(G31)), $A46 * G31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-H46 | =IF(AND(ISNUMBER($A46), ISNUMBER(H31)), $A46 * H31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-I46 | =IF(AND(ISNUMBER($A46), ISNUMBER(I31)), $A46 * I31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-J46 | =IF(AND(ISNUMBER($A46), ISNUMBER(J31)), $A46 * J31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-K46 | =IF(AND(ISNUMBER($A46), ISNUMBER(K31)), $A46 * K31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-L46 | =IF(AND(ISNUMBER($A46), ISNUMBER(L31)), $A46 * L31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-M46 | =IF(AND(ISNUMBER($A46), ISNUMBER(M31)), $A46 * M31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-N46 | =IF(AND(ISNUMBER($A46), ISNUMBER(N31)), $A46 * N31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-O46 | =IF(AND(ISNUMBER($A46), ISNUMBER(O31)), $A46 * O31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-P46 | =IF(AND(ISNUMBER($A46), ISNUMBER(P31)), $A46 * P31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-Q46 | =IF(AND(ISNUMBER($A46), ISNUMBER(Q31)), $A46 * Q31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-R46 | =IF(AND(ISNUMBER($A46), ISNUMBER(R31)), $A46 * R31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-S46 | =IF(AND(ISNUMBER($A46), ISNUMBER(S31)), $A46 * S31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-T46 | =IF(AND(ISNUMBER($A46), ISNUMBER(T31)), $A46 * T31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-U46 | =IF(AND(ISNUMBER($A46), ISNUMBER(U31)), $A46 * U31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A47 | 14.74 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
-B47 | =IF(AND(ISNUMBER($A47), ISNUMBER(B31)), $A47 * B31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-C47 | =IF(AND(ISNUMBER($A47), ISNUMBER(C31)), $A47 * C31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-D47 | =IF(AND(ISNUMBER($A47), ISNUMBER(D31)), $A47 * D31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-E47 | =IF(AND(ISNUMBER($A47), ISNUMBER(E31)), $A47 * E31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-F47 | =IF(AND(ISNUMBER($A47), ISNUMBER(F31)), $A47 * F31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-G47 | =IF(AND(ISNUMBER($A47), ISNUMBER(G31)), $A47 * G31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-H47 | =IF(AND(ISNUMBER($A47), ISNUMBER(H31)), $A47 * H31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-I47 | =IF(AND(ISNUMBER($A47), ISNUMBER(I31)), $A47 * I31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-J47 | =IF(AND(ISNUMBER($A47), ISNUMBER(J31)), $A47 * J31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-K47 | =IF(AND(ISNUMBER($A47), ISNUMBER(K31)), $A47 * K31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-L47 | =IF(AND(ISNUMBER($A47), ISNUMBER(L31)), $A47 * L31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-M47 | =IF(AND(ISNUMBER($A47), ISNUMBER(M31)), $A47 * M31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-N47 | =IF(AND(ISNUMBER($A47), ISNUMBER(N31)), $A47 * N31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-O47 | =IF(AND(ISNUMBER($A47), ISNUMBER(O31)), $A47 * O31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-P47 | =IF(AND(ISNUMBER($A47), ISNUMBER(P31)), $A47 * P31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-Q47 | =IF(AND(ISNUMBER($A47), ISNUMBER(Q31)), $A47 * Q31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-R47 | =IF(AND(ISNUMBER($A47), ISNUMBER(R31)), $A47 * R31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-S47 | =IF(AND(ISNUMBER($A47), ISNUMBER(S31)), $A47 * S31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-T47 | =IF(AND(ISNUMBER($A47), ISNUMBER(T31)), $A47 * T31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-U47 | =IF(AND(ISNUMBER($A47), ISNUMBER(U31)), $A47 * U31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A48 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
+A43 | 12.18 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · hiện tại\"","hAlign":"left","locked":false}
+B43 | =IF(AND(ISNUMBER($A43), ISNUMBER(B31)), $A43 * B31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+C43 | =IF(AND(ISNUMBER($A43), ISNUMBER(C31)), $A43 * C31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+D43 | =IF(AND(ISNUMBER($A43), ISNUMBER(D31)), $A43 * D31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+E43 | =IF(AND(ISNUMBER($A43), ISNUMBER(E31)), $A43 * E31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+F43 | =IF(AND(ISNUMBER($A43), ISNUMBER(F31)), $A43 * F31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+G43 | =IF(AND(ISNUMBER($A43), ISNUMBER(G31)), $A43 * G31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+H43 | =IF(AND(ISNUMBER($A43), ISNUMBER(H31)), $A43 * H31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+I43 | =IF(AND(ISNUMBER($A43), ISNUMBER(I31)), $A43 * I31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+J43 | =IF(AND(ISNUMBER($A43), ISNUMBER(J31)), $A43 * J31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+K43 | =IF(AND(ISNUMBER($A43), ISNUMBER(K31)), $A43 * K31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+L43 | =IF(AND(ISNUMBER($A43), ISNUMBER(L31)), $A43 * L31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+M43 | =IF(AND(ISNUMBER($A43), ISNUMBER(M31)), $A43 * M31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+N43 | =IF(AND(ISNUMBER($A43), ISNUMBER(N31)), $A43 * N31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+O43 | =IF(AND(ISNUMBER($A43), ISNUMBER(O31)), $A43 * O31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+P43 | =IF(AND(ISNUMBER($A43), ISNUMBER(P31)), $A43 * P31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+Q43 | =IF(AND(ISNUMBER($A43), ISNUMBER(Q31)), $A43 * Q31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+R43 | =IF(AND(ISNUMBER($A43), ISNUMBER(R31)), $A43 * R31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+S43 | =IF(AND(ISNUMBER($A43), ISNUMBER(S31)), $A43 * S31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+T43 | =IF(AND(ISNUMBER($A43), ISNUMBER(T31)), $A43 * T31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+U43 | =IF(AND(ISNUMBER($A43), ISNUMBER(U31)), $A43 * U31, "-") | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+A44 | 13.86 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · vùng thấp\"","hAlign":"left","locked":false}
+B44 | =IF(AND(ISNUMBER($A44), ISNUMBER(B31)), $A44 * B31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+C44 | =IF(AND(ISNUMBER($A44), ISNUMBER(C31)), $A44 * C31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+D44 | =IF(AND(ISNUMBER($A44), ISNUMBER(D31)), $A44 * D31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+E44 | =IF(AND(ISNUMBER($A44), ISNUMBER(E31)), $A44 * E31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+F44 | =IF(AND(ISNUMBER($A44), ISNUMBER(F31)), $A44 * F31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+G44 | =IF(AND(ISNUMBER($A44), ISNUMBER(G31)), $A44 * G31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+H44 | =IF(AND(ISNUMBER($A44), ISNUMBER(H31)), $A44 * H31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+I44 | =IF(AND(ISNUMBER($A44), ISNUMBER(I31)), $A44 * I31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+J44 | =IF(AND(ISNUMBER($A44), ISNUMBER(J31)), $A44 * J31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+K44 | =IF(AND(ISNUMBER($A44), ISNUMBER(K31)), $A44 * K31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+L44 | =IF(AND(ISNUMBER($A44), ISNUMBER(L31)), $A44 * L31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+M44 | =IF(AND(ISNUMBER($A44), ISNUMBER(M31)), $A44 * M31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+N44 | =IF(AND(ISNUMBER($A44), ISNUMBER(N31)), $A44 * N31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+O44 | =IF(AND(ISNUMBER($A44), ISNUMBER(O31)), $A44 * O31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+P44 | =IF(AND(ISNUMBER($A44), ISNUMBER(P31)), $A44 * P31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+Q44 | =IF(AND(ISNUMBER($A44), ISNUMBER(Q31)), $A44 * Q31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+R44 | =IF(AND(ISNUMBER($A44), ISNUMBER(R31)), $A44 * R31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+S44 | =IF(AND(ISNUMBER($A44), ISNUMBER(S31)), $A44 * S31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+T44 | =IF(AND(ISNUMBER($A44), ISNUMBER(T31)), $A44 * T31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+U44 | =IF(AND(ISNUMBER($A44), ISNUMBER(U31)), $A44 * U31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+A45 | 15.02 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · trung vị\"","hAlign":"left","locked":false}
+B45 | =IF(AND(ISNUMBER($A45), ISNUMBER(B31)), $A45 * B31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+C45 | =IF(AND(ISNUMBER($A45), ISNUMBER(C31)), $A45 * C31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+D45 | =IF(AND(ISNUMBER($A45), ISNUMBER(D31)), $A45 * D31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+E45 | =IF(AND(ISNUMBER($A45), ISNUMBER(E31)), $A45 * E31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+F45 | =IF(AND(ISNUMBER($A45), ISNUMBER(F31)), $A45 * F31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+G45 | =IF(AND(ISNUMBER($A45), ISNUMBER(G31)), $A45 * G31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+H45 | =IF(AND(ISNUMBER($A45), ISNUMBER(H31)), $A45 * H31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+I45 | =IF(AND(ISNUMBER($A45), ISNUMBER(I31)), $A45 * I31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+J45 | =IF(AND(ISNUMBER($A45), ISNUMBER(J31)), $A45 * J31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+K45 | =IF(AND(ISNUMBER($A45), ISNUMBER(K31)), $A45 * K31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+L45 | =IF(AND(ISNUMBER($A45), ISNUMBER(L31)), $A45 * L31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+M45 | =IF(AND(ISNUMBER($A45), ISNUMBER(M31)), $A45 * M31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+N45 | =IF(AND(ISNUMBER($A45), ISNUMBER(N31)), $A45 * N31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+O45 | =IF(AND(ISNUMBER($A45), ISNUMBER(O31)), $A45 * O31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+P45 | =IF(AND(ISNUMBER($A45), ISNUMBER(P31)), $A45 * P31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+Q45 | =IF(AND(ISNUMBER($A45), ISNUMBER(Q31)), $A45 * Q31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+R45 | =IF(AND(ISNUMBER($A45), ISNUMBER(R31)), $A45 * R31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+S45 | =IF(AND(ISNUMBER($A45), ISNUMBER(S31)), $A45 * S31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+T45 | =IF(AND(ISNUMBER($A45), ISNUMBER(T31)), $A45 * T31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+U45 | =IF(AND(ISNUMBER($A45), ISNUMBER(U31)), $A45 * U31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+A46 | 20.48 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · vùng cao\"","hAlign":"left","locked":false}
+B46 | =IF(AND(ISNUMBER($A46), ISNUMBER(B31)), $A46 * B31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+C46 | =IF(AND(ISNUMBER($A46), ISNUMBER(C31)), $A46 * C31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+D46 | =IF(AND(ISNUMBER($A46), ISNUMBER(D31)), $A46 * D31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+E46 | =IF(AND(ISNUMBER($A46), ISNUMBER(E31)), $A46 * E31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+F46 | =IF(AND(ISNUMBER($A46), ISNUMBER(F31)), $A46 * F31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+G46 | =IF(AND(ISNUMBER($A46), ISNUMBER(G31)), $A46 * G31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+H46 | =IF(AND(ISNUMBER($A46), ISNUMBER(H31)), $A46 * H31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+I46 | =IF(AND(ISNUMBER($A46), ISNUMBER(I31)), $A46 * I31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+J46 | =IF(AND(ISNUMBER($A46), ISNUMBER(J31)), $A46 * J31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+K46 | =IF(AND(ISNUMBER($A46), ISNUMBER(K31)), $A46 * K31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+L46 | =IF(AND(ISNUMBER($A46), ISNUMBER(L31)), $A46 * L31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+M46 | =IF(AND(ISNUMBER($A46), ISNUMBER(M31)), $A46 * M31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+N46 | =IF(AND(ISNUMBER($A46), ISNUMBER(N31)), $A46 * N31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+O46 | =IF(AND(ISNUMBER($A46), ISNUMBER(O31)), $A46 * O31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+P46 | =IF(AND(ISNUMBER($A46), ISNUMBER(P31)), $A46 * P31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+Q46 | =IF(AND(ISNUMBER($A46), ISNUMBER(Q31)), $A46 * Q31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+R46 | =IF(AND(ISNUMBER($A46), ISNUMBER(R31)), $A46 * R31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+S46 | =IF(AND(ISNUMBER($A46), ISNUMBER(S31)), $A46 * S31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+T46 | =IF(AND(ISNUMBER($A46), ISNUMBER(T31)), $A46 * T31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+U46 | =IF(AND(ISNUMBER($A46), ISNUMBER(U31)), $A46 * U31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+A47 | 23.63 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · cao nhất\"","hAlign":"left","locked":false}
+B47 | =IF(AND(ISNUMBER($A47), ISNUMBER(B31)), $A47 * B31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+C47 | =IF(AND(ISNUMBER($A47), ISNUMBER(C31)), $A47 * C31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+D47 | =IF(AND(ISNUMBER($A47), ISNUMBER(D31)), $A47 * D31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+E47 | =IF(AND(ISNUMBER($A47), ISNUMBER(E31)), $A47 * E31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+F47 | =IF(AND(ISNUMBER($A47), ISNUMBER(F31)), $A47 * F31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+G47 | =IF(AND(ISNUMBER($A47), ISNUMBER(G31)), $A47 * G31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+H47 | =IF(AND(ISNUMBER($A47), ISNUMBER(H31)), $A47 * H31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+I47 | =IF(AND(ISNUMBER($A47), ISNUMBER(I31)), $A47 * I31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+J47 | =IF(AND(ISNUMBER($A47), ISNUMBER(J31)), $A47 * J31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+K47 | =IF(AND(ISNUMBER($A47), ISNUMBER(K31)), $A47 * K31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+L47 | =IF(AND(ISNUMBER($A47), ISNUMBER(L31)), $A47 * L31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+M47 | =IF(AND(ISNUMBER($A47), ISNUMBER(M31)), $A47 * M31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+N47 | =IF(AND(ISNUMBER($A47), ISNUMBER(N31)), $A47 * N31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+O47 | =IF(AND(ISNUMBER($A47), ISNUMBER(O31)), $A47 * O31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+P47 | =IF(AND(ISNUMBER($A47), ISNUMBER(P31)), $A47 * P31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+Q47 | =IF(AND(ISNUMBER($A47), ISNUMBER(Q31)), $A47 * Q31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+R47 | =IF(AND(ISNUMBER($A47), ISNUMBER(R31)), $A47 * R31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+S47 | =IF(AND(ISNUMBER($A47), ISNUMBER(S31)), $A47 * S31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+T47 | =IF(AND(ISNUMBER($A47), ISNUMBER(T31)), $A47 * T31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+U47 | =IF(AND(ISNUMBER($A47), ISNUMBER(U31)), $A47 * U31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
+A48 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
 B48 | =IF(AND(ISNUMBER($A48), ISNUMBER(B31)), $A48 * B31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C48 | =IF(AND(ISNUMBER($A48), ISNUMBER(C31)), $A48 * C31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 D48 | =IF(AND(ISNUMBER($A48), ISNUMBER(D31)), $A48 * D31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -660,7 +660,7 @@ R48 | =IF(AND(ISNUMBER($A48), ISNUMBER(R31)), $A48 * R31, "-") | {"borderBottom"
 S48 | =IF(AND(ISNUMBER($A48), ISNUMBER(S31)), $A48 * S31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T48 | =IF(AND(ISNUMBER($A48), ISNUMBER(T31)), $A48 * T31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U48 | =IF(AND(ISNUMBER($A48), ISNUMBER(U31)), $A48 * U31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A49 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
+A49 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
 B49 | =IF(AND(ISNUMBER($A49), ISNUMBER(B31)), $A49 * B31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C49 | =IF(AND(ISNUMBER($A49), ISNUMBER(C31)), $A49 * C31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 D49 | =IF(AND(ISNUMBER($A49), ISNUMBER(D31)), $A49 * D31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -681,7 +681,7 @@ R49 | =IF(AND(ISNUMBER($A49), ISNUMBER(R31)), $A49 * R31, "-") | {"backColor":"#
 S49 | =IF(AND(ISNUMBER($A49), ISNUMBER(S31)), $A49 * S31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T49 | =IF(AND(ISNUMBER($A49), ISNUMBER(T31)), $A49 * T31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U49 | =IF(AND(ISNUMBER($A49), ISNUMBER(U31)), $A49 * U31, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A50 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
+A50 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
 B50 | =IF(AND(ISNUMBER($A50), ISNUMBER(B31)), $A50 * B31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C50 | =IF(AND(ISNUMBER($A50), ISNUMBER(C31)), $A50 * C31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 D50 | =IF(AND(ISNUMBER($A50), ISNUMBER(D31)), $A50 * D31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -702,7 +702,7 @@ R50 | =IF(AND(ISNUMBER($A50), ISNUMBER(R31)), $A50 * R31, "-") | {"borderBottom"
 S50 | =IF(AND(ISNUMBER($A50), ISNUMBER(S31)), $A50 * S31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 T50 | =IF(AND(ISNUMBER($A50), ISNUMBER(T31)), $A50 * T31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 U50 | =IF(AND(ISNUMBER($A50), ISNUMBER(U31)), $A50 * U31, "-") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
-A51 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"center","locked":false}
+A51 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
 B51 | =IF(AND(ISNUMBER($A51), ISNUMBER(B31)), $A51 * B31, "-") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 C51 | =IF(AND(ISNUMBER($A51), ISNUMBER(C31)), $A51 * C31, "-") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
 D51 | =IF(AND(ISNUMBER($A51), ISNUMBER(D31)), $A51 * D31, "-") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","hAlign":"right"}
@@ -728,10 +728,7 @@ cf A21 formula =TRUE {"backColor":"#E2E8F0"}
 cf A4 formula =TRUE {"backColor":"#E2E8F0"}
 cf A40 formula =TRUE {"backColor":"#E2E8F0"}
 cf A41 formula =TRUE {"backColor":"#E2E8F0"}
-cf A44 formula =TRUE {"backColor":"#FEF3C7"}
-cf A45 formula =TRUE {"backColor":"#FEF3C7"}
-cf A46 formula =TRUE {"backColor":"#FEF3C7"}
-cf A47 formula =TRUE {"backColor":"#FEF3C7"}
+cf A43 formula =TRUE {"backColor":"#FEF3C7"}
 cf B16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf B17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf B21 formula =TRUE {"backColor":"#F1F5F9"}
@@ -741,10 +738,7 @@ cf B36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf B4 formula =TRUE {"backColor":"#F1F5F9"}
 cf B40 formula =TRUE {"backColor":"#F1F5F9"}
 cf B41 formula =TRUE {"backColor":"#F1F5F9"}
-cf B44 formula =TRUE {"backColor":"#FEF3C7"}
-cf B45 formula =TRUE {"backColor":"#FEF3C7"}
-cf B46 formula =TRUE {"backColor":"#FEF3C7"}
-cf B47 formula =TRUE {"backColor":"#FEF3C7"}
+cf B43 formula =TRUE {"backColor":"#FEF3C7"}
 cf C16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf C17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf C22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -752,10 +746,7 @@ cf C35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf C36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf C4 formula =TRUE {"backColor":"#F1F5F9"}
 cf C41 formula =TRUE {"backColor":"#F1F5F9"}
-cf C44 formula =TRUE {"backColor":"#FEF3C7"}
-cf C45 formula =TRUE {"backColor":"#FEF3C7"}
-cf C46 formula =TRUE {"backColor":"#FEF3C7"}
-cf C47 formula =TRUE {"backColor":"#FEF3C7"}
+cf C43 formula =TRUE {"backColor":"#FEF3C7"}
 cf D16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf D17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf D22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -763,10 +754,7 @@ cf D35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf D36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf D4 formula =TRUE {"backColor":"#F1F5F9"}
 cf D41 formula =TRUE {"backColor":"#F1F5F9"}
-cf D44 formula =TRUE {"backColor":"#FEF3C7"}
-cf D45 formula =TRUE {"backColor":"#FEF3C7"}
-cf D46 formula =TRUE {"backColor":"#FEF3C7"}
-cf D47 formula =TRUE {"backColor":"#FEF3C7"}
+cf D43 formula =TRUE {"backColor":"#FEF3C7"}
 cf E16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf E17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf E22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -774,10 +762,7 @@ cf E35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf E36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf E4 formula =TRUE {"backColor":"#F1F5F9"}
 cf E41 formula =TRUE {"backColor":"#F1F5F9"}
-cf E44 formula =TRUE {"backColor":"#FEF3C7"}
-cf E45 formula =TRUE {"backColor":"#FEF3C7"}
-cf E46 formula =TRUE {"backColor":"#FEF3C7"}
-cf E47 formula =TRUE {"backColor":"#FEF3C7"}
+cf E43 formula =TRUE {"backColor":"#FEF3C7"}
 cf F16 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf F17 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf F21 formula =TRUE {"backColor":"#F1F5F9"}
@@ -789,40 +774,28 @@ cf F36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf F4 formula =TRUE {"backColor":"#FCE7F3"}
 cf F40 formula =TRUE {"backColor":"#F1F5F9"}
 cf F41 formula =TRUE {"backColor":"#F1F5F9"}
-cf F44 formula =TRUE {"backColor":"#FEF3C7"}
-cf F45 formula =TRUE {"backColor":"#FEF3C7"}
-cf F46 formula =TRUE {"backColor":"#FEF3C7"}
-cf F47 formula =TRUE {"backColor":"#FEF3C7"}
+cf F43 formula =TRUE {"backColor":"#FEF3C7"}
 cf G22 formula =TRUE {"backColor":"#F1F5F9"}
 cf G28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf G29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf G35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf G36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf G41 formula =TRUE {"backColor":"#F1F5F9"}
-cf G44 formula =TRUE {"backColor":"#FEF3C7"}
-cf G45 formula =TRUE {"backColor":"#FEF3C7"}
-cf G46 formula =TRUE {"backColor":"#FEF3C7"}
-cf G47 formula =TRUE {"backColor":"#FEF3C7"}
+cf G43 formula =TRUE {"backColor":"#FEF3C7"}
 cf H22 formula =TRUE {"backColor":"#F1F5F9"}
 cf H28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf H29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf H35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf H36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf H41 formula =TRUE {"backColor":"#F1F5F9"}
-cf H44 formula =TRUE {"backColor":"#FEF3C7"}
-cf H45 formula =TRUE {"backColor":"#FEF3C7"}
-cf H46 formula =TRUE {"backColor":"#FEF3C7"}
-cf H47 formula =TRUE {"backColor":"#FEF3C7"}
+cf H43 formula =TRUE {"backColor":"#FEF3C7"}
 cf I22 formula =TRUE {"backColor":"#F1F5F9"}
 cf I28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf I29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf I35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf I36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf I41 formula =TRUE {"backColor":"#F1F5F9"}
-cf I44 formula =TRUE {"backColor":"#FEF3C7"}
-cf I45 formula =TRUE {"backColor":"#FEF3C7"}
-cf I46 formula =TRUE {"backColor":"#FEF3C7"}
-cf I47 formula =TRUE {"backColor":"#FEF3C7"}
+cf I43 formula =TRUE {"backColor":"#FEF3C7"}
 cf J21 formula =TRUE {"backColor":"#F1F5F9"}
 cf J22 formula =TRUE {"backColor":"#F1F5F9"}
 cf J28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
@@ -831,10 +804,7 @@ cf J35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf J36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf J40 formula =TRUE {"backColor":"#F1F5F9"}
 cf J41 formula =TRUE {"backColor":"#F1F5F9"}
-cf J44 formula =TRUE {"backColor":"#FEF3C7"}
-cf J45 formula =TRUE {"backColor":"#FEF3C7"}
-cf J46 formula =TRUE {"backColor":"#FEF3C7"}
-cf J47 formula =TRUE {"backColor":"#FEF3C7"}
+cf J43 formula =TRUE {"backColor":"#FEF3C7"}
 cf K22 formula =TRUE {"backColor":"#F1F5F9"}
 cf K28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf K29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
@@ -842,20 +812,14 @@ cf K35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf K36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf K4 formula =TRUE {"backColor":"#E2E8F0"}
 cf K41 formula =TRUE {"backColor":"#F1F5F9"}
-cf K44 formula =TRUE {"backColor":"#FEF3C7"}
-cf K45 formula =TRUE {"backColor":"#FEF3C7"}
-cf K46 formula =TRUE {"backColor":"#FEF3C7"}
-cf K47 formula =TRUE {"backColor":"#FEF3C7"}
+cf K43 formula =TRUE {"backColor":"#FEF3C7"}
 cf L22 formula =TRUE {"backColor":"#F1F5F9"}
 cf L28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf L29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf L35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf L36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf L41 formula =TRUE {"backColor":"#F1F5F9"}
-cf L44 formula =TRUE {"backColor":"#FEF3C7"}
-cf L45 formula =TRUE {"backColor":"#FEF3C7"}
-cf L46 formula =TRUE {"backColor":"#FEF3C7"}
-cf L47 formula =TRUE {"backColor":"#FEF3C7"}
+cf L43 formula =TRUE {"backColor":"#FEF3C7"}
 cf M10 formula =TRUE {"backColor":"#FEF9C3"}
 cf M11 formula =TRUE {"backColor":"#FEF9C3"}
 cf M22 formula =TRUE {"backColor":"#F1F5F9"}
@@ -864,10 +828,7 @@ cf M29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1
 cf M35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf M36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf M41 formula =TRUE {"backColor":"#F1F5F9"}
-cf M44 formula =TRUE {"backColor":"#FEF3C7"}
-cf M45 formula =TRUE {"backColor":"#FEF3C7"}
-cf M46 formula =TRUE {"backColor":"#FEF3C7"}
-cf M47 formula =TRUE {"backColor":"#FEF3C7"}
+cf M43 formula =TRUE {"backColor":"#FEF3C7"}
 cf M5 formula =TRUE {"backColor":"#FEF9C3"}
 cf M6 formula =TRUE {"backColor":"#FEF9C3"}
 cf M7 formula =TRUE {"backColor":"#F1F5F9"}
@@ -882,40 +843,28 @@ cf N36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf N4 formula =TRUE {"backColor":"#E2E8F0"}
 cf N40 formula =TRUE {"backColor":"#F1F5F9"}
 cf N41 formula =TRUE {"backColor":"#F1F5F9"}
-cf N44 formula =TRUE {"backColor":"#FEF3C7"}
-cf N45 formula =TRUE {"backColor":"#FEF3C7"}
-cf N46 formula =TRUE {"backColor":"#FEF3C7"}
-cf N47 formula =TRUE {"backColor":"#FEF3C7"}
+cf N43 formula =TRUE {"backColor":"#FEF3C7"}
 cf O22 formula =TRUE {"backColor":"#F1F5F9"}
 cf O28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf O29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf O35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf O36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf O41 formula =TRUE {"backColor":"#F1F5F9"}
-cf O44 formula =TRUE {"backColor":"#FEF3C7"}
-cf O45 formula =TRUE {"backColor":"#FEF3C7"}
-cf O46 formula =TRUE {"backColor":"#FEF3C7"}
-cf O47 formula =TRUE {"backColor":"#FEF3C7"}
+cf O43 formula =TRUE {"backColor":"#FEF3C7"}
 cf P22 formula =TRUE {"backColor":"#F1F5F9"}
 cf P28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf P29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf P35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf P36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf P41 formula =TRUE {"backColor":"#F1F5F9"}
-cf P44 formula =TRUE {"backColor":"#FEF3C7"}
-cf P45 formula =TRUE {"backColor":"#FEF3C7"}
-cf P46 formula =TRUE {"backColor":"#FEF3C7"}
-cf P47 formula =TRUE {"backColor":"#FEF3C7"}
+cf P43 formula =TRUE {"backColor":"#FEF3C7"}
 cf Q22 formula =TRUE {"backColor":"#F1F5F9"}
 cf Q28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf Q29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf Q35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf Q36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf Q41 formula =TRUE {"backColor":"#F1F5F9"}
-cf Q44 formula =TRUE {"backColor":"#FEF3C7"}
-cf Q45 formula =TRUE {"backColor":"#FEF3C7"}
-cf Q46 formula =TRUE {"backColor":"#FEF3C7"}
-cf Q47 formula =TRUE {"backColor":"#FEF3C7"}
+cf Q43 formula =TRUE {"backColor":"#FEF3C7"}
 cf R21 formula =TRUE {"backColor":"#FCE7F3"}
 cf R22 formula =TRUE {"backColor":"#FCE7F3"}
 cf R28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
@@ -924,40 +873,28 @@ cf R35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf R36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf R40 formula =TRUE {"backColor":"#FCE7F3"}
 cf R41 formula =TRUE {"backColor":"#FCE7F3"}
-cf R44 formula =TRUE {"backColor":"#FEF3C7"}
-cf R45 formula =TRUE {"backColor":"#FEF3C7"}
-cf R46 formula =TRUE {"backColor":"#FEF3C7"}
-cf R47 formula =TRUE {"backColor":"#FEF3C7"}
+cf R43 formula =TRUE {"backColor":"#FEF3C7"}
 cf S22 formula =TRUE {"backColor":"#FCE7F3"}
 cf S28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf S29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf S35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf S36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf S41 formula =TRUE {"backColor":"#FCE7F3"}
-cf S44 formula =TRUE {"backColor":"#FEF3C7"}
-cf S45 formula =TRUE {"backColor":"#FEF3C7"}
-cf S46 formula =TRUE {"backColor":"#FEF3C7"}
-cf S47 formula =TRUE {"backColor":"#FEF3C7"}
+cf S43 formula =TRUE {"backColor":"#FEF3C7"}
 cf T22 formula =TRUE {"backColor":"#FCE7F3"}
 cf T28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf T29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf T35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf T36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf T41 formula =TRUE {"backColor":"#FCE7F3"}
-cf T44 formula =TRUE {"backColor":"#FEF3C7"}
-cf T45 formula =TRUE {"backColor":"#FEF3C7"}
-cf T46 formula =TRUE {"backColor":"#FEF3C7"}
-cf T47 formula =TRUE {"backColor":"#FEF3C7"}
+cf T43 formula =TRUE {"backColor":"#FEF3C7"}
 cf U22 formula =TRUE {"backColor":"#FCE7F3"}
 cf U28 formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, (F28-B28)/ABS(B28)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F28), ISNUMBER(B28), B28<>0, F28<B28) {"backColor":"#FFC7CE"}
 cf U29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf U35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U41 formula =TRUE {"backColor":"#FCE7F3"}
-cf U44 formula =TRUE {"backColor":"#FEF3C7"}
-cf U45 formula =TRUE {"backColor":"#FEF3C7"}
-cf U46 formula =TRUE {"backColor":"#FEF3C7"}
-cf U47 formula =TRUE {"backColor":"#FEF3C7"}
+cf U43 formula =TRUE {"backColor":"#FEF3C7"}
 spans A21+2x1 B21+1x4 B40+1x4 F21+1x4 F40+1x4 J21+1x4 J40+1x4 K10+1x2 K11+1x2 K4+1x3 K5+1x2 K6+1x2 K7+1x2 K8+1x2 K9+1x2 N10+1x3 N11+1x3 N21+1x4 N4+1x3 N40+1x4 N5+1x3 N6+1x3 N7+1x3 N8+1x3 N9+1x3 R21+1x4 R40+1x4
 rowHeights [[0,50],[3,60],[20,30],[21,50],[39,30],[40,50]]
 colWidths [[0,150],[1,110],[2,110],[3,110],[4,110],[5,110],[6,110],[7,110],[8,110],[9,110],[10,110],[11,110],[12,110],[13,110],[14,110],[15,110],[16,110],[17,110],[18,110],[19,110],[20,110]]
