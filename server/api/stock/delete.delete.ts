@@ -26,6 +26,8 @@ export default defineEventHandler(async (event) => {
         'DELETE FROM stock_analysis WHERE company_id = ?',
         [companyId]
       );
+      // and the forecast journal
+      await connection.query('DELETE FROM forecast_snapshots WHERE company_id = ?', [companyId]);
 
       // Check if there are any remaining references
       const [periods] = await connection.query<any[]>(

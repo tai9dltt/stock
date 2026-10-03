@@ -8,42 +8,37 @@
  * - Range-based conditional formatting (2 rules per row vs per cell)
  */
 
-// Color constants
-export const COLORS = {
-  SELECTED: '#E3F2FD', // Light blue for selected row
-  HEADER: '#1976D2',
-  FORECAST: '#FF1493',
-  HISTORICAL: '#70AD47',
-  INPUT: '#FFF2CC',
-  DISPLAY: '#E2EFDA',
-}
+import { SPREADJS_COLORS } from '~/constants/spreadJsConstants'
 
 // ============ CACHED BORDER SINGLETONS ============
 
 let _cachedThinBorder: any = null
-let _cachedDoubleBorder: any = null
+let _cachedSeparatorBorder: any = null
 let _cachedBorderGC: any = null // Track which GC the borders were created for
 
-/**
- * Get or create a cached thin LineBorder singleton
- */
+function cacheBorders(GC: any) {
+  if (_cachedBorderGC === GC) return
+  _cachedThinBorder = new GC.Spread.Sheets.LineBorder(SPREADJS_COLORS.GRID, GC.Spread.Sheets.LineStyle.thin)
+  _cachedSeparatorBorder = new GC.Spread.Sheets.LineBorder(SPREADJS_COLORS.FRAME, GC.Spread.Sheets.LineStyle.medium)
+  _cachedBorderGC = GC
+}
+
+/** Light line between the cells of a table */
 export function getThinBorder(GC: any): any {
-  if (!_cachedThinBorder || _cachedBorderGC !== GC) {
-    _cachedThinBorder = new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin)
-    _cachedBorderGC = GC
-  }
+  cacheBorders(GC)
   return _cachedThinBorder
 }
 
-/**
- * Get or create a cached double LineBorder singleton
- */
-export function getDoubleBorder(GC: any): any {
-  if (!_cachedDoubleBorder || _cachedBorderGC !== GC) {
-    _cachedDoubleBorder = new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.double)
-    _cachedBorderGC = GC
-  }
-  return _cachedDoubleBorder
+/** Darker line: table frame, under headers, between years */
+export function getSeparatorBorder(GC: any): any {
+  cacheBorders(GC)
+  return _cachedSeparatorBorder
+}
+
+/** Frame a table with the separator line */
+export function outlineRange(GC: any, sheet: any, row: number, col: number, rowCount: number, colCount: number): void {
+  if (rowCount <= 0 || colCount <= 0) return
+  sheet.getRange(row, col, rowCount, colCount).setBorder(getSeparatorBorder(GC), { outline: true })
 }
 
 // ============ CORE UTILITIES ============
@@ -126,7 +121,7 @@ export function setDivisionFormula(
 export function applyRowHighlightOnSelect(
   GC: any,
   sheet: any, // GC.Spread.Sheets.Worksheet
-  rowColor: string = COLORS.SELECTED,
+  rowColor: string = SPREADJS_COLORS.SELECTED,
   startRowOffset: number = 0,
   columnCount?: number,
   startColumnIndex: number = 0
@@ -154,12 +149,56 @@ export function applyRowHighlightOnSelect(
     finalColumnCount
   )
 
+  // Cells with their own colour keep it in the selected row
+  const keepRules = keepCellColours(GC, sheet, viewportRange.rowCount, finalColumnCount)
+
   // Add row state rule for active row
-  cfs.addRowStateRule(
+  const rowRule = cfs.addRowStateRule(
     GC.Spread.Sheets.RowColumnStates.active,
     rowStyle,
     [viewportRange]
   )
+
+  // The newest rule wins by default. Order instead: growth / margin colours,
+  // then the cells' own colours, then the selected row.
+  const rules: any[] | undefined = cfs.getRules?.()
+  if (rules && rowRule) {
+    const others = rules.filter(r => r !== rowRule && !keepRules.includes(r))
+      .sort((a, b) => a.priority() - b.priority())
+    ;[...others, ...keepRules, rowRule].forEach((r, i) => r.priority(i + 1))
+  }
+}
+
+/**
+ * Conditional rules that repaint each cell with its own background (inputs,
+ * headers, highlighted P/E), so the selected-row colour does not cover it.
+ * Zebra stripes are left out: the selected row may cover them.
+ */
+function keepCellColours(GC: any, sheet: any, rowCount: number, colCount: number): any[] {
+  const rangesByColour = new Map<string, any[]>()
+  for (let row = 0; row < rowCount; row++) {
+    let runStart = -1
+    let runColour = ''
+    // Merge runs of same-coloured cells in a row into one range
+    for (let col = 0; col <= colCount; col++) {
+      const colour = col < colCount ? sheet.getCell(row, col).backColor() : undefined
+      const own = colour && colour !== SPREADJS_COLORS.STRIPE ? colour : ''
+      if (own === runColour) continue
+      if (runColour) {
+        const ranges = rangesByColour.get(runColour) ?? []
+        ranges.push(new GC.Spread.Sheets.Range(row, runStart, 1, col - runStart))
+        rangesByColour.set(runColour, ranges)
+      }
+      runStart = col
+      runColour = own
+    }
+  }
+
+  return [...rangesByColour].map(([colour, ranges]) => {
+    const style = new GC.Spread.Sheets.Style()
+    style.backColor = colour
+    return sheet.conditionalFormats.addFormulaRule('=TRUE', style, ranges)
+  })
 }
 
 // ============ CELL STYLING (OPTIMIZED) ============
@@ -301,24 +340,64 @@ export function applyGrowthHighlightRange(
 
   const cfs = sheet.conditionalFormats
   const range = [new GC.Spread.Sheets.Range(row, startCol, 1, colCount)]
-  const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
-  const border = getThinBorder(GC)
-
+  // Numbers only: an empty growth ("") counts as greater than any number.
+  // Relative to the first cell of the range, like Excel.
+  const cell = relativeAddr(row, startCol)
+  // Background only: the cell keeps its own borders
   // Green for > 20%
   const greenStyle = new GC.Spread.Sheets.Style()
   greenStyle.backColor = '#C6EFCE'
-  greenStyle.borderLeft = border
-  greenStyle.borderTop = border
-  greenStyle.borderRight = border
-  greenStyle.borderBottom = border
-  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${cell}>0.2)`, greenStyle, range)
 
   // Pink for < 0
   const pinkStyle = new GC.Spread.Sheets.Style()
   pinkStyle.backColor = '#FFC7CE'
-  pinkStyle.borderLeft = border
-  pinkStyle.borderTop = border
-  pinkStyle.borderRight = border
-  pinkStyle.borderBottom = border
-  cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${cell}<0)`, pinkStyle, range)
+}
+
+/** Column letters, e.g. 0 → "A", 26 → "AA" */
+export function columnName(col: number): string {
+  let name = ''
+  for (let n = col + 1; n > 0; n = Math.floor((n - 1) / 26)) {
+    name = String.fromCharCode(65 + ((n - 1) % 26)) + name
+  }
+  return name
+}
+
+/** Relative A1 address, e.g. (25, 5) → "F26" */
+export function relativeAddr(row: number, col: number): string {
+  return `${columnName(col)}${row + 1}`
+}
+
+/**
+ * Colour a row by its change against `lag` columns earlier (4 = same quarter
+ * last year): green when it grew by more than `greenAbove` (relative, 0.1 =
+ * +10%), red when it fell. Cells without a number on either side stay plain.
+ */
+export function applyYoyChangeHighlight(
+  GC: any,
+  sheet: any,
+  row: number,
+  startCol: number,
+  colCount: number,
+  greenAbove: number = 0.1,
+  lag: number = 4
+): void {
+  if (colCount <= 0 || startCol - lag < 0) return
+
+  const range = [new GC.Spread.Sheets.Range(row, startCol, 1, colCount)]
+  // Relative to the first cell of the range, like Excel
+  const curr = relativeAddr(row, startCol)
+  const prev = relativeAddr(row, startCol - lag)
+  const bothNumbers = `ISNUMBER(${curr}), ISNUMBER(${prev}), ${prev}<>0`
+  // Background only: the cell keeps its own borders
+  const style = (backColor: string) => {
+    const s = new GC.Spread.Sheets.Style()
+    s.backColor = backColor
+    return s
+  }
+
+  const cfs = sheet.conditionalFormats
+  cfs.addFormulaRule(`=AND(${bothNumbers}, (${curr}-${prev})/ABS(${prev})>${greenAbove})`, style('#C6EFCE'), range)
+  cfs.addFormulaRule(`=AND(${bothNumbers}, ${curr}<${prev})`, style('#FFC7CE'), range)
 }

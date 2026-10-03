@@ -7,7 +7,9 @@ import {
   QUARTERLY_INDICATOR_SOURCES,
   ANNUAL_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
-import type { AnalysisSheetData } from '~/spreadsheet/types';
+import type { AnalysisSheetData, GrowthKind, GrowthOverrides } from '~/spreadsheet/types';
+import { extractYearsFromData } from '~/spreadsheet/years';
+import { defaultShares } from '~/spreadsheet/shares';
 import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
 
 /**
@@ -233,6 +235,7 @@ export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
     forecastYears: [],
     forecastQuarters: [],
     peScenarios: [],
+    growthOverrides: {},
     tradingDate: '',
     currentPrice: 0,
     outstandingShares: 0,
@@ -284,9 +287,8 @@ export function buildAnalysisState(
 
   const saved = data.analysis;
   if (saved) {
-    // Shares per quarter are the only per-period figures the user enters
-    if (saved.sharesByQuarter) state.quarterlyData = { outstandingShares: structuredClone(saved.sharesByQuarter) };
     if (saved.peScenarios?.length) state.peScenarios = [...saved.peScenarios];
+    if (saved.growthOverrides) state.growthOverrides = structuredClone(saved.growthOverrides);
     if (saved.outstandingShares && !state.outstandingShares) state.outstandingShares = saved.outstandingShares;
     if (saved.currentPrice && !state.currentPrice) state.currentPrice = saved.currentPrice;
     if (saved.max52W && !state.max52W) state.max52W = saved.max52W;
@@ -306,16 +308,28 @@ export function buildAnalysisState(
   // Years that only have annual data still get (empty) quarter columns
   state.quarterlyData = syncYearsToQuarterly(state.annualData, state.quarterlyData);
 
+  // Shares per quarter are the only per-period figures the user enters;
+  // compared with the defaults, which need the crawled equity / BVPS
+  // (older saves stored every quarter at the share count of the time)
+  const overrides = sharesOverrides(saved?.sharesByQuarter, state.quarterlyData, state.outstandingShares, saved?.outstandingShares);
+  if (overrides) state.quarterlyData.outstandingShares = overrides;
+
   return state;
 }
 
 /**
- * The year "Add Year" appends: the year after the last known one.
+ * The year "Add Year" appends: the year after the last one the sheet shows
+ * (any indicator counts, since banks have no netRevenue).
  */
-export function nextForecastYear(annualData: Record<string, any>, forecastYears: string[]): string {
-  const years = [...Object.keys(annualData['netRevenue'] || {}), ...forecastYears].sort();
-  const lastYear = years[years.length - 1];
-  return lastYear ? String(parseInt(lastYear) + 1) : String(new Date().getFullYear());
+export function nextForecastYear(
+  annualData: Record<string, any>,
+  quarterlyData: Record<string, any>,
+  forecastYears: string[]
+): string {
+  const years = [...extractYearsFromData(annualData), ...extractYearsFromData(quarterlyData), ...forecastYears]
+    .map(Number)
+    .filter(Number.isFinite);
+  return years.length > 0 ? String(Math.max(...years) + 1) : String(new Date().getFullYear());
 }
 
 /**
@@ -344,15 +358,50 @@ export interface TradingPlan {
 export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): SaveAnalysisPayload {
   return {
     symbol: state.symbol,
+    forecastYears: [...state.forecastYears],
     revenueGrowth: state.revenueGrowth,
     grossMargin: state.grossMargin,
     netProfitGrowth: state.netProfitGrowth,
     peScenarios: state.peScenarios.length > 0 ? state.peScenarios : null,
-    sharesByQuarter: state.quarterlyData['outstandingShares'] ?? null,
+    sharesByQuarter: sharesOverrides(state.quarterlyData['outstandingShares'], state.quarterlyData, state.outstandingShares),
+    growthOverrides: cleanGrowthOverrides(state.growthOverrides),
     currentPrice: state.currentPrice || null,
     outstandingShares: state.outstandingShares || null,
     max52W: state.max52W || null,
     min52W: state.min52W || null,
     ...plan,
   };
+}
+
+/**
+ * Quarters whose share count differs from that quarter's default (derived
+ * from equity / BVPS, else the current outstanding shares). Equal values are
+ * defaults the sheet showed, not user edits; keeping them would freeze old
+ * counts, e.g. MBB before its stock dividend.
+ */
+export function sharesOverrides(
+  sharesByQuarter: Record<string, Record<string, number>> | null | undefined,
+  quarterlyData: Record<string, any>,
+  currentShares: number,
+  /** Default when the analysis was saved */
+  savedShares?: number | null
+): Record<string, Record<string, number>> | null {
+  const result: Record<string, Record<string, number>> = {};
+  for (const [year, quarters] of Object.entries(sharesByQuarter ?? {})) {
+    for (const [quarter, shares] of Object.entries(quarters ?? {})) {
+      const isDefault = shares === defaultShares(quarterlyData, year, quarter, currentShares) || shares === savedShares;
+      if (!isDefault) (result[year] ??= {})[quarter] = shares;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+/** Per-quarter assumptions to save: finite values only, null when there is none */
+export function cleanGrowthOverrides(overrides: GrowthOverrides): GrowthOverrides | null {
+  const cleaned: GrowthOverrides = {};
+  for (const kind of ['revenue', 'grossMargin', 'netProfit'] as GrowthKind[]) {
+    const entries = Object.entries(overrides[kind] ?? {}).filter(([, v]) => Number.isFinite(v));
+    if (entries.length > 0) cleaned[kind] = Object.fromEntries(entries);
+  }
+  return Object.keys(cleaned).length > 0 ? cleaned : null;
 }

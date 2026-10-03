@@ -4,8 +4,9 @@
  * Each renderer fills one cell of a row for one period and leaves it bordered.
  */
 
-import type { CellContext, RowKey } from './types'
-import { applyBorder, getCellAddr, setCell, setDivisionFormula } from '~/utils/spreadjs'
+import type { CellContext, GrowthKind, RowKey } from './types'
+import { SPREADJS_COLORS } from '~/constants/spreadJsConstants'
+import { applyBorder, getCellAddr, getThinBorder, setCell, setDivisionFormula } from '~/utils/spreadjs'
 
 type Renderer = (cell: CellContext) => void
 
@@ -41,16 +42,22 @@ export function amount(key: RowKey, indicator: string): Renderer {
 
 /**
  * Reported amount; in forecast periods projected from the same period last year:
- * last year × (1 + growth input)
+ * last year + |last year| × growth, i.e. last year × (1 + growth) for a profit,
+ * while for a loss a positive growth shrinks the loss instead of growing it.
+ * The growth is the input above the sheet, or the period's own growth cell when
+ * `growthRow` is given (quarterly table).
  */
 export function projectedAmount(
   key: RowKey,
   indicator: string,
-  growthRef: 'revenueGrowth' | 'netProfitGrowth'
+  growthRef: 'revenueGrowth' | 'netProfitGrowth',
+  growthRow?: RowKey
 ): Renderer {
   return (cell) => {
     if (cell.isForecast && cell.prevYearCol) {
-      setFormula(cell, key, `${addrOf(cell, key, cell.prevYearCol)} * (1 + ${cell.refs[growthRef]})`, AMOUNT)
+      const rate = growthRow ? addrOf(cell, growthRow) : cell.refs[growthRef]
+      const prev = addrOf(cell, key, cell.prevYearCol)
+      setFormula(cell, key, `${prev} + ABS(${prev}) * ${rate}`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, cell.value(indicator), { format: AMOUNT, border: true })
     }
@@ -58,11 +65,15 @@ export function projectedAmount(
   }
 }
 
-/** Gross profit; in forecast quarters revenue × gross margin input */
-export function forecastGrossProfit(): Renderer {
+/**
+ * Gross profit; in forecast quarters revenue × gross margin: the input above
+ * the sheet, or the quarter's own margin cell when `marginRow` is given
+ */
+export function forecastGrossProfit(marginRow?: RowKey): Renderer {
   return (cell) => {
     if (cell.isForecast) {
-      setFormula(cell, 'grossProfit', `${addrOf(cell, 'revenue')} * ${cell.refs.grossMargin}`, AMOUNT)
+      const margin = marginRow ? addrOf(cell, marginRow) : cell.refs.grossMargin
+      setFormula(cell, 'grossProfit', `${addrOf(cell, 'revenue')} * ${margin}`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'grossProfit'), cell.col, cell.value('grossProfit'), {
         format: AMOUNT,
@@ -145,13 +156,18 @@ export function quarterlyEps(): Renderer {
   }
 }
 
-function lastFourQuartersEps(cell: CellContext): string {
+/** This quarter and the 3 before it, e.g. "F27:I27" */
+function lastFourQuarters(cell: CellContext, key: RowKey): string {
   return cell.GC.Spread.Sheets.CalcEngine.rangeToFormula(
-    cell.sheet.getRange(rowOf(cell, 'eps'), cell.col - 3, 1, 4)
+    cell.sheet.getRange(rowOf(cell, key), cell.col - 3, 1, 4)
   )
 }
 
-/** Trailing 4-quarter EPS: reported for historical quarters, else SUM of the last 4 quarterly EPS */
+/**
+ * Trailing 4-quarter EPS: reported for historical quarters, else
+ * net profit of the last 4 quarters (million VND) × 1,000,000 / this quarter's shares.
+ * (Adding up quarterly EPS would mix share counts before and after stock dividends.)
+ */
 export function trailingEps(): Renderer {
   return (cell) => {
     // Vietstock reports TTM EPS under both 'epsTtm' and 'eps'
@@ -160,7 +176,12 @@ export function trailingEps(): Renderer {
     if (!cell.isForecast && reportedTtm !== undefined) {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'epsTtm'), cell.col, reportedTtm, { format: AMOUNT, border: true })
     } else if (cell.col >= 4) {
-      setFormula(cell, 'epsTtm', `SUM(${lastFourQuartersEps(cell)})`, AMOUNT)
+      const sharesAddr = addrOf(cell, 'shares')
+      setFormula(
+        cell, 'epsTtm',
+        `IF(${sharesAddr}<>0, SUM(${lastFourQuarters(cell, 'netProfit')}) * 1000000 / ${sharesAddr}, 0)`,
+        AMOUNT
+      )
     }
     border(cell, 'epsTtm')
   }
@@ -177,21 +198,89 @@ export function quarterlyPe(reportedInForecast: boolean): Renderer {
     if (isPresent(pe) && (reportedInForecast || !cell.isForecast)) {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'pe'), cell.col, pe, { format: '0.00', border: true })
     } else if (cell.isForecast && cell.col >= 4) {
-      const eps = lastFourQuartersEps(cell)
-      setFormula(cell, 'pe', `IF(SUM(${eps}) <> 0, ${cell.refs.currentPrice} / SUM(${eps}), 0)`, '0.00')
+      const epsTtm = addrOf(cell, 'epsTtm')
+      setFormula(cell, 'pe', `IF(${epsTtm}<>0, ${cell.refs.currentPrice} / ${epsTtm}, 0)`, '0.00')
     }
     border(cell, 'pe')
   }
 }
 
-/** Year-over-year growth of another row */
+/**
+ * Year-over-year growth of another row, against the size of last year's
+ * figure: a loss turning into a profit is a rise, a growing loss a fall.
+ * Empty when either year has no figure.
+ */
 export function growth(key: RowKey, base: RowKey): Renderer {
   return (cell) => {
     if (cell.prevYearCol) {
       const curr = addrOf(cell, base)
       const prev = addrOf(cell, base, cell.prevYearCol)
-      setFormula(cell, key, `IF(${prev}<>0, (${curr}-${prev})/${prev}, 0)`, PERCENT)
+      setFormula(cell, key,
+        `IF(AND(ISNUMBER(${curr}), ISNUMBER(${prev}), ${prev}<>0), (${curr}-${prev})/ABS(${prev}), "")`, PERCENT)
     }
     border(cell, key)
   }
+}
+
+const GROWTH_INPUT: Record<GrowthKind, 'revenueGrowth' | 'grossMargin' | 'netProfitGrowth'> = {
+  revenue: 'revenueGrowth',
+  grossMargin: 'grossMargin',
+  netProfit: 'netProfitGrowth',
+}
+
+/**
+ * Style of a forecast quarter's growth cell: editable; bold when the user typed
+ * a growth for this quarter instead of following the input above the sheet.
+ */
+export function styleGrowthInput(GC: any, sheet: any, row: number, col: number, typed: boolean) {
+  const style = new GC.Spread.Sheets.Style()
+  style.backColor = SPREADJS_COLORS.INPUT
+  if (typed) {
+    style.font = 'bold 11pt Calibri'
+    style.foreColor = SPREADJS_COLORS.FORECAST_TEXT
+  }
+  const border = getThinBorder(GC)
+  style.borderLeft = border
+  style.borderTop = border
+  style.borderRight = border
+  style.borderBottom = border
+  style.formatter = PERCENT
+  style.locked = false
+  sheet.setStyle(row, col, style)
+}
+
+/**
+ * Quarterly growth row. Reported quarters: year-over-year growth of `base`.
+ * Forecast quarters: the growth the projection uses, which the user can type
+ * per quarter; otherwise it follows the input above the sheet.
+ */
+export function quarterlyGrowth(key: RowKey, base: RowKey, kind: GrowthKind): Renderer {
+  const reported = growth(key, base)
+  return (cell) => {
+    if (!cell.isForecast || !cell.prevYearCol) return reported(cell)
+
+    forecastInput(cell, key, kind)
+  }
+}
+
+/**
+ * Quarterly margin row, e.g. gross margin. Reported quarters: numerator ÷
+ * denominator. Forecast quarters: the margin the projection uses, typed per
+ * quarter or following the input above the sheet.
+ */
+export function quarterlyMargin(key: RowKey, numerator: RowKey, denominator: RowKey): Renderer {
+  const reported = ratio(key, numerator, denominator)
+  return (cell) => {
+    if (!cell.isForecast) return reported(cell)
+    forecastInput(cell, key, 'grossMargin')
+  }
+}
+
+/** Forecast quarter cell of an assumption: the typed value, else the input */
+function forecastInput(cell: CellContext, key: RowKey, kind: GrowthKind) {
+  const row = rowOf(cell, key)
+  const typed = cell.growthOverride?.(kind)
+  if (typed !== undefined) cell.sheet.setValue(row, cell.col, typed)
+  else cell.sheet.setFormula(row, cell.col, cell.refs[GROWTH_INPUT[kind]])
+  styleGrowthInput(cell.GC, cell.sheet, row, cell.col, typed !== undefined)
 }

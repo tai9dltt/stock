@@ -105,13 +105,16 @@ const setValues = (data: {
   if (data.stopLoss !== undefined) stopLoss.value = data.stopLoss;
 };
 
+// A cleared number input holds '' (v-model.number keeps text it can't parse)
+const priceOrNull = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : null);
+
 // Get values for global save
 const getTradingData = () => {
   return {
     noteHtml: editor.value?.getHTML() || '',
-    entryPrice: entryPrice.value,
-    targetPrice: targetPrice.value,
-    stopLoss: stopLoss.value,
+    entryPrice: priceOrNull(entryPrice.value),
+    targetPrice: priceOrNull(targetPrice.value),
+    stopLoss: priceOrNull(stopLoss.value),
   };
 };
 

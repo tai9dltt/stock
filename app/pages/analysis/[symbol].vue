@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue';
+import { ref, watch, onMounted, computed, defineAsyncComponent, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
-import { detectStockType } from '~/spreadsheet/profiles';
-import { withForecastYearQuarters } from '~/composables/useStockDataTransform';
+import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
+import type { InputFieldName } from '~/constants/spreadJsConstants';
+import { sharesOverrides, withForecastYearQuarters } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
 import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
+import { preloadGoogleCharts } from '~/utils/googleCharts';
+import { stockSummary } from '~/utils/stockSummary';
 
 // Dynamically import SpreadJS components to avoid SSR issues
 const GcSpreadSheets = defineAsyncComponent(() =>
@@ -23,20 +26,55 @@ const stockSymbol = computed(
 );
 
 const analysis = useStockAnalysis(stockSymbol);
-const { state, savedAnalysis } = analysis;
+const { state, savedAnalysis, isLoading } = analysis;
 const sheet = useAnalysisSheet();
+const toast = useToast();
 
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
-const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart
+const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart, 2 = forecast journal
+// The assumptions form opens from the "Giả định" button next to the tabs
+const showAssumptions = ref(false);
 const tabItems = [
   { label: 'Bảng tính', icon: 'i-lucide-table-2' },
   { label: 'Biểu đồ', icon: 'i-lucide-bar-chart-2' },
+  { label: 'Nhật ký', icon: 'i-lucide-notebook-pen' },
 ];
+
+// The journal tab is created on first open; it reloads after each save
+const journalOpened = ref(false);
+const journalReloadKey = ref(0);
+watch(activeTab, (tab) => {
+  if (tab === '2') journalOpened.value = true;
+});
 
 const stockType = computed(() =>
   detectStockType(stockSymbol.value, state.value.annualData, state.value.quarterlyData),
 );
 const noteHtml = computed(() => savedAnalysis.value?.noteHtml || '');
+
+const summary = computed(() =>
+  stockSummary({
+    ...state.value,
+    targetPrice: savedAnalysis.value?.targetPrice,
+    stopLoss: savedAnalysis.value?.stopLoss,
+  }),
+);
+
+// The chart tab is created on first open and then kept, so switching back is instant
+const chartTabOpened = ref(false);
+let widthWhenChartsHidden = 0;
+watch(activeTab, async (tab, previous) => {
+  if (tab === '1') {
+    chartTabOpened.value = true;
+    // Google Charts only redraws on window resize; catch up on a resize that happened while hidden
+    if (widthWhenChartsHidden && widthWhenChartsHidden !== window.innerWidth) {
+      await nextTick();
+      window.dispatchEvent(new Event('resize'));
+    }
+  } else if (previous === '1') {
+    widthWhenChartsHidden = window.innerWidth;
+  }
+});
 
 // ============ SPREADSHEET ============
 
@@ -56,19 +94,101 @@ const initWorkbook = async (spread: any) => {
 };
 
 let renderTimer: ReturnType<typeof setTimeout> | null = null;
-watch(
-  [
-    () => state.value.annualData,
-    () => state.value.quarterlyData,
-    () => state.value.currentPrice,
-    () => state.value.tradingDate,
-  ],
-  () => {
-    if (renderTimer) clearTimeout(renderTimer);
-    renderTimer = setTimeout(renderSheet, 100);
-  },
-  { deep: true },
-);
+// Set while state takes a value the sheet already shows (a cell the user typed)
+let sheetShowsState = false;
+const scheduleRender = () => {
+  if (sheetShowsState) return;
+  if (renderTimer) clearTimeout(renderTimer);
+  renderTimer = setTimeout(renderSheet, 100);
+};
+
+/** Change state to match the sheet, without rebuilding the sheet */
+const syncFromSheet = (change: () => void) => {
+  sheetShowsState = true;
+  change();
+  // State watchers run before the next tick
+  nextTick(() => {
+    sheetShowsState = false;
+  });
+};
+
+// Rebuild the sheet when a stock is (re)loaded or its figures change.
+// Inputs are not watched: they are written into their cells (see updateInput).
+watch(() => state.value, scheduleRender);
+watch([() => state.value.annualData, () => state.value.quarterlyData], scheduleRender, { deep: true });
+
+// ============ INPUTS (assumptions form ⇄ sheet input cells) ============
+
+const profile = computed(() => STOCK_PROFILES[stockType.value]);
+const assumptionValues = computed(() => ({
+  currentPrice: state.value.currentPrice,
+  outstandingShares: state.value.outstandingShares,
+  revenueGrowth: state.value.revenueGrowth,
+  grossMargin: state.value.grossMargin,
+  netProfitGrowth: state.value.netProfitGrowth,
+}));
+
+// Assumption field ⇄ the per-quarter values typed into the sheet
+const OVERRIDE_KIND = { revenueGrowth: 'revenue', grossMargin: 'grossMargin', netProfitGrowth: 'netProfit' } as const;
+
+/** Forecast quarters the sheet shows with their own value, per assumption field */
+const overrideCounts = computed(() => Object.fromEntries(
+  Object.entries(OVERRIDE_KIND).map(([field, kind]) => [
+    field,
+    Object.keys(state.value.growthOverrides[kind] ?? {}).filter(p => sheet.forecastPeriods.value.has(p)).length,
+  ]),
+));
+
+/** "Đặt lại" in the form: every forecast quarter follows the assumption again */
+const resetOverrides = (field: string) => {
+  if (!(field in OVERRIDE_KIND)) return;
+  const kind = OVERRIDE_KIND[field as keyof typeof OVERRIDE_KIND];
+  state.value.growthOverrides = { ...state.value.growthOverrides, [kind]: {} };
+  renderSheet();
+};
+
+const applyInput = (field: InputFieldName, value: number) => {
+  state.value[field] = value;
+  // Quarters without their own share count use this one, so they need a rebuild
+  if (field === 'outstandingShares') scheduleRender();
+};
+
+/** "Áp dụng" in the form: update the state and the input cells (formulas recalculate) */
+const applyAssumptions = (changes: Partial<Record<InputFieldName, number>>) => {
+  for (const [field, value] of Object.entries(changes) as [InputFieldName, number][]) {
+    applyInput(field, value);
+    if (field !== 'outstandingShares') sheet.setInput(field, value);
+  }
+  toast.add({ title: 'Đã áp dụng giả định', description: 'Bảng tính đã được tính lại', color: 'success' });
+};
+
+/** Replace the P/E scenarios with the ladder from the P/E history (saved on "Lưu") */
+const regeneratePe = () => {
+  state.value.peScenarios = [];
+  renderSheet();
+  toast.add({
+    title: 'Đã tạo lại thang P/E',
+    description: 'Theo P/E 5 năm gần nhất và P/E hiện tại. Bấm Lưu để giữ lại.',
+    color: 'success',
+  });
+};
+
+/** From the sheet: the user typed into an input cell */
+sheet.onInputEdited(applyInput);
+
+/** From the sheet: growth typed for one forecast quarter (null = follow the assumption again) */
+sheet.onGrowthEdited((kind, period, value) => {
+  const { [period]: _previous, ...others } = state.value.growthOverrides[kind] ?? {};
+  state.value.growthOverrides[kind] = value === null ? others : { ...others, [period]: value };
+});
+
+/** From the sheet: P/E scenarios or shares per quarter typed, kept over re-renders */
+sheet.onTableEdited(({ peValues, sharesPerQuarter }) => syncFromSheet(() => {
+  const s = state.value;
+  if (peValues) s.peScenarios = peValues;
+  // Only the counts the user typed; the others keep following their defaults
+  if (sharesPerQuarter) s.quarterlyData['outstandingShares'] = sharesOverrides(sharesPerQuarter, s.quarterlyData, s.outstandingShares) ?? {};
+}));
 
 // ============ ACTIONS ============
 
@@ -84,8 +204,9 @@ const loadAnalysis = async () => {
   }
 };
 
+// New figures; unsaved assumptions and trading plan stay as they are
 const refreshData = async () => {
-  if (await analysis.crawl()) await loadAnalysis();
+  if (await analysis.crawl()) await analysis.load({ keepInputs: true });
 };
 
 const addYear = () => {
@@ -93,15 +214,75 @@ const addYear = () => {
   renderSheet();
 };
 
-const handleGlobalSave = () => {
+// Remounted on reset so the form drops edits it has not applied
+const formKey = ref(0);
+
+const resetChanges = () => {
+  analysis.reset();
+  formKey.value++;
+  toast.add({ title: 'Đã đặt lại', description: 'Bảng tính quay về lần lưu gần nhất', color: 'info' });
+};
+
+const isExporting = ref(false);
+
+const exportExcel = async () => {
+  if (!sheet.isReady()) return;
+  isExporting.value = true;
+  try {
+    const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+    await sheet.exportExcel(`${stockSymbol.value}_phan-tich_${date}.xlsx`);
+  } catch (error) {
+    toast.add({
+      title: 'Không xuất được Excel',
+      description: error instanceof Error ? error.message : String(error),
+      color: 'error',
+    });
+  } finally {
+    isExporting.value = false;
+  }
+};
+
+const secondaryActions = computed(() => [
+  {
+    label: 'Cập nhật dữ liệu',
+    title: 'Tải báo cáo tài chính mới nhất từ Vietstock',
+    icon: 'i-lucide-refresh-cw',
+    loading: false,
+    onClick: refreshData,
+  },
+  {
+    label: 'Thêm năm',
+    title: 'Thêm một năm dự phóng vào bảng tính',
+    icon: 'i-lucide-calendar-plus',
+    loading: false,
+    onClick: addYear,
+  },
+  {
+    label: 'Đặt lại',
+    title: 'Bỏ các thay đổi chưa lưu (giả định, ô đã sửa trong bảng tính, năm vừa thêm)',
+    icon: 'i-lucide-rotate-ccw',
+    loading: false,
+    onClick: resetChanges,
+  },
+  {
+    label: 'Xuất Excel',
+    title: 'Tải bảng tính về dạng .xlsx',
+    icon: 'i-lucide-file-spreadsheet',
+    loading: isExporting.value,
+    onClick: exportExcel,
+  },
+]);
+
+const handleGlobalSave = async () => {
   if (!tradingNoteRef.value) return;
-  analysis.save(tradingNoteRef.value.getTradingData(), sheet.readEdits());
+  if (await analysis.save(tradingNoteRef.value.getTradingData(), sheet.readEdits())) journalReloadKey.value++;
 };
 
 // ============ LIFECYCLE ============
 
-onMounted(() => {
-  if (stockSymbol.value) loadAnalysis();
+onMounted(async () => {
+  if (stockSymbol.value) await loadAnalysis();
+  preloadGoogleCharts();
 });
 
 watch(stockSymbol, (val) => {
@@ -109,43 +290,75 @@ watch(stockSymbol, (val) => {
 });
 
 useHead({
-  title: computed(() => `${stockSymbol.value} (SpreadJS) | Stock Analysis`),
+  title: computed(() => `${stockSymbol.value} · Phân tích`),
 });
 </script>
 
 <template>
-  <div class="analysis-page p-6">
-    <header class="page-header mb-4">
-      <div
-        class="header-content flex flex-col md:flex-row justify-between items-start md:items-center"
-      >
-        <div class="header-left">
-          <nav
-            class="breadcrumb text-sm mb-2 flex items-center gap-2 text-gray-500"
-          >
-            <NuxtLink to="/analysis">Phân tích</NuxtLink>
-            <span>/</span>
-            <span
-              class="text-2xl font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
-            >
-              {{ stockSymbol }}
-            </span>
-          </nav>
-        </div>
-        <div class="header-right mt-4 md:mt-0">
+  <div class="analysis-page max-w-screen-2xl mx-auto px-3 md:px-4 py-4 md:py-6">
+    <AnalysisStockSummaryBar
+      :symbol="stockSymbol"
+      :stock-type="stockType"
+      :figures="summary"
+      :price-date="state.tradingDate"
+      :loading="isLoading"
+    >
+      <template #tabs>
+        <div class="flex items-center gap-2">
           <UTabs
             v-model="activeTab"
             :items="tabItems"
-            :ui="{ label: 'cursor-pointer' }"
-            class="w-full md:w-[320px]"
+            :content="false"
+            variant="link"
+            size="md"
+            :ui="{
+              root: 'w-auto',
+              list: 'border-none p-0 gap-1 w-auto',
+              // Underline drawn inside the tab, so the card edge does not cut it
+              indicator: 'hidden',
+              trigger: [
+                'cursor-pointer px-4 py-3 rounded-t-lg text-sm font-medium text-gray-600 dark:text-gray-400',
+                'hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white',
+                'data-[state=active]:font-semibold data-[state=active]:bg-primary-50 dark:data-[state=active]:bg-primary-950/40',
+                'data-[state=active]:shadow-[inset_0_-3px_0_var(--ui-primary)]',
+              ].join(' '),
+              leadingIcon: 'size-5',
+            }"
           />
+          <!-- Assumptions form: hidden until asked for (sheet tab only) -->
+          <UButton
+            v-if="activeTab === '0'"
+            :icon="showAssumptions ? 'i-lucide-chevron-up' : 'i-lucide-sliders-horizontal'"
+            :color="showAssumptions ? 'primary' : 'neutral'"
+            :variant="showAssumptions ? 'soft' : 'ghost'"
+            :aria-expanded="showAssumptions"
+            aria-controls="assumptions-form"
+            title="Hiện / ẩn giả định dự phóng và định giá"
+            class="ml-auto shrink-0"
+            @click="() => { showAssumptions = !showAssumptions }"
+          >
+            Giả định
+          </UButton>
         </div>
-      </div>
-    </header>
+      </template>
+    </AnalysisStockSummaryBar>
 
-    <main class="page-content space-y-6">
+    <main class="page-content space-y-6 mt-4">
+      <AnalysisAssumptionsForm
+        v-show="activeTab === '0' && showAssumptions"
+        id="assumptions-form"
+        :key="formKey"
+        :values="assumptionValues"
+        :labels="profile.inputLabels"
+        :notes="profile.inputNotes"
+        :override-counts="overrideCounts"
+        @apply="applyAssumptions"
+        @reset-overrides="resetOverrides"
+        @regenerate-pe="regeneratePe"
+      />
+
       <!-- SpreadJS Area -->
-      <UCard v-show="activeTab === '0'" class="p-0 overflow-hidden">
+      <UCard v-show="activeTab === '0'" class="overflow-hidden" :ui="{ body: 'p-2 sm:p-3' }">
         <ClientOnly>
           <div class="h-[700px] w-full">
             <GcSpreadSheets
@@ -157,7 +370,7 @@ useHead({
       </UCard>
 
       <!-- Chart View -->
-      <UCard v-if="activeTab === '1'" class="p-4">
+      <UCard v-if="chartTabOpened" v-show="activeTab === '1'" :ui="{ body: 'p-2 sm:p-3' }">
         <AnalysisChartView
           :quarterly-data="state.quarterlyData"
           :annual-data="state.annualData"
@@ -165,8 +378,18 @@ useHead({
         />
       </UCard>
 
+      <!-- Forecast journal -->
+      <UCard v-if="journalOpened" v-show="activeTab === '2'" :ui="{ body: 'p-3 sm:p-4' }">
+        <AnalysisForecastJournal
+          :symbol="stockSymbol"
+          :stock-type="stockType"
+          :quarterly-data="state.quarterlyData"
+          :reload-key="journalReloadKey"
+        />
+      </UCard>
+
       <!-- Trading Note -->
-      <UCard>
+      <UCard :ui="{ body: 'p-3 sm:p-4' }">
         <AnalysisTradingNote
           ref="tradingNoteRef"
           :note-html="noteHtml"
@@ -174,42 +397,29 @@ useHead({
       </UCard>
     </main>
 
-    <!-- Fixed Bottom Bar -->
+    <!-- Fixed bottom bar: secondary actions on the left (icons only on phones), save on the right -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-100 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4 shadow-lg flex justify-center"
+      class="fixed bottom-0 left-0 right-0 z-100 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 flex justify-center"
     >
-      <div class="w-full flex justify-between px-3">
-        <div class="flex gap-2">
+      <div class="w-full max-w-screen-2xl flex items-center justify-between gap-2 px-3 md:px-4">
+        <div class="flex gap-1 sm:gap-2">
           <UButton
-            color="primary"
-            variant="soft"
-            size="md"
-            class="cursor-pointer"
-            icon="i-lucide-arrow-down-to-line"
-            @click="refreshData"
+            v-for="action in secondaryActions"
+            :key="action.label"
+            color="neutral"
+            variant="outline"
+            :icon="action.icon"
+            :loading="action.loading"
+            :aria-label="action.label"
+            :title="action.title"
+            @click="action.onClick"
           >
-            Crawl
-          </UButton>
-          <UButton
-            color="primary"
-            variant="soft"
-            size="md"
-            class="cursor-pointer"
-            icon="i-lucide-plus"
-            @click="addYear"
-          >
-            Add Year
+            <span class="hidden sm:inline">{{ action.label }}</span>
           </UButton>
         </div>
 
-        <UButton
-          color="primary"
-          size="md"
-          icon="i-lucide-save"
-          class="save-btn-floating"
-          @click="handleGlobalSave"
-        >
-          Save
+        <UButton color="primary" icon="i-lucide-save" class="px-4" @click="handleGlobalSave">
+          Lưu
         </UButton>
       </div>
     </div>
@@ -224,14 +434,5 @@ useHead({
 
 .analysis-page {
   padding-bottom: 100px;
-}
-
-.save-btn-floating {
-  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
-  transition: transform 0.2s ease;
-}
-
-.save-btn-floating:hover {
-  transform: translateY(-2px);
 }
 </style>

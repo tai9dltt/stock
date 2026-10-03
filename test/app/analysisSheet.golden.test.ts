@@ -29,7 +29,7 @@ const load = (symbol: string, response: any) =>
   buildAnalysisState(symbol, JSON.parse(JSON.stringify(response.data)), TRADING, '2026-10-02')
 
 function addYear(state: AnalysisSheetData) {
-  const year = nextForecastYear(state.annualData, state.forecastYears)
+  const year = nextForecastYear(state.annualData, state.quarterlyData, state.forecastYears)
   state.forecastYears.push(year)
   state.forecastQuarters.push(...['Q1', 'Q2', 'Q3', 'Q4'].map(q => `${year}_${q}`))
 }
@@ -66,5 +66,91 @@ describe.each([
     build(state) // initial render (also marks forecast quarters, like the page)
     addYear(state)
     await expect(build(state)).toMatchFileSnapshot(`__snapshots__/sheet-${symbol}-add-year.txt`)
+  })
+
+  it('builds the P/E ladder when no scenarios are saved', async () => {
+    const state = load(symbol, response)
+    state.peScenarios = []
+    const valuation = build(state).split('\n').filter(line => /^A(4\d|5\d) \|/.test(line))
+    await expect(valuation.join('\n')).toMatchFileSnapshot(`__snapshots__/pe-ladder-${symbol}.txt`)
+  })
+})
+
+describe('growth typed for a forecast quarter', () => {
+  const cellOf = (text: string, addr: string) => text.split('\n').find(line => line.startsWith(`${addr} |`))
+
+  it('replaces the growth assumption in that quarter only', () => {
+    const state = load('DGW', DGW)
+    state.growthOverrides = { revenue: { '2026_Q3': 0.3 } }
+    const text = build(state)
+
+    // T35 = TT DT of 2026 Q3, U35 = 2026 Q4 (still following the input M9)
+    expect(cellOf(text, 'T35')).toMatch(/^T35 \| 0\.3 \| .*"font":"bold 11pt Calibri"/)
+    expect(cellOf(text, 'U35')).toMatch(/^U35 \| =M9 \|/)
+    // Revenue keeps projecting from the quarter's growth cell; for a loss last
+    // year, a positive growth shrinks the loss (|last year| × growth)
+    expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \+ ABS\(P23\) \* T35 \|/)
+  })
+
+  it('takes a gross margin typed for one quarter', () => {
+    const state = load('DGW', DGW)
+    state.growthOverrides = { grossMargin: { '2026_Q4': 0.12 } }
+    const text = build(state)
+
+    // T26/U26 = gross margin of 2026 Q3/Q4; gross profit = revenue × that cell
+    expect(cellOf(text, 'T26')).toMatch(/^T26 \| =M10 \|/)
+    expect(cellOf(text, 'U26')).toMatch(/^U26 \| 0\.12 \| .*"font":"bold 11pt Calibri"/)
+    expect(cellOf(text, 'U24')).toMatch(/^U24 \| =U23 \* U26 \|/)
+  })
+})
+
+describe('same period last year', () => {
+  it('points a quarter to the same quarter a year earlier, a year to the year before', async () => {
+    const { samePeriodLastYear } = await import('~/spreadsheet/buildAnalysisSheet')
+    const { sheet } = createFakeSheet()
+    const layout = buildAnalysisSheet({ GC: FakeGC, spread: createFakeSpread(), sheet }, load('DGW', DGW))
+    const [annual, quarterly] = layout.periodTables
+
+    // Quarterly: 4 columns back; nothing before the first year
+    expect(samePeriodLastYear(layout, quarterly!.firstRow + 3, quarterly!.firstCol + 6))
+      .toEqual({ row: quarterly!.firstRow + 3, col: quarterly!.firstCol + 2 })
+    expect(samePeriodLastYear(layout, quarterly!.firstRow, quarterly!.firstCol + 3)).toBeNull()
+    // Annual: the column before
+    expect(samePeriodLastYear(layout, annual!.firstRow, 3)).toEqual({ row: annual!.firstRow, col: 2 })
+    expect(samePeriodLastYear(layout, annual!.firstRow, 1)).toBeNull()
+    // Outside the tables (labels, input area)
+    expect(samePeriodLastYear(layout, quarterly!.firstRow, 0)).toBeNull()
+    expect(samePeriodLastYear(layout, 8, 12)).toBeNull()
+  })
+})
+
+describe('financial health table', () => {
+  it('shows the ratios of reported quarters under the quarterly table', async () => {
+    const state = load('DGW', DGW)
+    const quarters: [string, string][] = [['2025', 'Q1'], ['2025', 'Q2'], ['2025', 'Q3'], ['2025', 'Q4'], ['2026', 'Q1'], ['2026', 'Q2']]
+    const ratios = {
+      cfoToOperatingProfit: [-521.95, 574.14, -260.83, 211.59, 120, 80],
+      borrowingsToEquity: [96.7, 83.49, 75.93, 85.52, 90, 110],
+      debtToEquity: [180.04, 224.17, 173, 233.56, 190, 210],
+      currentRatio: [1.46, 1.38, 1.49, 1.36, 1.4, 0.95],
+      inventoryTurnover: [2.06, 1.96, 2.16, 1.5, 2.3, 2.1],
+      interestCoverage: [4.91, 6.3, 6.14, 8.17, 1.5, 6],
+    }
+    for (const [indicator, values] of Object.entries(ratios)) {
+      state.quarterlyData[indicator] = {}
+      quarters.forEach(([year, quarter], i) => {
+        (state.quarterlyData[indicator][year] ??= {})[quarter] = values[i]
+      })
+    }
+
+    const { sheet, serialize } = createFakeSheet()
+    const layout = buildAnalysisSheet({ GC: FakeGC, spread: createFakeSpread(), sheet }, state)
+    const health = layout.periodTables[2]!
+    const text = serialize()
+    const rowsOf = (from: number, to: number) => text.split('\n')
+      .filter(line => { const m = /^[A-Z]+(\d+) \|/.exec(line); return m && Number(m[1]) >= from && Number(m[1]) <= to })
+    await expect(rowsOf(health.firstRow - 1, health.lastRow + 1).join('\n')).toMatchFileSnapshot('__snapshots__/health-DGW.txt')
+    // The valuation table moved below it
+    expect(layout.valuationStartRow).toBeGreaterThan(health.lastRow)
   })
 })

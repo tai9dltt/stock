@@ -82,6 +82,27 @@ describe('parseFinanceInfoPages', () => {
     ])
   })
 
+  it('derives the yearly period end from its start, not from Vietstock PeriodEnd', () => {
+    const year = (begin: string, end: string) => ({ YearPeriod: 2025, TermCode: 'N', PeriodBegin: begin, PeriodEnd: end, ID: 1 })
+    const ends = (begin: string, end: string) =>
+      parseFinanceInfoPages('year', [page([year(begin, end)], {})]).periods[0]?.periodEnd
+
+    expect(ends('202501', '202612')).toBe('2025-12-31') // calendar year, wrong end from Vietstock
+    expect(ends('202407', '202506')).toBe('2025-06-30') // fiscal year July–June
+  })
+
+  it('derives the yearly period start from its end when the start is invalid', () => {
+    const data = parseFinanceInfoPages('year', [
+      page([{ YearPeriod: 2026, TermCode: 'N', PeriodBegin: '202595', PeriodEnd: '202606', ID: 1 }], {}),
+    ])
+    expect(data.periods[0]).toMatchObject({ periodBegin: '2025-07-01', periodEnd: '2026-06-30' })
+  })
+
+  it('rejects impossible dates instead of failing the crawl', () => {
+    expect(parseVietstockDate('202595')).toBeNull()
+    expect(parseVietstockDate('20250230')).toBeNull()
+  })
+
   it('stores yearly data with quarter 0', () => {
     const data = parseFinanceInfoPages('year', [
       page([{ YearPeriod: 2025, TermCode: 'N', PeriodBegin: '202501', PeriodEnd: '202512', ID: 1 }], {
@@ -132,6 +153,40 @@ describe('parseFinanceInfoPages', () => {
     expect(valueOf(data, 2025, 1, 'REVENUE_NET')).toBe(1)
     expect(valueOf(data, 2025, 1, 'EQUITY')).toBe(2)
     expect(valueOf(data, 2025, 1, 'EPS_TTM')).toBe(3)
+  })
+
+  it('reads the balance sheet under its current name (regression: it was skipped)', () => {
+    const data = parseFinanceInfoPages('quarter', [
+      page([quarter(2026, 2, 1)], {
+        'Báo cáo tình hình tài chính': [
+          { Name: 'Tổng tài sản ', Value1: 12_537_467 },
+          { Name: 'Vốn chủ sở hữu', Value1: 3_758_705 },
+          { Name: 'Lợi ích của CĐ thiểu số', Value1: null },
+        ],
+      }),
+      // Banks call equity "Vốn và các quỹ"
+      page([quarter(2026, 1, 1)], { 'Báo cáo tình hình tài chính': [{ Name: 'Vốn và các quỹ', Value1: 156_762_644 }] }),
+    ])
+
+    expect(valueOf(data, 2026, 2, 'TOTAL_ASSETS')).toBe(12_537_467)
+    expect(valueOf(data, 2026, 2, 'EQUITY')).toBe(3_758_705)
+    expect(valueOf(data, 2026, 1, 'EQUITY')).toBe(156_762_644)
+  })
+
+  it('stores a bank\'s "Tổng TNTT" as profit before tax (regression: was operating income)', () => {
+    // MBB 2025: net interest income 51.6 trillion, TNTT 34.3 trillion, LNST 27.4 trillion
+    const data = parseFinanceInfoPages('year', [
+      page([{ ...quarter(2025, 4, 1), TermCode: 'N' }], {
+        'Kết quả kinh doanh': [
+          { Name: 'Thu nhập lãi thuần', Value1: 51_610_117 },
+          { Name: 'Tổng TNTT', Value1: 34_268_358 },
+          { Name: 'Tổng LNST', Value1: 27_382_978 },
+        ],
+      }),
+    ])
+
+    expect(valueOf(data, 2025, 0, 'PROFIT_BEFORE_TAX')).toBe(34_268_358)
+    expect(valueOf(data, 2025, 0, 'TOTAL_OPERATING_INCOME')).toBeUndefined()
   })
 
   it('merges pages without duplicating periods or values', () => {

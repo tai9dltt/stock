@@ -1,3 +1,5 @@
+import type { GrowthOverrides } from '~/spreadsheet/types';
+
 
 export interface TradingInfo {
   lastPrice: number;
@@ -16,6 +18,8 @@ export interface AnalysisInputs {
   netProfitGrowth: number;
   peScenarios: number[] | null;
   sharesByQuarter: Record<string, Record<string, number>> | null;
+  /** Growth typed for single forecast quarters: { revenue: { "2026_Q3": 0.3 } } */
+  growthOverrides: GrowthOverrides | null;
   /** Market data last shown in the sheet, used when no live price is available */
   currentPrice: number | null;
   outstandingShares: number | null;
@@ -27,8 +31,29 @@ export interface AnalysisInputs {
   noteHtml: string | null;
 }
 
+/** What the forecast quarters showed when saving: { "2026_Q3": { revenue, netProfit, eps } } */
+export type ForecastFigures = Record<string, { revenue: number | null; netProfit: number | null; eps: number | null }>;
+
+/** One entry of the forecast journal */
+export interface ForecastSnapshot {
+  id: number;
+  createdAt: string;
+  assumptions: {
+    revenueGrowth: number;
+    grossMargin: number;
+    netProfitGrowth: number;
+    growthOverrides: GrowthOverrides | null;
+    currentPrice: number | null;
+    targetPrice: number | null;
+  };
+  forecast: ForecastFigures;
+}
+
 export interface SaveAnalysisPayload extends AnalysisInputs {
   symbol: string;
+  /** Forecast years shown in the sheet, including ones added with "Add Year" */
+  forecastYears: string[];
+  forecast?: ForecastFigures;
 }
 
 /** data of GET /api/stock/get */

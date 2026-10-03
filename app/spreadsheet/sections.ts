@@ -4,21 +4,27 @@
  */
 
 import type {
-  AnalysisSheetData, CellContext, InputCellReferences, QuarterlyColumnInfo, RowMap, RowSpec,
+  AnalysisSheetData, CellContext, InputCellReferences, InputField, QuarterlyColumnInfo, RowMap, RowSpec,
   SheetContext, StockProfile,
 } from './types'
 import {
-  ANNUAL_TABLE, INPUT_AREA, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
+  ANNUAL_TABLE, INPUT_AREA, inputRow, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
 } from '~/constants/spreadJsConstants'
 import {
-  applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, getCellAddr, getDoubleBorder,
+  applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getSeparatorBorder,
   getThinBorder, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
+import { currentPe, distinctPe, peFormat, peLadder } from './peLadder'
+import { defaultShares } from './shares'
 import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
 
 const HEADER_STYLE = { bold: true, align: 'center' as const, border: true }
 
-const periodColor = (forecast: boolean) => (forecast ? SPREADJS_COLORS.FORECAST : SPREADJS_COLORS.HISTORICAL)
+/** Header of a period column: forecasts get the accent colour */
+const periodStyle = (forecast: boolean) =>
+  forecast
+    ? { bg: SPREADJS_COLORS.FORECAST, color: SPREADJS_COLORS.FORECAST_TEXT }
+    : { bg: SPREADJS_COLORS.HISTORICAL }
 
 /** Lay rows out top to bottom starting at firstRow */
 function layoutRows(specs: RowSpec[], firstRow: number): RowMap {
@@ -34,6 +40,21 @@ function writeRowLabels(ctx: SheetContext, specs: RowSpec[], rows: RowMap) {
   }
 }
 
+/**
+ * Zebra stripes: every other row of a table gets a light background, so a
+ * row is easy to follow across many periods. Cells with their own colour
+ * (inputs, highlighted P/E) keep it; growth colours (conditional formats)
+ * still show on top.
+ */
+export function stripeRows(ctx: SheetContext, firstRow: number, lastRow: number, lastCol: number): void {
+  for (let row = firstRow + 1; row <= lastRow; row += 2) {
+    for (let col = 0; col <= lastCol; col++) {
+      const cell = ctx.sheet.getCell(row, col)
+      if (!cell.backColor()) cell.backColor(SPREADJS_COLORS.STRIPE)
+    }
+  }
+}
+
 function highlightGrowthRows(ctx: SheetContext, rows: RowMap, firstCol: number, colCount: number) {
   applyGrowthHighlightRange(ctx.GC, ctx.sheet, rows.revGrowth!, firstCol, colCount)
   applyGrowthHighlightRange(ctx.GC, ctx.sheet, rows.profitGrowth!, firstCol, colCount)
@@ -45,8 +66,8 @@ export function buildTitleSection(ctx: SheetContext, profile: StockProfile, symb
   const { GC, sheet } = ctx
 
   sheet.setRowHeight(0, 50)
-  setCell(GC, sheet, 0, 2, profile.title, { bold: true, color: '#0000FF', align: 'center' })
-  setCell(GC, sheet, 0, 0, symbol, { bold: true, color: '#FF0000', align: 'center', border: true })
+  setCell(GC, sheet, 0, 2, profile.title, { bold: true, color: SPREADJS_COLORS.TITLE, align: 'center' })
+  setCell(GC, sheet, 0, 0, symbol, { bold: true, color: SPREADJS_COLORS.SYMBOL, align: 'center', border: true })
   setCell(GC, sheet, 0, 4, 'NGÀY', { bold: true })
   setCell(GC, sheet, 0, 5, new Date(), { format: 'dd/mm/yyyy' })
 }
@@ -64,45 +85,59 @@ export function buildInputSection(
   const col = INPUT_AREA.COL
   const startRow = INPUT_AREA.ROW_START
   const valueCol = col + INPUT_AREA.VALUE_COL_OFFSET
+  const noteCol = valueCol + 1
   const labels = profile.inputLabels
 
   sheet.setColumnWidth(col, 180)
   sheet.setColumnWidth(col + 1, 100)
   sheet.setColumnWidth(valueCol, 120)
 
-  const inputRow = (
-    row: number,
-    label: string,
+  // Note column: spans several columns since quarterly columns below are narrow
+  const noteCell = (row: number, text: string, style: Parameters<typeof setCell>[5]) => {
+    setCell(GC, sheet, row, noteCol, text, { align: 'left', ...style })
+    sheet.addSpan(row, noteCol, 1, INPUT_AREA.NOTE_SPAN)
+    sheet.getRange(row, noteCol, 1, INPUT_AREA.NOTE_SPAN).setBorder(getThinBorder(GC), { all: true })
+  }
+
+  const writeInput = (
+    field: InputField,
     value: number,
     { editable = false, format = '#,##0', bg = SPREADJS_COLORS.INPUT } = {}
   ) => {
-    setCell(GC, sheet, row, col, label, { bold: true, align: 'left' })
+    const row = inputRow(field)
+    setCell(GC, sheet, row, col, labels[field], { bold: true, align: 'left' })
     sheet.addSpan(row, col, 1, 2)
     sheet.getRange(row, col, 1, 2).setBorder(getThinBorder(GC), { all: true })
 
     setCell(GC, sheet, row, valueCol, value, { format, border: true, bg })
     if (editable) sheet.getCell(row, valueCol).locked(false)
+
+    const note = profile.inputNotes[field]
+    noteCell(row, note.text, note.kind === 'forecast'
+      ? { bold: true, color: SPREADJS_COLORS.FORECAST_TEXT }
+      : { color: SPREADJS_COLORS.NOTE })
   }
 
   const formattedDate = data.tradingDate ? data.tradingDate.split('-').reverse().join('/') : ''
-  setCell(GC, sheet, startRow, col, `Ngày: ${formattedDate}`, { bold: true, align: 'left', bg: '#D9E1F2' })
+  setCell(GC, sheet, startRow, col, `Ngày: ${formattedDate}`, { bold: true, align: 'left', bg: SPREADJS_COLORS.HEADER })
   sheet.addSpan(startRow, col, 1, 3)
+  noteCell(startRow, 'Loại số liệu', { bold: true, bg: SPREADJS_COLORS.HEADER })
 
-  inputRow(startRow + 1, labels.currentPrice, data.currentPrice || 0, { editable: true })
-  inputRow(startRow + 2, labels.outstandingShares, data.outstandingShares || 0, { editable: true })
-  inputRow(startRow + 3, labels.max52W, data.max52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
-  inputRow(startRow + 4, labels.min52W, data.min52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
-  inputRow(startRow + 5, labels.revenueGrowth, data.revenueGrowth || 0, { editable: true, format: '0.00%' })
-  inputRow(startRow + 6, labels.grossMargin, data.grossMargin || 0, { editable: true, format: '0.00%' })
-  inputRow(startRow + 7, labels.netProfitGrowth, data.netProfitGrowth || 0, { editable: true, format: '0.00%' })
+  writeInput('currentPrice', data.currentPrice || 0, { editable: true })
+  writeInput('outstandingShares', data.outstandingShares || 0, { editable: true })
+  writeInput('max52W', data.max52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
+  writeInput('min52W', data.min52W || 0, { bg: SPREADJS_COLORS.DISPLAY })
+  writeInput('revenueGrowth', data.revenueGrowth || 0, { editable: true, format: '0.00%' })
+  writeInput('grossMargin', data.grossMargin || 0, { editable: true, format: '0.00%' })
+  writeInput('netProfitGrowth', data.netProfitGrowth || 0, { editable: true, format: '0.00%' })
 
-  const ref = (row: number) => getCellAddr(GC, sheet, row, valueCol)
+  const ref = (field: InputField) => getCellAddr(GC, sheet, inputRow(field), valueCol)
   return {
-    currentPrice: ref(startRow + 1),
-    outstandingShares: ref(startRow + 2),
-    revenueGrowth: ref(startRow + 5),
-    grossMargin: ref(startRow + 6),
-    netProfitGrowth: ref(startRow + 7),
+    currentPrice: ref('currentPrice'),
+    outstandingShares: ref('outstandingShares'),
+    revenueGrowth: ref('revenueGrowth'),
+    grossMargin: ref('grossMargin'),
+    netProfitGrowth: ref('netProfitGrowth'),
   }
 }
 
@@ -125,7 +160,7 @@ export function buildAnnualTable(
     currentYear
   )
   const colMap: Record<string, number> = Object.fromEntries(years.map((year, i) => [year, 1 + i]))
-  const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
+  const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
 
   // Header
   sheet.setRowHeight(startRow, 60)
@@ -137,7 +172,7 @@ export function buildAnnualTable(
     sheet.setColumnWidth(col, ANNUAL_TABLE.COLUMN_WIDTH)
     setCell(GC, sheet, startRow, col, `${year}${forecast ? ' (F)' : ''}\n01/01-31/12`, {
       ...HEADER_STYLE,
-      bg: periodColor(forecast),
+      ...periodStyle(forecast),
     })
     sheet.getCell(startRow, col).wordWrap(true)
   }
@@ -199,9 +234,9 @@ export function buildQuarterlyTable(
   let nextCol = 1
 
   for (const year of years) {
-    const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
+    const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
 
-    setCell(GC, sheet, startRow, nextCol, year, { ...HEADER_STYLE, bg: periodColor(isYearForecast) })
+    setCell(GC, sheet, startRow, nextCol, year, { ...HEADER_STYLE, ...periodStyle(isYearForecast) })
     sheet.addSpan(startRow, nextCol, 1, 4)
     sheet.getRange(startRow, nextCol, 1, 4).setBorder(getThinBorder(GC), { all: true })
 
@@ -213,7 +248,7 @@ export function buildQuarterlyTable(
       sheet.setColumnWidth(nextCol, QUARTERLY_TABLE.COLUMN_WIDTH)
       setCell(GC, sheet, startRow + 1, nextCol, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[i]}`, {
         ...HEADER_STYLE,
-        bg: periodColor(isForecast),
+        ...periodStyle(isForecast),
       })
       sheet.getCell(startRow + 1, nextCol).wordWrap(true)
 
@@ -231,19 +266,30 @@ export function buildQuarterlyTable(
       GC, sheet, rows, refs, col, year, quarter, isForecast,
       prevYearCol: col - 4 >= 1 ? col - 4 : undefined,
       value: indicator => data.quarterlyData[indicator]?.[year]?.[quarter],
-      shares: savedShares !== undefined && savedShares !== null ? Number(savedShares) : data.outstandingShares,
+      // Entered by the user, else derived from equity / BVPS, else today's count
+      shares: savedShares !== undefined && savedShares !== null
+        ? Number(savedShares)
+        : defaultShares(data.quarterlyData, year, quarter, data.outstandingShares),
+      growthOverride: kind => data.growthOverrides[kind]?.[`${year}_${quarter}`],
     }
     profile.quarterlyRows.forEach(spec => spec.render(cell))
 
-    // Double border after each year
+    // Separator after each year
     if (quarter === 'Q4') {
-      sheet.getRange(startRow, col, lastRow - startRow + 1, 1).setBorder(getDoubleBorder(GC), { right: true })
+      sheet.getRange(startRow, col, lastRow - startRow + 1, 1).setBorder(getSeparatorBorder(GC), { right: true })
     }
   }
 
-  if (cols.length > 0) highlightGrowthRows(ctx, rows, cols[0]!.col, cols.length)
-
-  sheet.getRange(lastRow, 0, 1, nextCol).setBorder(getDoubleBorder(GC), { bottom: true })
+  if (cols.length > 0) {
+    highlightGrowthRows(ctx, rows, cols[0]!.col, cols.length)
+    // Gross and net margins against the same quarter last year:
+    // green when up more than 10%, red when down
+    if (cols.length > 4) {
+      for (const margin of [rows.grossMargin, rows.netMargin, rows.netProfitMargin]) {
+        if (margin !== undefined) applyYoyChangeHighlight(GC, sheet, margin, cols[4]!.col, cols.length - 4)
+      }
+    }
+  }
 
   return { cols, rows, lastRow, nextCol }
 }
@@ -252,7 +298,9 @@ export function buildQuarterlyTable(
 
 /**
  * Annual cells computed from the quarterly table: always for the profile's
- * sum rows, and for forecast years also net profit, EPS, P/E and ROS.
+ * sum rows; for forecast years also revenue and net profit (sum of the 4
+ * quarters, so a year in progress combines reported and forecast quarters),
+ * EPS (net profit / average shares of the 4 quarters), P/E and ROS.
  */
 export function linkAnnualToQuarterly(
   ctx: SheetContext,
@@ -281,9 +329,16 @@ export function linkAnnualToQuarterly(
     // Historical years keep the reported figures
     if (!yearQuarters.some(q => q.isForecast)) continue
 
+    sumOfQuarters('revenue')
     sumOfQuarters('netProfit')
 
-    sumOfQuarters('eps')
+    // Weighted by quarter, as basic EPS uses the average number of shares of the year
+    const shares = GC.Spread.Sheets.CalcEngine.rangeToFormula(
+      sheet.getRange(quarterlyRows.shares!, quarterCols[0]!, 1, 4)
+    )
+    const profit = getCellAddr(GC, sheet, annualRows.netProfit!, annualCol)
+    sheet.setFormula(annualRows.eps!, annualCol, `IF(AVERAGE(${shares})<>0, ${profit} * 1000000 / AVERAGE(${shares}), 0)`)
+    sheet.setFormatter(annualRows.eps!, annualCol, '#,##0')
     applyBorder(GC, sheet, annualRows.eps!, annualCol)
 
     const epsAddr = getCellAddr(GC, sheet, annualRows.eps!, annualCol)
@@ -303,90 +358,77 @@ export function linkAnnualToQuarterly(
 
 // ─── Valuation table ────────────────────────────────────────────────
 
-/** P/E scenarios: saved by the user, else recent reported P/E + forecast P/E + defaults */
-function resolvePeScenarios(
-  ctx: SheetContext,
-  quarterlyCols: QuarterlyColumnInfo[],
-  quarterlyRows: RowMap,
-  data: AnalysisSheetData,
-  defaultPE: number
-): number[] {
-  if (data.peScenarios.length > 0) return data.peScenarios
-
-  const byPeriod = (a: QuarterlyColumnInfo, b: QuarterlyColumnInfo) =>
-    parseInt(a.year) - parseInt(b.year) || parseInt(a.quarter.slice(1)) - parseInt(b.quarter.slice(1))
-  const isValidPe = (v: unknown) => v !== undefined && v !== null && !isNaN(Number(v)) && Number(v) > 0
-  const round2 = (v: unknown) => Math.round(Number(v) * 100) / 100
-
-  const lastHistorical = quarterlyCols.filter(q => !q.isForecast).sort((a, b) => byPeriod(b, a)).slice(0, 3)
-  const firstForecast = quarterlyCols.filter(q => q.isForecast).sort(byPeriod).slice(0, 3)
-
-  const values: number[] = []
-
-  for (const q of lastHistorical.reverse()) {
-    const pe = data.quarterlyData['pe']?.[q.year]?.[q.quarter]
-    if (isValidPe(pe)) values.push(round2(pe))
-  }
-
-  for (const q of firstForecast) {
-    const pe = ctx.sheet.getValue(quarterlyRows.pe!, q.col)
-    values.push(isValidPe(pe) ? round2(pe) : defaultPE)
-  }
-
-  if (values.length < 6) {
-    const defaults = [9, 11, 12, 13, 14, 5, 4]
-    while (values.length < 7) values.push(defaults[values.length] || 10)
-  }
-
-  return values
+/**
+ * P/E scenarios: the user's saved values (without repeats), else a ladder
+ * from the stock's P/E history. Values matching a ladder level get its label.
+ */
+function resolvePeScenarios(data: AnalysisSheetData): { values: number[]; labels: Map<number, string> } {
+  const ladder = peLadder(data)
+  const labels = new Map(ladder.filter(l => l.label).map(l => [l.value, l.label]))
+  const values = data.peScenarios.length > 0 ? distinctPe(data.peScenarios) : ladder.map(l => l.value)
+  return { values, labels }
 }
 
 /**
  * Price targets: each row is a P/E scenario × trailing EPS of every quarter.
  * Returns the first row of the table.
  */
-export function buildValuationTable(
+/**
+ * Year and quarter headers over the quarterly columns, as in the quarterly
+ * table, for the tables below it. Labels go in column A.
+ */
+export function writePeriodHeaders(
   ctx: SheetContext,
   quarterlyCols: QuarterlyColumnInfo[],
-  quarterlyRows: RowMap,
-  quarterlyLastRow: number,
-  data: AnalysisSheetData
-): number {
+  startRow: number,
+  yearLabel: string,
+  quarterLabel: string
+): void {
   const { GC, sheet } = ctx
-  const currentYear = new Date().getFullYear()
-  const startRow = quarterlyLastRow + 4
-  const totalRows = VALUATION_TABLE.TOTAL_ROWS
 
-  const lastPe = data.annualData['pe']?.[(currentYear - 1).toString()] || data.annualData['pe']?.[(currentYear - 2).toString()] || 10
-  const defaultPE = parseFloat(String(lastPe)) || 10
-  const peScenarios = resolvePeScenarios(ctx, quarterlyCols, quarterlyRows, data, defaultPE)
-
-  // Year headers
   sheet.setRowHeight(startRow, 30)
   for (const year of new Set(quarterlyCols.map(q => q.year))) {
     const yearCols = quarterlyCols.filter(q => q.year === year)
     const firstCol = yearCols[0]!.col
-    const forecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
+    const forecast = yearCols.some(q => q.isForecast)
 
-    setCell(GC, sheet, startRow, firstCol, year, { ...HEADER_STYLE, bg: periodColor(forecast) })
+    setCell(GC, sheet, startRow, firstCol, year, { ...HEADER_STYLE, ...periodStyle(forecast) })
     if (yearCols.length > 1) sheet.addSpan(startRow, firstCol, 1, yearCols.length)
     sheet.getRange(startRow, firstCol, 1, yearCols.length).setBorder(getThinBorder(GC), { all: true })
   }
 
-  // Quarter headers
   for (const { quarter, col, isForecast } of quarterlyCols) {
     const qIdx = parseInt(quarter.replace('Q', '')) - 1
     setCell(GC, sheet, startRow + 1, col, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[qIdx]}`, {
       ...HEADER_STYLE,
-      bg: periodColor(isForecast),
+      ...periodStyle(isForecast),
     })
     sheet.getCell(startRow + 1, col).wordWrap(true)
     sheet.setRowHeight(startRow + 1, 50)
   }
 
   const labelStyle = { bold: true, border: true, align: 'center' as const, bg: SPREADJS_COLORS.HEADER }
-  setCell(GC, sheet, startRow, 0, 'Niên độ:', labelStyle)
-  setCell(GC, sheet, startRow + 1, 0, 'Giả sử P/E:', labelStyle)
+  setCell(GC, sheet, startRow, 0, yearLabel, labelStyle)
+  setCell(GC, sheet, startRow + 1, 0, quarterLabel, labelStyle)
+  sheet.getCell(startRow + 1, 0).wordWrap(true)
+}
+
+export function buildValuationTable(
+  ctx: SheetContext,
+  quarterlyCols: QuarterlyColumnInfo[],
+  quarterlyRows: RowMap,
+  afterRow: number,
+  data: AnalysisSheetData
+): number {
+  const { GC, sheet } = ctx
+  const startRow = afterRow + 4
+  const totalRows = VALUATION_TABLE.TOTAL_ROWS
+
+  const { values: peScenarios, labels: peLabels } = resolvePeScenarios(data)
+  const current = currentPe(data)
+
+  // Ladder levels come from the reported P/E of the last 5 years
+  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Niên độ:', 'Giả sử P/E\n(lịch sử 5 năm)')
 
   // Scenario rows
   const endCol = quarterlyCols.length > 0 ? quarterlyCols[quarterlyCols.length - 1]!.col + 1 : 1
@@ -395,10 +437,11 @@ export function buildValuationTable(
     const row = startRow + 2 + r
     const pe = peScenarios[r]
 
-    setCell(GC, sheet, row, 0, pe, { border: true, align: 'center', format: '0.00' })
+    setCell(GC, sheet, row, 0, pe, { border: true, align: 'left', format: peFormat(pe, peLabels) })
     sheet.getCell(row, 0).locked(false)
 
-    if (pe !== undefined && Math.abs(pe - defaultPE) < 0.01) {
+    // The current P/E
+    if (pe !== undefined && current !== null && Math.abs(pe - current) < 0.01) {
       sheet.getRange(row, 0, 1, endCol).backColor(SPREADJS_COLORS.DEFAULT_HIGHLIGHT)
     }
 
@@ -416,7 +459,7 @@ export function buildValuationTable(
 
   for (const { quarter, col } of quarterlyCols) {
     if (quarter === 'Q4') {
-      sheet.getRange(startRow, col, totalRows + 2, 1).setBorder(getDoubleBorder(GC), { right: true })
+      sheet.getRange(startRow, col, totalRows + 2, 1).setBorder(getSeparatorBorder(GC), { right: true })
     }
   }
 
@@ -425,14 +468,18 @@ export function buildValuationTable(
 
 // ─── Final touches ──────────────────────────────────────────────────
 
-export function applyFinalStyling(ctx: SheetContext, maxCol: number, valuationStartRow: number): void {
+export function applyFinalStyling(ctx: SheetContext, maxCol: number, lastRow: number): void {
   const { GC, spread, sheet } = ctx
 
   sheet.autoFitColumn(0)
   sheet.setColumnWidth(0, 150)
   sheet.setColumnCount(Math.max(maxCol, 30))
-  sheet.setRowCount(valuationStartRow + VALUATION_TABLE.TOTAL_ROWS + 4)
+  sheet.setRowCount(lastRow + 4)
   sheet.frozenColumnCount(1)
+  // No grid outside the tables: empty cells stay blank
+  sheet.options.gridline = { showVerticalGridline: false, showHorizontalGridline: false }
+  // The tables draw their own frame; no line down the empty rows
+  sheet.options.frozenlineColor = 'transparent'
 
   spread.options.scrollbarMaxAlign = true
   spread.options.scrollbarShowMax = true

@@ -4,15 +4,28 @@
  */
 
 // ============ COLORS ============
+// Muted palette matching the app (slate neutrals); forecasts are the one accent
 export const SPREADJS_COLORS = {
-  SELECTED: '#E3F2FD',
-  HEADER: '#cffc03',
-  FORECAST: '#FF1493',
-  HISTORICAL: '#70AD47',
-  INPUT: '#FFF2CC',
-  DISPLAY: '#E2EFDA',
-  DEFAULT_HIGHLIGHT: '#FFE4E1',
-  TEXT_RED: '#e02926',
+  SELECTED: '#EEF6FF', // row highlight on select
+  HEADER: '#E2E8F0', // "Chỉ số" / "Niên độ" corner cells, input header
+  HISTORICAL: '#F1F5F9', // reported period headers
+  FORECAST: '#FCE7F3', // forecast period headers (F)
+  FORECAST_TEXT: '#9D174D', // text on forecast headers and forecast notes
+  INPUT: '#FEF9C3', // editable inputs
+  DISPLAY: '#F1F5F9',
+  /** Every other row of the tables, to follow a row across many columns */
+  STRIPE: '#EEF2F6',
+  /** Lines between cells of a table */
+  GRID: '#CBD5E1',
+  /** Table frame, under headers, between years */
+  FRAME: '#64748B',
+  /** Outline of the same period last year as the selected cell */
+  COMPARISON: '#F59E0B', // read-only inputs
+  DEFAULT_HIGHLIGHT: '#FEF3C7', // default P/E row in the valuation table
+  TEXT_RED: '#B91C1C', // emphasized row labels
+  TITLE: '#0F172A',
+  SYMBOL: '#007F45',
+  NOTE: '#64748B',
 };
 
 // ============ YEAR DETECTION ============
@@ -31,10 +44,27 @@ export const YEAR_DETECTION_METRICS = [
 ];
 
 // ============ INPUT AREA ============
+/** Input rows below the date header (INPUT_AREA.ROW_START), in sheet order */
+export const INPUT_FIELDS = [
+  'currentPrice',
+  'outstandingShares',
+  'max52W',
+  'min52W',
+  'revenueGrowth',
+  'grossMargin',
+  'netProfitGrowth',
+] as const;
+
+export type InputFieldName = (typeof INPUT_FIELDS)[number];
+
+/** Sheet row of an input value */
+export const inputRow = (field: InputFieldName) => INPUT_AREA.ROW_START + 1 + INPUT_FIELDS.indexOf(field);
+
 export const INPUT_AREA = {
   COL: 10, // Column K
   ROW_START: 3,
   VALUE_COL_OFFSET: 2, // Values in COL + 2
+  NOTE_SPAN: 3, // Note ("actual" / "forecast") right of the values, over 3 columns
 };
 
 // ============ ANNUAL TABLE ============
@@ -91,6 +121,17 @@ export const QUARTERLY_INDICATOR_SOURCES: Record<string, string[]> = {
   currentAssets: ['CURRENT_ASSETS'],
   shortTermLiabilities: ['SHORT_TERM_LIABILITIES'],
   equity: ['EQUITY'],
+  minorityInterest: ['MINORITY_INTEREST'],
+  // Financial ratios (Vietstock "Chỉ số tài chính"), in % or times
+  cfoToOperatingProfit: ['CFO_TO_OPERATING_PROFIT'],
+  borrowingsToEquity: ['BORROWINGS_TO_EQUITY'],
+  debtToEquity: ['DEBT_TO_EQUITY'],
+  currentRatio: ['CURRENT_RATIO'],
+  inventoryTurnover: ['INVENTORY_TURNOVER'],
+  interestCoverage: ['INTEREST_COVERAGE'],
+  nim: ['NIM'],
+  cir: ['CIR'],
+  ldr: ['LDR'],
 };
 
 export const ANNUAL_INDICATOR_SOURCES: Record<string, string[]> = {

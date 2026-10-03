@@ -15,6 +15,7 @@ import {
   upsertPeriods,
 } from '../repositories/stockRepo'
 import { fetchFinanceInfoPages, type ReportTerm } from './vietstock/financeinfo'
+import { fetchFinanceRatios } from './vietstock/financeRatios'
 import { parseFinanceInfoPages, type ParsedFinanceData } from './vietstock/parser'
 
 export type CrawlType = ReportTerm | 'all'
@@ -58,6 +59,19 @@ export async function crawlStock(rawSymbol: string, options: CrawlOptions = {}):
       console.info(`ℹ️ ${symbol} ${term}: unmapped metrics: ${data.unmappedNames.join(' | ')}`)
     }
     parsed.set(term, data)
+  }
+
+  // Quarterly ratios (cash flow quality, leverage…): optional, a failure
+  // only leaves them out
+  const quarterly = parsed.get('quarter')
+  if (quarterly) {
+    try {
+      const ratios = await fetchFinanceRatios(symbol)
+      quarterly.values.push(...ratios)
+      console.log(`✅ ${symbol} ratios: ${ratios.length} values`)
+    } catch (error) {
+      console.warn(`⚠️ ${symbol}: financial ratios not crawled: ${error instanceof Error ? error.message : error}`)
+    }
   }
 
   // 2. Persist everything in one transaction

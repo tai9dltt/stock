@@ -42,6 +42,8 @@ export const METRIC_MAP: Record<string, string> = {
   'Vốn chủ sở hữu': 'EQUITY',
   'Vốn góp của chủ sở hữu': 'PAID_IN_CAPITAL',
   'Lợi ích của CĐ thiểu số': 'MINORITY_INTEREST',
+  // Banks: equity is "Vốn và các quỹ"
+  'Vốn và các quỹ': 'EQUITY',
 
   // ===== RATIOS =====
   'EPS 4 quý': 'EPS_TTM',
@@ -71,7 +73,8 @@ export const METRIC_MAP: Record<string, string> = {
   // ===== BANK-SPECIFIC METRICS =====
   'Thu nhập lãi thuần': 'NET_INTEREST_INCOME',
   'Chi phí hoạt động': 'OPERATING_EXPENSES',
-  'Tổng TNTT': 'TOTAL_OPERATING_INCOME',
+  // TNTT = thu nhập trước thuế: profit before tax, not operating income
+  'Tổng TNTT': 'PROFIT_BEFORE_TAX',
   'Tổng thu nhập từ hoạt động': 'TOTAL_OPERATING_INCOME',
   'Tổng LNST': 'TOTAL_NET_PROFIT',
   'LNST của CĐ Ngân hàng mẹ': 'NET_PROFIT',
@@ -95,6 +98,7 @@ export const METRIC_MAP: Record<string, string> = {
 // Vietstock group names to our component codes
 export const COMPONENT_MAP: Record<string, string> = {
   'Kết quả kinh doanh': 'income_statement',
+  'Báo cáo tình hình tài chính': 'balance_sheet',
   'Cân đối kế toán': 'balance_sheet',
   'Chỉ số tài chính': 'ratios',
 }

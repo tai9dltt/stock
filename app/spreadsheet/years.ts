@@ -22,27 +22,36 @@ export function extractYearsFromData(data: Record<string, any>): string[] {
   return Array.from(years).sort()
 }
 
-export function hasQuarterData(quarterlyData: Record<string, any>, year: string, quarter: string): boolean {
-  return YEAR_DETECTION_METRICS.some((metric) => {
+export function hasQuarterData(
+  quarterlyData: Record<string, any>,
+  year: string,
+  quarter: string,
+  indicators: readonly string[] = YEAR_DETECTION_METRICS
+): boolean {
+  return indicators.some((metric) => {
     const value = quarterlyData[metric]?.[year]?.[quarter]
     return value !== undefined && value !== null
   })
 }
 
 /**
- * Current and future years are forecasts; last year is one until its Q4 is reported.
+ * Current and future years are forecasts; last year is one until its Q4 is
+ * reported. `indicators` are the figures that make a quarter reported (the
+ * profile's actualDataIndicators), so a Q4 with only a P/E or BVPS doesn't
+ * end the forecast and leave an empty "reported" quarter.
  */
 export function isForecastYear(
   year: string,
   currentYear: number,
   quarterlyData: Record<string, any>,
-  forecastYears: string[]
+  forecastYears: string[],
+  indicators?: readonly string[]
 ): boolean {
   const yearInt = parseInt(year)
 
   if (yearInt >= currentYear) return true
   if (yearInt < currentYear - 1) return false
-  if (yearInt === currentYear - 1) return !hasQuarterData(quarterlyData, year, 'Q4')
+  if (yearInt === currentYear - 1) return !hasQuarterData(quarterlyData, year, 'Q4', indicators)
 
   return forecastYears.includes(year)
 }
@@ -50,20 +59,6 @@ export function isForecastYear(
 export function getQuarterDateRange(quarter: string): string {
   const qIdx = parseInt(quarter.replace('Q', '')) - 1
   return QUARTER_DATE_RANGES[qIdx] || ''
-}
-
-/**
- * Hide years older than last year that don't have all 4 quarters.
- */
-export function filterIncompleteYears(
-  years: string[],
-  quarterlyData: Record<string, any>,
-  currentYear: number
-): string[] {
-  return years.filter((year) => {
-    if (!(parseInt(year) < currentYear - 1)) return true
-    return QUARTERS.every(q => hasQuarterData(quarterlyData, year, q))
-  })
 }
 
 /**
@@ -84,16 +79,19 @@ export function fillYearGaps(years: string[]): string[] {
 }
 
 /**
- * Sorted, gap-free list of years to show, without incomplete old years.
+ * Sorted, gap-free list of years to show. Old years (before last year)
+ * without all 4 quarters are hidden at the start only: a gap in the middle
+ * would shift every "same quarter last year" reference (col - 4) by a year,
+ * so an incomplete year in between is shown with its missing quarters empty.
  */
 export function resolveDisplayYears(
   years: string[],
   quarterlyData: Record<string, any>,
   currentYear: number
 ): string[] {
-  let result = filterIncompleteYears([...new Set(years)].sort(), quarterlyData, currentYear)
-  if (result.length > 0) {
-    result = filterIncompleteYears(fillYearGaps(result), quarterlyData, currentYear)
-  }
-  return result
+  const all = fillYearGaps([...new Set(years)].sort())
+  const isComplete = (year: string) =>
+    parseInt(year) >= currentYear - 1 || QUARTERS.every(q => hasQuarterData(quarterlyData, year, q))
+  const first = all.findIndex(isComplete)
+  return first < 0 ? [] : all.slice(first)
 }

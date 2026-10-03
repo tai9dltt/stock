@@ -1,0 +1,18 @@
+A40 | "Niên độ:" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
+A41 | "Giả sử P/E\n(lịch sử 5 năm)" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+A42 | 6.59 | {"backColor":"#FEF3C7","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · hiện tại\"","hAlign":"left","locked":false}
+A43 | 6.96 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · thấp nhất\"","hAlign":"left","locked":false}
+A44 | 12.24 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · vùng thấp\"","hAlign":"left","locked":false}
+A45 | 15.82 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · trung vị\"","hAlign":"left","locked":false}
+A46 | 19.76 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · vùng cao\"","hAlign":"left","locked":false}
+A47 | 30.05 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00\" · cao nhất\"","hAlign":"left","locked":false}
+A48 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A49 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A50 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A51 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"left","locked":false}
+A54 | "Độ nhạy giá mục tiêu" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
+A55 | "" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri"}
+A56 | "TT LNST \\ P/E" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
+A57 | -0.1 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+A58 | 0 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}
+A59 | 0.1 | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"undefined","borderTop":"thin","font":"bold 11pt Calibri","formatter":"+0%;-0%;0%","hAlign":"center","locked":false}

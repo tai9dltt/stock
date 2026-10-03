@@ -1,5 +1,5 @@
 
-import type { StockDataResponse, CrawlResponse, SaveAnalysisPayload, TradingInfo } from '~/types';
+import type { StockDataResponse, CrawlResponse, ForecastSnapshot, SaveAnalysisPayload, TradingInfo } from '~/types';
 
 /**
  * Fetch stock data including metrics, analysis, and trading info
@@ -19,6 +19,9 @@ export interface StockSummary {
   entry_price: string | null;
   target_price: string | null;
   stop_loss: string | null;
+  /** Latest stored trading snapshot */
+  last_price: string | null;
+  price_date: string | null;
 }
 
 /**
@@ -65,6 +68,15 @@ export async function deleteStockAnalysis(symbol: string): Promise<{ success: bo
   return await $fetch(`/api/stock/delete?symbol=${symbol}`, {
     method: 'DELETE',
   });
+}
+
+/** Forecast journal of a stock, newest first */
+export async function getForecastJournal(symbol: string): Promise<{ success: boolean; data: ForecastSnapshot[] }> {
+  return await $fetch(`/api/stock/snapshots?symbol=${symbol}`);
+}
+
+export async function deleteForecastSnapshot(id: number): Promise<{ success: boolean }> {
+  return await $fetch(`/api/stock/snapshots/${id}`, { method: 'DELETE' });
 }
 
 /**

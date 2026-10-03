@@ -2,7 +2,18 @@
  * Types for building the analysis spreadsheet.
  */
 
+import type { InputFieldName as InputField } from '~/constants/spreadJsConstants'
+
 export type StockType = 'industrial' | 'bank' | 'securities'
+
+/**
+ * Assumption that can be set per forecast quarter: revenue and net profit
+ * growth against the same quarter last year, and the gross margin
+ */
+export type GrowthKind = 'revenue' | 'grossMargin' | 'netProfit'
+
+/** Values typed into forecast quarters, e.g. { revenue: { "2026_Q3": 0.3 } } */
+export type GrowthOverrides = Partial<Record<GrowthKind, Record<string, number>>>
 
 /** SpreadJS module, workbook and the sheet being built */
 export interface SheetContext {
@@ -61,6 +72,8 @@ export interface CellContext {
   value: (indicator: string) => any
   /** Outstanding shares for this quarter (quarterly table only) */
   shares?: number
+  /** Growth the user typed for this forecast quarter (quarterly table only) */
+  growthOverride?: (kind: GrowthKind) => number | undefined
 }
 
 export interface RowSpec {
@@ -68,21 +81,24 @@ export interface RowSpec {
   label: string
   /** Red label text */
   emphasize?: boolean
+  /** Its forecast quarter cells take this assumption, typed per quarter */
+  forecastInput?: GrowthKind
   render: (cell: CellContext) => void
+}
+
+export type { InputField }
+
+/** Note next to an input: whether it is market data or a forecast assumption */
+export interface InputNote {
+  text: string
+  kind: 'actual' | 'forecast' | 'unused'
 }
 
 export interface StockProfile {
   type: StockType
   title: string
-  inputLabels: {
-    currentPrice: string
-    outstandingShares: string
-    max52W: string
-    min52W: string
-    revenueGrowth: string
-    grossMargin: string
-    netProfitGrowth: string
-  }
+  inputLabels: Record<InputField, string>
+  inputNotes: Record<InputField, InputNote>
   /** A quarter with any of these indicators is actual data, not a forecast */
   actualDataIndicators: string[]
   annualRows: RowSpec[]
@@ -108,6 +124,8 @@ export interface AnalysisSheetData {
   forecastQuarters: string[]
   /** Saved P/E scenarios of the valuation table; empty = derive defaults */
   peScenarios: number[]
+  /** Per-quarter growth that replaces the growth assumption in forecast quarters */
+  growthOverrides: GrowthOverrides
   tradingDate: string
   currentPrice: number
   outstandingShares: number
@@ -124,4 +142,20 @@ export interface AnalysisSheetLayout {
   quarterlyCols: QuarterlyColumnInfo[]
   sharesRow: number
   valuationStartRow: number
+  /** Rows of the quarterly table */
+  quarterlyRows: RowMap
+  /** Quarterly rows whose forecast cells take a per-quarter assumption */
+  growthRows: Partial<Record<GrowthKind, number>>
+  /** Data area of the annual and quarterly tables, for same-period comparisons */
+  periodTables: PeriodTable[]
+}
+
+/** Data cells of a table whose columns are periods */
+export interface PeriodTable {
+  firstRow: number
+  lastRow: number
+  firstCol: number
+  lastCol: number
+  /** Columns back to the same period a year earlier (1 for years, 4 for quarters) */
+  lag: number
 }
