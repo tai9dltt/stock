@@ -73,7 +73,8 @@ export const METRIC_MAP: Record<string, string> = {
   // ===== BANK-SPECIFIC METRICS =====
   'Thu nhập lãi thuần': 'NET_INTEREST_INCOME',
   'Chi phí hoạt động': 'OPERATING_EXPENSES',
-  'Tổng TNTT': 'TOTAL_OPERATING_INCOME',
+  // TNTT = thu nhập trước thuế: profit before tax, not operating income
+  'Tổng TNTT': 'PROFIT_BEFORE_TAX',
   'Tổng thu nhập từ hoạt động': 'TOTAL_OPERATING_INCOME',
   'Tổng LNST': 'TOTAL_NET_PROFIT',
   'LNST của CĐ Ngân hàng mẹ': 'NET_PROFIT',

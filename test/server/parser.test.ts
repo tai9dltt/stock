@@ -173,6 +173,22 @@ describe('parseFinanceInfoPages', () => {
     expect(valueOf(data, 2026, 1, 'EQUITY')).toBe(156_762_644)
   })
 
+  it('stores a bank\'s "Tổng TNTT" as profit before tax (regression: was operating income)', () => {
+    // MBB 2025: net interest income 51.6 trillion, TNTT 34.3 trillion, LNST 27.4 trillion
+    const data = parseFinanceInfoPages('year', [
+      page([{ ...quarter(2025, 4, 1), TermCode: 'N' }], {
+        'Kết quả kinh doanh': [
+          { Name: 'Thu nhập lãi thuần', Value1: 51_610_117 },
+          { Name: 'Tổng TNTT', Value1: 34_268_358 },
+          { Name: 'Tổng LNST', Value1: 27_382_978 },
+        ],
+      }),
+    ])
+
+    expect(valueOf(data, 2025, 0, 'PROFIT_BEFORE_TAX')).toBe(34_268_358)
+    expect(valueOf(data, 2025, 0, 'TOTAL_OPERATING_INCOME')).toBeUndefined()
+  })
+
   it('merges pages without duplicating periods or values', () => {
     const metrics = { 'Kết quả kinh doanh': [{ Name: 'Doanh thu thuần', Value1: 1 }] }
     const data = parseFinanceInfoPages('quarter', [
