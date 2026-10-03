@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
+import { computed, reactive } from "vue";
 import { GChart } from "vue-google-charts";
+import { GOOGLE_CHARTS_SETTINGS } from "~/utils/googleCharts";
 
 // Props
 const props = defineProps<{
@@ -9,18 +10,13 @@ const props = defineProps<{
   stockType?: "industrial" | "bank" | "securities";
 }>();
 
-// Loading state
-const loadingStore = useLoadingStore();
-const isChartReady = ref(false);
+// Charts that finished drawing (a placeholder is shown until then)
+const drawn = reactive(new Set<string>());
 
-onMounted(() => {
-  loadingStore.show("Đang tải biểu đồ...");
-  // Simulate brief loading for smooth transition
-  setTimeout(() => {
-    isChartReady.value = true;
-    loadingStore.hide();
-  }, 300);
-});
+// GChart attaches { eventName: listener } to the chart; its typings describe
+// the google.visualization.events API instead, hence the cast
+const whenDrawn = (id: string) =>
+  ({ ready: () => drawn.add(id) }) as unknown as InstanceType<typeof GChart>["$props"]["events"];
 
 // Get revenue key based on stock type
 const getRevenueKey = () => {
@@ -165,7 +161,6 @@ const quarterlyRevenueOptions = {
   },
   legend: { position: "top" },
   chartArea: { width: "80%", height: "65%" },
-  animation: { startup: true, duration: 500 },
 };
 
 const quarterlyProfitOptions = {
@@ -183,7 +178,6 @@ const quarterlyProfitOptions = {
   },
   legend: { position: "top" },
   chartArea: { width: "80%", height: "65%" },
-  animation: { startup: true, duration: 500 },
 };
 
 const annualRevenueOptions = {
@@ -201,7 +195,6 @@ const annualRevenueOptions = {
   },
   legend: { position: "top" },
   chartArea: { width: "80%", height: "65%" },
-  animation: { startup: true, duration: 500 },
 };
 
 const annualProfitOptions = {
@@ -219,7 +212,6 @@ const annualProfitOptions = {
   },
   legend: { position: "top" },
   chartArea: { width: "80%", height: "65%" },
-  animation: { startup: true, duration: 500 },
 };
 
 const hasData = computed(() => {
@@ -230,75 +222,46 @@ const hasData = computed(() => {
     annualProfitChartData.value.length > 1
   );
 });
+
+const sections = computed(() => [
+  {
+    title: "📈 Biểu đồ theo Năm",
+    charts: [
+      { id: "annual-revenue", data: annualRevenueChartData.value, options: annualRevenueOptions },
+      { id: "annual-profit", data: annualProfitChartData.value, options: annualProfitOptions },
+    ],
+  },
+  {
+    title: "📊 Biểu đồ theo Quý",
+    charts: [
+      { id: "quarterly-revenue", data: quarterlyRevenueChartData.value, options: quarterlyRevenueOptions },
+      { id: "quarterly-profit", data: quarterlyProfitChartData.value, options: quarterlyProfitOptions },
+    ],
+  },
+]);
 </script>
 
 <template>
   <div class="chart-view p-4">
-    <!-- Loading skeleton -->
-    <div v-if="!isChartReady" class="space-y-6">
-      <div class="animate-pulse">
-        <div class="h-6 bg-gray-200 rounded w-48 mb-4"/>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="h-80 bg-gray-200 rounded"/>
-          <div class="h-80 bg-gray-200 rounded"/>
-        </div>
-      </div>
-    </div>
-
-    <div v-else-if="hasData" class="space-y-8">
-      <!-- Annual Charts -->
-      <div>
+    <div v-if="hasData" class="space-y-8">
+      <div v-for="section in sections" :key="section.title">
         <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
-          📈 Biểu đồ theo Năm
+          {{ section.title }}
         </h3>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div
+            v-for="chart in section.charts"
+            :key="chart.id"
             class="chart-wrapper bg-white dark:bg-gray-800 rounded-lg p-4 shadow"
           >
+            <div v-if="!drawn.has(chart.id)" class="chart-placeholder animate-pulse" />
             <GChart
               type="ComboChart"
-              :data="annualRevenueChartData"
-              :options="annualRevenueOptions"
+              :data="chart.data"
+              :options="chart.options"
+              :settings="GOOGLE_CHARTS_SETTINGS"
               style="height: 350px; width: 100%"
-            />
-          </div>
-          <div
-            class="chart-wrapper bg-white dark:bg-gray-800 rounded-lg p-4 shadow"
-          >
-            <GChart
-              type="ComboChart"
-              :data="annualProfitChartData"
-              :options="annualProfitOptions"
-              style="height: 350px; width: 100%"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Quarterly Charts -->
-      <div>
-        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
-          📊 Biểu đồ theo Quý
-        </h3>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div
-            class="chart-wrapper bg-white dark:bg-gray-800 rounded-lg p-4 shadow"
-          >
-            <GChart
-              type="ComboChart"
-              :data="quarterlyRevenueChartData"
-              :options="quarterlyRevenueOptions"
-              style="height: 350px; width: 100%"
-            />
-          </div>
-          <div
-            class="chart-wrapper bg-white dark:bg-gray-800 rounded-lg p-4 shadow"
-          >
-            <GChart
-              type="ComboChart"
-              :data="quarterlyProfitChartData"
-              :options="quarterlyProfitOptions"
-              style="height: 350px; width: 100%"
+              :events="whenDrawn(chart.id)"
             />
           </div>
         </div>
@@ -322,6 +285,15 @@ const hasData = computed(() => {
 }
 
 .chart-wrapper {
+  position: relative;
   min-height: 380px;
+}
+
+/* Shown over the chart area until Google Charts has drawn it */
+.chart-placeholder {
+  position: absolute;
+  inset: 1rem;
+  border-radius: 0.5rem;
+  background: rgb(229 231 235);
 }
 </style>

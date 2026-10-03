@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue';
+import { ref, watch, onMounted, computed, defineAsyncComponent, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
 import { detectStockType } from '~/spreadsheet/profiles';
 import { withForecastYearQuarters } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
 import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
+import { preloadGoogleCharts } from '~/utils/googleCharts';
 
 // Dynamically import SpreadJS components to avoid SSR issues
 const GcSpreadSheets = defineAsyncComponent(() =>
@@ -37,6 +38,22 @@ const stockType = computed(() =>
   detectStockType(stockSymbol.value, state.value.annualData, state.value.quarterlyData),
 );
 const noteHtml = computed(() => savedAnalysis.value?.noteHtml || '');
+
+// The chart tab is created on first open and then kept, so switching back is instant
+const chartTabOpened = ref(false);
+let widthWhenChartsHidden = 0;
+watch(activeTab, async (tab, previous) => {
+  if (tab === '1') {
+    chartTabOpened.value = true;
+    // Google Charts only redraws on window resize; catch up on a resize that happened while hidden
+    if (widthWhenChartsHidden && widthWhenChartsHidden !== window.innerWidth) {
+      await nextTick();
+      window.dispatchEvent(new Event('resize'));
+    }
+  } else if (previous === '1') {
+    widthWhenChartsHidden = window.innerWidth;
+  }
+});
 
 // ============ SPREADSHEET ============
 
@@ -100,8 +117,9 @@ const handleGlobalSave = () => {
 
 // ============ LIFECYCLE ============
 
-onMounted(() => {
-  if (stockSymbol.value) loadAnalysis();
+onMounted(async () => {
+  if (stockSymbol.value) await loadAnalysis();
+  preloadGoogleCharts();
 });
 
 watch(stockSymbol, (val) => {
@@ -157,7 +175,7 @@ useHead({
       </UCard>
 
       <!-- Chart View -->
-      <UCard v-if="activeTab === '1'" class="p-4">
+      <UCard v-if="chartTabOpened" v-show="activeTab === '1'" class="p-4">
         <AnalysisChartView
           :quarterly-data="state.quarterlyData"
           :annual-data="state.annualData"
