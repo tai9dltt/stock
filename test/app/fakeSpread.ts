@@ -138,8 +138,10 @@ export function createFakeSheet() {
     },
     getCell(r: number, c: number) {
       const style = cell(r, c).style
-      const setter = (key: string) => (value: unknown) => {
-        style[key] = value
+      // Like SpreadJS: no argument reads the value, an argument sets it
+      const setter = (key: string) => (...args: unknown[]) => {
+        if (args.length === 0) return style[key]
+        style[key] = args[0]
         return api
       }
       const api = {

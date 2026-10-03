@@ -38,6 +38,21 @@ function writeRowLabels(ctx: SheetContext, specs: RowSpec[], rows: RowMap) {
   }
 }
 
+/**
+ * Zebra stripes: every other row of a table gets a light background, so a
+ * row is easy to follow across many periods. Cells with their own colour
+ * (inputs, highlighted P/E) keep it; growth colours (conditional formats)
+ * still show on top.
+ */
+export function stripeRows(ctx: SheetContext, firstRow: number, lastRow: number, lastCol: number): void {
+  for (let row = firstRow + 1; row <= lastRow; row += 2) {
+    for (let col = 0; col <= lastCol; col++) {
+      const cell = ctx.sheet.getCell(row, col)
+      if (!cell.backColor()) cell.backColor(SPREADJS_COLORS.STRIPE)
+    }
+  }
+}
+
 function highlightGrowthRows(ctx: SheetContext, rows: RowMap, firstCol: number, colCount: number) {
   applyGrowthHighlightRange(ctx.GC, ctx.sheet, rows.revGrowth!, firstCol, colCount)
   applyGrowthHighlightRange(ctx.GC, ctx.sheet, rows.profitGrowth!, firstCol, colCount)

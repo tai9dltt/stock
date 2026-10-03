@@ -3,11 +3,11 @@
  */
 
 import type { AnalysisSheetData, AnalysisSheetLayout, SheetContext } from './types'
-import { INPUT_AREA, QUARTERLY_TABLE } from '~/constants/spreadJsConstants'
+import { ANNUAL_TABLE, INPUT_AREA, QUARTERLY_TABLE, VALUATION_TABLE } from '~/constants/spreadJsConstants'
 import { detectStockType, STOCK_PROFILES } from './profiles'
 import {
   applyFinalStyling, buildAnnualTable, buildInputSection, buildQuarterlyTable, buildTitleSection,
-  buildValuationTable, linkAnnualToQuarterly,
+  buildValuationTable, linkAnnualToQuarterly, stripeRows,
 } from './sections'
 
 export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): AnalysisSheetLayout {
@@ -30,6 +30,12 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     Math.max(0, ...Object.values(annual.colMap)) + 1,
     30
   )
+  // Last: stripes only fill cells that have no colour of their own
+  const annualFirstRow = ANNUAL_TABLE.START_ROW + 1
+  stripeRows(ctx, annualFirstRow, annual.lastRow, Math.max(0, ...Object.values(annual.colMap)))
+  stripeRows(ctx, Math.min(...Object.values(quarterly.rows)), quarterly.lastRow, quarterly.nextCol - 1)
+  stripeRows(ctx, valuationStartRow + 2, valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS, quarterly.nextCol - 1)
+
   applyFinalStyling(ctx, maxCol, valuationStartRow)
 
   return {
