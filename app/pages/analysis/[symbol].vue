@@ -7,6 +7,7 @@ import { withForecastYearQuarters } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
 import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
 import { preloadGoogleCharts } from '~/utils/googleCharts';
+import { stockSummary } from '~/utils/stockSummary';
 
 // Dynamically import SpreadJS components to avoid SSR issues
 const GcSpreadSheets = defineAsyncComponent(() =>
@@ -24,7 +25,7 @@ const stockSymbol = computed(
 );
 
 const analysis = useStockAnalysis(stockSymbol);
-const { state, savedAnalysis } = analysis;
+const { state, savedAnalysis, isLoading } = analysis;
 const sheet = useAnalysisSheet();
 
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
@@ -38,6 +39,14 @@ const stockType = computed(() =>
   detectStockType(stockSymbol.value, state.value.annualData, state.value.quarterlyData),
 );
 const noteHtml = computed(() => savedAnalysis.value?.noteHtml || '');
+
+const summary = computed(() =>
+  stockSummary({
+    ...state.value,
+    targetPrice: savedAnalysis.value?.targetPrice,
+    stopLoss: savedAnalysis.value?.stopLoss,
+  }),
+);
 
 // The chart tab is created on first open and then kept, so switching back is instant
 const chartTabOpened = ref(false);
@@ -147,39 +156,28 @@ watch(stockSymbol, (val) => {
 });
 
 useHead({
-  title: computed(() => `${stockSymbol.value} (SpreadJS) | Stock Analysis`),
+  title: computed(() => `${stockSymbol.value} · Phân tích`),
 });
 </script>
 
 <template>
-  <div class="analysis-page p-6">
-    <header class="page-header mb-4">
-      <div
-        class="header-content flex flex-col md:flex-row justify-between items-start md:items-center"
-      >
-        <div class="header-left">
-          <nav
-            class="breadcrumb text-sm mb-2 flex items-center gap-2 text-gray-500"
-          >
-            <NuxtLink to="/analysis">Phân tích</NuxtLink>
-            <span>/</span>
-            <span
-              class="text-2xl font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
-            >
-              {{ stockSymbol }}
-            </span>
-          </nav>
-        </div>
-        <div class="header-right mt-4 md:mt-0">
-          <UTabs
-            v-model="activeTab"
-            :items="tabItems"
-            :ui="{ label: 'cursor-pointer' }"
-            class="w-full md:w-[320px]"
-          />
-        </div>
-      </div>
-    </header>
+  <div class="analysis-page max-w-screen-2xl mx-auto px-4 md:px-6 py-4 md:py-6">
+    <AnalysisStockSummaryBar
+      :symbol="stockSymbol"
+      :stock-type="stockType"
+      :figures="summary"
+      :price-date="state.tradingDate"
+      :loading="isLoading"
+    />
+
+    <div class="flex items-center justify-end mt-4 mb-4">
+      <UTabs
+        v-model="activeTab"
+        :items="tabItems"
+        :ui="{ label: 'cursor-pointer' }"
+        class="w-full sm:w-[320px]"
+      />
+    </div>
 
     <main class="page-content space-y-6">
       <!-- SpreadJS Area -->

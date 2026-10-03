@@ -20,6 +20,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
 
   const state = ref<AnalysisSheetData>(createEmptyAnalysisState(symbol.value));
   const savedAnalysis = ref<StockData['analysis']>(null);
+  const isLoading = ref(false);
 
   async function fetchLiveTradingInfo() {
     try {
@@ -35,6 +36,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
     if (!symbol.value) return;
 
     loadingStore.show('Đang tải dữ liệu...');
+    isLoading.value = true;
     try {
       const response = await getStockData(symbol.value);
       if (!response.success || !response.data) return;
@@ -47,6 +49,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
     } catch (error) {
       console.error(error);
     } finally {
+      isLoading.value = false;
       loadingStore.hide();
     }
   }
@@ -103,7 +106,11 @@ export function useStockAnalysis(symbol: Ref<string>) {
 
     loadingStore.show('Đang lưu dữ liệu...');
     try {
-      await saveStockAnalysis(toSavePayload({ ...s, symbol: symbol.value }, plan));
+      const payload = toSavePayload({ ...s, symbol: symbol.value }, plan);
+      await saveStockAnalysis(payload);
+      // The summary bar shows the saved trading plan
+      const { symbol: _symbol, forecastYears: _forecastYears, ...saved } = payload;
+      savedAnalysis.value = saved;
 
       toast.add({
         title: 'Đã lưu',
@@ -121,5 +128,5 @@ export function useStockAnalysis(symbol: Ref<string>) {
     }
   }
 
-  return { state, savedAnalysis, load, crawl, addYear, save };
+  return { state, savedAnalysis, isLoading, load, crawl, addYear, save };
 }

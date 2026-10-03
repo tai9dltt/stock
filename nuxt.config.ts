@@ -30,6 +30,10 @@ export default defineNuxtConfig({
   // Enable SSR for full-stack capabilities
   ssr: true,
 
+  routeRules: {
+    '/': { redirect: '/analysis' },
+  },
+
   // TypeScript configuration
   typescript: {
     strict: true

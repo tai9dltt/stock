@@ -4,6 +4,10 @@ const isHydrated = ref(false);
 onMounted(() => {
   isHydrated.value = true;
 });
+
+useHead({
+  titleTemplate: (title?: string) => (title ? `${title} · Stock Analysis` : 'Stock Analysis'),
+});
 </script>
 
 <template>
@@ -14,8 +18,9 @@ onMounted(() => {
     }"
   >
     <NuxtRouteAnnouncer />
-    <NuxtPage />
-    <UNotifications />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
     <GlobalLoading />
   </UApp>
 </template>

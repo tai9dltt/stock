@@ -19,6 +19,9 @@ export interface StockSummary {
   entry_price: string | null;
   target_price: string | null;
   stop_loss: string | null;
+  /** Latest stored trading snapshot */
+  last_price: string | null;
+  price_date: string | null;
 }
 
 /**
