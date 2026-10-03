@@ -110,6 +110,26 @@ const addYear = () => {
   renderSheet();
 };
 
+const toast = useToast();
+const isExporting = ref(false);
+
+const exportExcel = async () => {
+  if (!sheet.isReady()) return;
+  isExporting.value = true;
+  try {
+    const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+    await sheet.exportExcel(`${stockSymbol.value}_phan-tich_${date}.xlsx`);
+  } catch (error) {
+    toast.add({
+      title: 'Không xuất được Excel',
+      description: error instanceof Error ? error.message : String(error),
+      color: 'error',
+    });
+  } finally {
+    isExporting.value = false;
+  }
+};
+
 const handleGlobalSave = () => {
   if (!tradingNoteRef.value) return;
   analysis.save(tradingNoteRef.value.getTradingData(), sheet.readEdits());
@@ -217,6 +237,17 @@ useHead({
             @click="addYear"
           >
             Add Year
+          </UButton>
+          <UButton
+            color="primary"
+            variant="soft"
+            size="md"
+            class="cursor-pointer"
+            icon="i-lucide-file-spreadsheet"
+            :loading="isExporting"
+            @click="exportExcel"
+          >
+            Export Excel
           </UButton>
         </div>
 

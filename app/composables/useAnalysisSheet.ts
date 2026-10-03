@@ -63,6 +63,32 @@ export function useAnalysisSheet() {
     workbook.resumePaint();
   }
 
+  /**
+   * Download the sheet as .xlsx, keeping formulas, number formats, colours,
+   * borders and merged cells, so it recalculates in Excel.
+   */
+  async function exportExcel(fileName: string): Promise<void> {
+    if (!isReady()) throw new Error('Bảng tính chưa sẵn sàng');
+
+    // Registers the Excel import/export plugin on the SpreadJS module
+    await import('@mescius/spread-sheets-io');
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      spread.value.export(resolve, (error: unknown) => reject(error), {
+        fileType: GC.Spread.Sheets.FileType.excel,
+        includeStyles: true,
+        includeFormulas: true,
+      });
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   /** Values the user may have edited: inputs, P/E scenarios, shares per quarter */
   function readEdits(): SheetEdits | null {
     if (!spread.value) return null;
@@ -83,5 +109,5 @@ export function useAnalysisSheet() {
     return edits;
   }
 
-  return { init, isReady, render, readEdits };
+  return { init, isReady, render, readEdits, exportExcel };
 }
