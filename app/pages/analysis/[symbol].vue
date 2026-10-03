@@ -28,6 +28,7 @@ const stockSymbol = computed(
 const analysis = useStockAnalysis(stockSymbol);
 const { state, savedAnalysis, isLoading } = analysis;
 const sheet = useAnalysisSheet();
+const toast = useToast();
 
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
 const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart
@@ -110,10 +111,13 @@ const applyInput = (field: InputFieldName, value: number) => {
   if (field === 'outstandingShares') scheduleRender();
 };
 
-/** From the form: update the state and the input cell (formulas recalculate) */
-const updateInput = (field: InputFieldName, value: number) => {
-  applyInput(field, value);
-  if (field !== 'outstandingShares') sheet.setInput(field, value);
+/** "Áp dụng" in the form: update the state and the input cells (formulas recalculate) */
+const applyAssumptions = (changes: Partial<Record<InputFieldName, number>>) => {
+  for (const [field, value] of Object.entries(changes) as [InputFieldName, number][]) {
+    applyInput(field, value);
+    if (field !== 'outstandingShares') sheet.setInput(field, value);
+  }
+  toast.add({ title: 'Đã áp dụng giả định', description: 'Bảng tính đã được tính lại', color: 'success' });
 };
 
 /** From the sheet: the user typed into an input cell */
@@ -142,7 +146,6 @@ const addYear = () => {
   renderSheet();
 };
 
-const toast = useToast();
 const isExporting = ref(false);
 
 const exportExcel = async () => {
@@ -232,7 +235,7 @@ useHead({
         :values="assumptionValues"
         :labels="profile.inputLabels"
         :notes="profile.inputNotes"
-        @update="updateInput"
+        @apply="applyAssumptions"
       />
 
       <!-- SpreadJS Area -->
