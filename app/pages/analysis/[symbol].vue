@@ -32,6 +32,8 @@ const toast = useToast();
 
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
 const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart
+// The assumptions form opens from the "Giả định" button next to the tabs
+const showAssumptions = ref(false);
 const tabItems = [
   { label: 'Bảng tính', icon: 'i-lucide-table-2' },
   { label: 'Biểu đồ', icon: 'i-lucide-bar-chart-2' },
@@ -242,32 +244,50 @@ useHead({
       :loading="isLoading"
     >
       <template #tabs>
-        <UTabs
-          v-model="activeTab"
-          :items="tabItems"
-          :content="false"
-          variant="link"
-          size="md"
-          :ui="{
-            list: 'border-none p-0 gap-1',
-            // Underline drawn inside the tab, so the card edge does not cut it
-            indicator: 'hidden',
-            trigger: [
-              'cursor-pointer px-4 py-3 rounded-t-lg text-sm font-medium text-gray-600 dark:text-gray-400',
-              'hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white',
-              'data-[state=active]:font-semibold data-[state=active]:bg-primary-50 dark:data-[state=active]:bg-primary-950/40',
-              'data-[state=active]:shadow-[inset_0_-3px_0_var(--ui-primary)]',
-            ].join(' '),
-            leadingIcon: 'size-5',
-          }"
-        />
+        <div class="flex items-center gap-2">
+          <UTabs
+            v-model="activeTab"
+            :items="tabItems"
+            :content="false"
+            variant="link"
+            size="md"
+            :ui="{
+              root: 'w-auto',
+              list: 'border-none p-0 gap-1 w-auto',
+              // Underline drawn inside the tab, so the card edge does not cut it
+              indicator: 'hidden',
+              trigger: [
+                'cursor-pointer px-4 py-3 rounded-t-lg text-sm font-medium text-gray-600 dark:text-gray-400',
+                'hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white',
+                'data-[state=active]:font-semibold data-[state=active]:bg-primary-50 dark:data-[state=active]:bg-primary-950/40',
+                'data-[state=active]:shadow-[inset_0_-3px_0_var(--ui-primary)]',
+              ].join(' '),
+              leadingIcon: 'size-5',
+            }"
+          />
+          <!-- Assumptions form: hidden until asked for (sheet tab only) -->
+          <UButton
+            v-if="activeTab === '0'"
+            :icon="showAssumptions ? 'i-lucide-chevron-up' : 'i-lucide-sliders-horizontal'"
+            :color="showAssumptions ? 'primary' : 'neutral'"
+            :variant="showAssumptions ? 'soft' : 'ghost'"
+            :aria-expanded="showAssumptions"
+            aria-controls="assumptions-form"
+            title="Hiện / ẩn giả định dự phóng và định giá"
+            class="shrink-0"
+            @click="() => { showAssumptions = !showAssumptions }"
+          >
+            Giả định
+          </UButton>
+        </div>
       </template>
     </AnalysisStockSummaryBar>
 
     <main class="page-content space-y-6 mt-4">
       <AnalysisAssumptionsForm
+        v-show="activeTab === '0' && showAssumptions"
+        id="assumptions-form"
         :key="formKey"
-        v-show="activeTab === '0'"
         :values="assumptionValues"
         :labels="profile.inputLabels"
         :notes="profile.inputNotes"
