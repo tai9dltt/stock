@@ -87,7 +87,7 @@ export async function upsertMetricValues(
   metricIds: Map<string, number>
 ): Promise<{ written: number; unknownMetricCodes: string[] }> {
   const unknown = new Set<string>()
-  const rows: (string | number)[][] = []
+  const rows: number[][] = []
 
   for (const v of values) {
     const metricId = metricIds.get(v.metricCode)
@@ -98,12 +98,12 @@ export async function upsertMetricValues(
     const periodId = periodIds.get(`${v.year}_${v.quarter}`)
     if (!periodId) continue
 
-    rows.push([companyId, metricId, periodId, v.value, 'vietstock'])
+    rows.push([companyId, metricId, periodId, v.value])
   }
 
   for (let i = 0; i < rows.length; i += BULK_CHUNK_SIZE) {
     await conn.query(
-      `INSERT INTO metric_values (company_id, metric_id, period_id, value, source)
+      `INSERT INTO metric_values (company_id, metric_id, period_id, value)
        VALUES ? ON DUPLICATE KEY UPDATE value = VALUES(value)`,
       [rows.slice(i, i + BULK_CHUNK_SIZE)]
     )
