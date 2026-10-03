@@ -87,8 +87,9 @@ describe('growth typed for a forecast quarter', () => {
     // T35 = TT DT of 2026 Q3, U35 = 2026 Q4 (still following the input M9)
     expect(cellOf(text, 'T35')).toMatch(/^T35 \| 0\.3 \| .*"font":"bold 11pt Calibri"/)
     expect(cellOf(text, 'U35')).toMatch(/^U35 \| =M9 \|/)
-    // Revenue keeps projecting from the quarter's growth cell
-    expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \* \(1 \+ T35\) \|/)
+    // Revenue keeps projecting from the quarter's growth cell; for a loss last
+    // year, a positive growth shrinks the loss (|last year| × growth)
+    expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \+ ABS\(P23\) \* T35 \|/)
   })
 
   it('takes a gross margin typed for one quarter', () => {

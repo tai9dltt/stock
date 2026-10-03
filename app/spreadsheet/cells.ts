@@ -42,8 +42,10 @@ export function amount(key: RowKey, indicator: string): Renderer {
 
 /**
  * Reported amount; in forecast periods projected from the same period last year:
- * last year × (1 + growth). The growth is the input above the sheet, or the
- * period's own growth cell when `growthRow` is given (quarterly table).
+ * last year + |last year| × growth, i.e. last year × (1 + growth) for a profit,
+ * while for a loss a positive growth shrinks the loss instead of growing it.
+ * The growth is the input above the sheet, or the period's own growth cell when
+ * `growthRow` is given (quarterly table).
  */
 export function projectedAmount(
   key: RowKey,
@@ -54,7 +56,8 @@ export function projectedAmount(
   return (cell) => {
     if (cell.isForecast && cell.prevYearCol) {
       const rate = growthRow ? addrOf(cell, growthRow) : cell.refs[growthRef]
-      setFormula(cell, key, `${addrOf(cell, key, cell.prevYearCol)} * (1 + ${rate})`, AMOUNT)
+      const prev = addrOf(cell, key, cell.prevYearCol)
+      setFormula(cell, key, `${prev} + ABS(${prev}) * ${rate}`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, cell.value(indicator), { format: AMOUNT, border: true })
     }
@@ -202,13 +205,18 @@ export function quarterlyPe(reportedInForecast: boolean): Renderer {
   }
 }
 
-/** Year-over-year growth of another row */
+/**
+ * Year-over-year growth of another row, against the size of last year's
+ * figure: a loss turning into a profit is a rise, a growing loss a fall.
+ * Empty when either year has no figure.
+ */
 export function growth(key: RowKey, base: RowKey): Renderer {
   return (cell) => {
     if (cell.prevYearCol) {
       const curr = addrOf(cell, base)
       const prev = addrOf(cell, base, cell.prevYearCol)
-      setFormula(cell, key, `IF(${prev}<>0, (${curr}-${prev})/${prev}, 0)`, PERCENT)
+      setFormula(cell, key,
+        `IF(AND(ISNUMBER(${curr}), ISNUMBER(${prev}), ${prev}<>0), (${curr}-${prev})/ABS(${prev}), "")`, PERCENT)
     }
     border(cell, key)
   }

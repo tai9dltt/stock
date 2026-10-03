@@ -125,16 +125,16 @@ E15 | 5.54 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","bo
 F15 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00"}
 A16 | "TT tăng trưởng DT" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B16 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-C16 | =IF(B5<>0, (C5-B5)/B5, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-D16 | =IF(C5<>0, (D5-C5)/C5, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-E16 | =IF(D5<>0, (E5-D5)/D5, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-F16 | =IF(E5<>0, (F5-E5)/E5, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+C16 | =IF(AND(ISNUMBER(C5), ISNUMBER(B5), B5<>0), (C5-B5)/ABS(B5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+D16 | =IF(AND(ISNUMBER(D5), ISNUMBER(C5), C5<>0), (D5-C5)/ABS(C5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+E16 | =IF(AND(ISNUMBER(E5), ISNUMBER(D5), D5<>0), (E5-D5)/ABS(D5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+F16 | =IF(AND(ISNUMBER(F5), ISNUMBER(E5), E5<>0), (F5-E5)/ABS(E5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 A17 | "TT tăng trưởng LNST" | {"borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B17 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
-C17 | =IF(B8<>0, (C8-B8)/B8, 0) | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-D17 | =IF(C8<>0, (D8-C8)/C8, 0) | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-E17 | =IF(D8<>0, (E8-D8)/D8, 0) | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-F17 | =IF(E8<>0, (F8-E8)/E8, 0) | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+C17 | =IF(AND(ISNUMBER(C8), ISNUMBER(B8), B8<>0), (C8-B8)/ABS(B8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+D17 | =IF(AND(ISNUMBER(D8), ISNUMBER(C8), C8<>0), (D8-C8)/ABS(C8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+E17 | =IF(AND(ISNUMBER(E8), ISNUMBER(D8), D8<>0), (E8-D8)/ABS(D8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+F17 | =IF(AND(ISNUMBER(F8), ISNUMBER(E8), E8<>0), (F8-E8)/ABS(E8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 A21 | "Niên độ \nChỉ số" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 B21 | "2022" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
 C21 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined"}
@@ -196,8 +196,8 @@ P23 | 7390637 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin",
 Q23 | 7990149 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 R23 | 8500182 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 S23 | 7273329 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-T23 | =P23 * (1 + T35) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-U23 | =Q23 * (1 + U35) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+T23 | =P23 + ABS(P23) * T35 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+U23 | =Q23 + ABS(Q23) * U35 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 A24 | "Lợi nhuận gộp" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
 B24 | 466453 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C24 | 320228 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -280,8 +280,8 @@ P27 | 166440 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","
 Q27 | 159765 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 R27 | 200217 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 S27 | 309315 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-T27 | =P27 * (1 + T36) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-U27 | =Q27 * (1 + U36) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+T27 | =P27 + ABS(P27) * T36 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+U27 | =Q27 + ABS(Q27) * U36 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 A28 | "KL CP lưu hành" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
 B28 | 500000000 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
 C28 | 500000000 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -434,20 +434,20 @@ B35 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop
 C35 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 D35 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 E35 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
-F35 | =IF(B23<>0, (F23-B23)/B23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G35 | =IF(C23<>0, (G23-C23)/C23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-H35 | =IF(D23<>0, (H23-D23)/D23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-I35 | =IF(E23<>0, (I23-E23)/E23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
-J35 | =IF(F23<>0, (J23-F23)/F23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-K35 | =IF(G23<>0, (K23-G23)/G23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-L35 | =IF(H23<>0, (L23-H23)/H23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-M35 | =IF(I23<>0, (M23-I23)/I23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
-N35 | =IF(J23<>0, (N23-J23)/J23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-O35 | =IF(K23<>0, (O23-K23)/K23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-P35 | =IF(L23<>0, (P23-L23)/L23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-Q35 | =IF(M23<>0, (Q23-M23)/M23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
-R35 | =IF(N23<>0, (R23-N23)/N23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-S35 | =IF(O23<>0, (S23-O23)/O23, 0) | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+F35 | =IF(AND(ISNUMBER(F23), ISNUMBER(B23), B23<>0), (F23-B23)/ABS(B23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+G35 | =IF(AND(ISNUMBER(G23), ISNUMBER(C23), C23<>0), (G23-C23)/ABS(C23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H35 | =IF(AND(ISNUMBER(H23), ISNUMBER(D23), D23<>0), (H23-D23)/ABS(D23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+I35 | =IF(AND(ISNUMBER(I23), ISNUMBER(E23), E23<>0), (I23-E23)/ABS(E23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+J35 | =IF(AND(ISNUMBER(J23), ISNUMBER(F23), F23<>0), (J23-F23)/ABS(F23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+K35 | =IF(AND(ISNUMBER(K23), ISNUMBER(G23), G23<>0), (K23-G23)/ABS(G23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+L35 | =IF(AND(ISNUMBER(L23), ISNUMBER(H23), H23<>0), (L23-H23)/ABS(H23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+M35 | =IF(AND(ISNUMBER(M23), ISNUMBER(I23), I23<>0), (M23-I23)/ABS(I23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+N35 | =IF(AND(ISNUMBER(N23), ISNUMBER(J23), J23<>0), (N23-J23)/ABS(J23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+O35 | =IF(AND(ISNUMBER(O23), ISNUMBER(K23), K23<>0), (O23-K23)/ABS(K23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+P35 | =IF(AND(ISNUMBER(P23), ISNUMBER(L23), L23<>0), (P23-L23)/ABS(L23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+Q35 | =IF(AND(ISNUMBER(Q23), ISNUMBER(M23), M23<>0), (Q23-M23)/ABS(M23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+R35 | =IF(AND(ISNUMBER(R23), ISNUMBER(N23), N23<>0), (R23-N23)/ABS(N23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+S35 | =IF(AND(ISNUMBER(S23), ISNUMBER(O23), O23<>0), (S23-O23)/ABS(O23), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 T35 | =M9 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
 U35 | =M9 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%","locked":false}
 A36 | "TT LNST (%)" | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
@@ -455,20 +455,20 @@ B36 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","bor
 C36 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 D36 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 E36 | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
-F36 | =IF(B27<>0, (F27-B27)/B27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G36 | =IF(C27<>0, (G27-C27)/C27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-H36 | =IF(D27<>0, (H27-D27)/D27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-I36 | =IF(E27<>0, (I27-E27)/E27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
-J36 | =IF(F27<>0, (J27-F27)/F27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-K36 | =IF(G27<>0, (K27-G27)/G27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-L36 | =IF(H27<>0, (L27-H27)/H27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-M36 | =IF(I27<>0, (M27-I27)/I27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
-N36 | =IF(J27<>0, (N27-J27)/J27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-O36 | =IF(K27<>0, (O27-K27)/K27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-P36 | =IF(L27<>0, (P27-L27)/L27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-Q36 | =IF(M27<>0, (Q27-M27)/M27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
-R36 | =IF(N27<>0, (R27-N27)/N27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-S36 | =IF(O27<>0, (S27-O27)/O27, 0) | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+F36 | =IF(AND(ISNUMBER(F27), ISNUMBER(B27), B27<>0), (F27-B27)/ABS(B27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+G36 | =IF(AND(ISNUMBER(G27), ISNUMBER(C27), C27<>0), (G27-C27)/ABS(C27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H36 | =IF(AND(ISNUMBER(H27), ISNUMBER(D27), D27<>0), (H27-D27)/ABS(D27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+I36 | =IF(AND(ISNUMBER(I27), ISNUMBER(E27), E27<>0), (I27-E27)/ABS(E27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+J36 | =IF(AND(ISNUMBER(J27), ISNUMBER(F27), F27<>0), (J27-F27)/ABS(F27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+K36 | =IF(AND(ISNUMBER(K27), ISNUMBER(G27), G27<>0), (K27-G27)/ABS(G27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+L36 | =IF(AND(ISNUMBER(L27), ISNUMBER(H27), H27<>0), (L27-H27)/ABS(H27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+M36 | =IF(AND(ISNUMBER(M27), ISNUMBER(I27), I27<>0), (M27-I27)/ABS(I27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+N36 | =IF(AND(ISNUMBER(N27), ISNUMBER(J27), J27<>0), (N27-J27)/ABS(J27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+O36 | =IF(AND(ISNUMBER(O27), ISNUMBER(K27), K27<>0), (O27-K27)/ABS(K27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+P36 | =IF(AND(ISNUMBER(P27), ISNUMBER(L27), L27<>0), (P27-L27)/ABS(L27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+Q36 | =IF(AND(ISNUMBER(Q27), ISNUMBER(M27), M27<>0), (Q27-M27)/ABS(M27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+R36 | =IF(AND(ISNUMBER(R27), ISNUMBER(N27), N27<>0), (R27-N27)/ABS(N27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+S36 | =IF(AND(ISNUMBER(S27), ISNUMBER(O27), O27<>0), (S27-O27)/ABS(O27), "") | {"backColor":"#EEF2F6","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 T36 | =M11 | {"backColor":"#FEF9C3","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
 U36 | =M11 | {"backColor":"#FEF9C3","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%","locked":false}
 A40 | "Niên độ:" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}

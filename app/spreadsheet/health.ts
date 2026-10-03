@@ -85,7 +85,7 @@ export function buildHealthTable(
   const rowOf = (index: number) => firstDataRow + index
   const cashRow = rows.findIndex(r => r.source === 'operatingCashFlow')
 
-  writePeriodHeaders(ctx, quarterlyCols, data, startRow, 'Sức khoẻ tài chính', 'Chỉ số (Vietstock)')
+  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Sức khoẻ tài chính', 'Chỉ số (Vietstock)')
 
   rows.forEach((spec, i) => {
     const row = rowOf(i)

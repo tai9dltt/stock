@@ -160,7 +160,7 @@ export function buildAnnualTable(
     currentYear
   )
   const colMap: Record<string, number> = Object.fromEntries(years.map((year, i) => [year, 1 + i]))
-  const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
+  const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
 
   // Header
   sheet.setRowHeight(startRow, 60)
@@ -234,7 +234,7 @@ export function buildQuarterlyTable(
   let nextCol = 1
 
   for (const year of years) {
-    const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
+    const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
 
     setCell(GC, sheet, startRow, nextCol, year, { ...HEADER_STYLE, ...periodStyle(isYearForecast) })
     sheet.addSpan(startRow, nextCol, 1, 4)
@@ -380,19 +380,17 @@ function resolvePeScenarios(data: AnalysisSheetData): { values: number[]; labels
 export function writePeriodHeaders(
   ctx: SheetContext,
   quarterlyCols: QuarterlyColumnInfo[],
-  data: AnalysisSheetData,
   startRow: number,
   yearLabel: string,
   quarterLabel: string
 ): void {
   const { GC, sheet } = ctx
-  const currentYear = new Date().getFullYear()
 
   sheet.setRowHeight(startRow, 30)
   for (const year of new Set(quarterlyCols.map(q => q.year))) {
     const yearCols = quarterlyCols.filter(q => q.year === year)
     const firstCol = yearCols[0]!.col
-    const forecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears)
+    const forecast = yearCols.some(q => q.isForecast)
 
     setCell(GC, sheet, startRow, firstCol, year, { ...HEADER_STYLE, ...periodStyle(forecast) })
     if (yearCols.length > 1) sheet.addSpan(startRow, firstCol, 1, yearCols.length)
@@ -430,7 +428,7 @@ export function buildValuationTable(
   const current = currentPe(data)
 
   // Ladder levels come from the reported P/E of the last 5 years
-  writePeriodHeaders(ctx, quarterlyCols, data, startRow, 'Niên độ:', 'Giả sử P/E\n(lịch sử 5 năm)')
+  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Niên độ:', 'Giả sử P/E\n(lịch sử 5 năm)')
 
   // Scenario rows
   const endCol = quarterlyCols.length > 0 ? quarterlyCols[quarterlyCols.length - 1]!.col + 1 : 1
