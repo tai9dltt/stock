@@ -31,14 +31,15 @@ export default defineEventHandler(async (event) => {
       await conn.query(
         `INSERT INTO stock_analysis
            (company_id, revenue_growth, gross_margin, net_profit_growth, pe_scenarios, shares_by_quarter,
-            current_price, outstanding_shares, max_52w, min_52w, entry_price, target_price, stop_loss, note_html)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            growth_overrides, current_price, outstanding_shares, max_52w, min_52w, entry_price, target_price, stop_loss, note_html)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE
            revenue_growth = VALUES(revenue_growth),
            gross_margin = VALUES(gross_margin),
            net_profit_growth = VALUES(net_profit_growth),
            pe_scenarios = VALUES(pe_scenarios),
            shares_by_quarter = VALUES(shares_by_quarter),
+           growth_overrides = VALUES(growth_overrides),
            current_price = VALUES(current_price),
            outstanding_shares = VALUES(outstanding_shares),
            max_52w = VALUES(max_52w),
@@ -50,7 +51,7 @@ export default defineEventHandler(async (event) => {
         [
           company.id,
           body.revenueGrowth, body.grossMargin, body.netProfitGrowth,
-          json(body.peScenarios), json(body.sharesByQuarter),
+          json(body.peScenarios), json(body.sharesByQuarter), json(body.growthOverrides),
           body.currentPrice || null, body.outstandingShares || null, body.max52W || null, body.min52W || null,
           body.entryPrice ?? null, body.targetPrice ?? null, body.stopLoss ?? null, body.noteHtml ?? null,
         ]

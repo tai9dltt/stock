@@ -6,6 +6,12 @@ import type { InputFieldName as InputField } from '~/constants/spreadJsConstants
 
 export type StockType = 'industrial' | 'bank' | 'securities'
 
+/** Figure whose year-over-year growth can be set per forecast quarter */
+export type GrowthKind = 'revenue' | 'netProfit'
+
+/** Growth typed into a forecast quarter, e.g. { revenue: { "2026_Q3": 0.3 } } */
+export type GrowthOverrides = Partial<Record<GrowthKind, Record<string, number>>>
+
 /** SpreadJS module, workbook and the sheet being built */
 export interface SheetContext {
   GC: any
@@ -63,6 +69,8 @@ export interface CellContext {
   value: (indicator: string) => any
   /** Outstanding shares for this quarter (quarterly table only) */
   shares?: number
+  /** Growth the user typed for this forecast quarter (quarterly table only) */
+  growthOverride?: (kind: GrowthKind) => number | undefined
 }
 
 export interface RowSpec {
@@ -111,6 +119,8 @@ export interface AnalysisSheetData {
   forecastQuarters: string[]
   /** Saved P/E scenarios of the valuation table; empty = derive defaults */
   peScenarios: number[]
+  /** Per-quarter growth that replaces the growth assumption in forecast quarters */
+  growthOverrides: GrowthOverrides
   tradingDate: string
   currentPrice: number
   outstandingShares: number
@@ -127,4 +137,6 @@ export interface AnalysisSheetLayout {
   quarterlyCols: QuarterlyColumnInfo[]
   sharesRow: number
   valuationStartRow: number
+  /** Quarterly growth rows, whose forecast cells take per-quarter growth */
+  growthRows: Record<GrowthKind, number>
 }

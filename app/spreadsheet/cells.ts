@@ -4,8 +4,9 @@
  * Each renderer fills one cell of a row for one period and leaves it bordered.
  */
 
-import type { CellContext, RowKey } from './types'
-import { applyBorder, getCellAddr, setCell, setDivisionFormula } from '~/utils/spreadjs'
+import type { CellContext, GrowthKind, RowKey } from './types'
+import { SPREADJS_COLORS } from '~/constants/spreadJsConstants'
+import { applyBorder, getCellAddr, getThinBorder, setCell, setDivisionFormula } from '~/utils/spreadjs'
 
 type Renderer = (cell: CellContext) => void
 
@@ -41,16 +42,19 @@ export function amount(key: RowKey, indicator: string): Renderer {
 
 /**
  * Reported amount; in forecast periods projected from the same period last year:
- * last year × (1 + growth input)
+ * last year × (1 + growth). The growth is the input above the sheet, or the
+ * period's own growth cell when `growthRow` is given (quarterly table).
  */
 export function projectedAmount(
   key: RowKey,
   indicator: string,
-  growthRef: 'revenueGrowth' | 'netProfitGrowth'
+  growthRef: 'revenueGrowth' | 'netProfitGrowth',
+  growthRow?: RowKey
 ): Renderer {
   return (cell) => {
     if (cell.isForecast && cell.prevYearCol) {
-      setFormula(cell, key, `${addrOf(cell, key, cell.prevYearCol)} * (1 + ${cell.refs[growthRef]})`, AMOUNT)
+      const rate = growthRow ? addrOf(cell, growthRow) : cell.refs[growthRef]
+      setFormula(cell, key, `${addrOf(cell, key, cell.prevYearCol)} * (1 + ${rate})`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, cell.value(indicator), { format: AMOUNT, border: true })
     }
@@ -203,5 +207,49 @@ export function growth(key: RowKey, base: RowKey): Renderer {
       setFormula(cell, key, `IF(${prev}<>0, (${curr}-${prev})/${prev}, 0)`, PERCENT)
     }
     border(cell, key)
+  }
+}
+
+const GROWTH_INPUT: Record<GrowthKind, 'revenueGrowth' | 'netProfitGrowth'> = {
+  revenue: 'revenueGrowth',
+  netProfit: 'netProfitGrowth',
+}
+
+/**
+ * Style of a forecast quarter's growth cell: editable; bold when the user typed
+ * a growth for this quarter instead of following the input above the sheet.
+ */
+export function styleGrowthInput(GC: any, sheet: any, row: number, col: number, typed: boolean) {
+  const style = new GC.Spread.Sheets.Style()
+  style.backColor = SPREADJS_COLORS.INPUT
+  if (typed) {
+    style.font = 'bold 11pt Calibri'
+    style.foreColor = SPREADJS_COLORS.FORECAST_TEXT
+  }
+  const border = getThinBorder(GC)
+  style.borderLeft = border
+  style.borderTop = border
+  style.borderRight = border
+  style.borderBottom = border
+  style.formatter = PERCENT
+  style.locked = false
+  sheet.setStyle(row, col, style)
+}
+
+/**
+ * Quarterly growth row. Reported quarters: year-over-year growth of `base`.
+ * Forecast quarters: the growth the projection uses, which the user can type
+ * per quarter; otherwise it follows the input above the sheet.
+ */
+export function quarterlyGrowth(key: RowKey, base: RowKey, kind: GrowthKind): Renderer {
+  const reported = growth(key, base)
+  return (cell) => {
+    if (!cell.isForecast || !cell.prevYearCol) return reported(cell)
+
+    const row = rowOf(cell, key)
+    const typed = cell.growthOverride?.(kind)
+    if (typed !== undefined) cell.sheet.setValue(row, cell.col, typed)
+    else cell.sheet.setFormula(row, cell.col, cell.refs[GROWTH_INPUT[kind]])
+    styleGrowthInput(cell.GC, cell.sheet, row, cell.col, typed !== undefined)
   }
 }

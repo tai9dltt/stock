@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
     // 6. Get user analysis if any (DECIMAL columns come back as strings)
     const analysis = await queryOne<Record<string, any>>(
       `SELECT revenue_growth, gross_margin, net_profit_growth, pe_scenarios, shares_by_quarter,
-              current_price, outstanding_shares, max_52w, min_52w,
+              growth_overrides, current_price, outstanding_shares, max_52w, min_52w,
               entry_price, target_price, stop_loss, note_html
        FROM stock_analysis
        WHERE company_id = ?`,
@@ -119,6 +119,7 @@ export default defineEventHandler(async (event) => {
           netProfitGrowth: Number(analysis.net_profit_growth),
           peScenarios: analysis.pe_scenarios,
           sharesByQuarter: analysis.shares_by_quarter,
+          growthOverrides: analysis.growth_overrides,
           currentPrice: num(analysis.current_price),
           outstandingShares: num(analysis.outstanding_shares),
           max52W: num(analysis.max_52w),

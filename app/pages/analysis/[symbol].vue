@@ -123,6 +123,12 @@ const applyAssumptions = (changes: Partial<Record<InputFieldName, number>>) => {
 /** From the sheet: the user typed into an input cell */
 sheet.onInputEdited(applyInput);
 
+/** From the sheet: growth typed for one forecast quarter (null = follow the assumption again) */
+sheet.onGrowthEdited((kind, period, value) => {
+  const { [period]: _previous, ...others } = state.value.growthOverrides[kind] ?? {};
+  state.value.growthOverrides[kind] = value === null ? others : { ...others, [period]: value };
+});
+
 // ============ ACTIONS ============
 
 const loadAnalysis = async () => {
@@ -144,6 +150,15 @@ const refreshData = async () => {
 const addYear = () => {
   analysis.addYear();
   renderSheet();
+};
+
+// Remounted on reset so the form drops edits it has not applied
+const formKey = ref(0);
+
+const resetChanges = () => {
+  analysis.reset();
+  formKey.value++;
+  toast.add({ title: 'Đã đặt lại', description: 'Bảng tính quay về lần lưu gần nhất', color: 'info' });
 };
 
 const isExporting = ref(false);
@@ -179,6 +194,13 @@ const secondaryActions = computed(() => [
     icon: 'i-lucide-calendar-plus',
     loading: false,
     onClick: addYear,
+  },
+  {
+    label: 'Đặt lại',
+    title: 'Bỏ các thay đổi chưa lưu (giả định, ô đã sửa trong bảng tính, năm vừa thêm)',
+    icon: 'i-lucide-rotate-ccw',
+    loading: false,
+    onClick: resetChanges,
   },
   {
     label: 'Xuất Excel',
@@ -231,6 +253,7 @@ useHead({
 
     <main class="page-content space-y-6">
       <AnalysisAssumptionsForm
+        :key="formKey"
         v-show="activeTab === '0'"
         :values="assumptionValues"
         :labels="profile.inputLabels"

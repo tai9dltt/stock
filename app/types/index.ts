@@ -1,3 +1,5 @@
+import type { GrowthOverrides } from '~/spreadsheet/types';
+
 
 export interface TradingInfo {
   lastPrice: number;
@@ -16,6 +18,8 @@ export interface AnalysisInputs {
   netProfitGrowth: number;
   peScenarios: number[] | null;
   sharesByQuarter: Record<string, Record<string, number>> | null;
+  /** Growth typed for single forecast quarters: { revenue: { "2026_Q3": 0.3 } } */
+  growthOverrides: GrowthOverrides | null;
   /** Market data last shown in the sheet, used when no live price is available */
   currentPrice: number | null;
   outstandingShares: number | null;

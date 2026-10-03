@@ -250,6 +250,7 @@ export function buildQuarterlyTable(
       prevYearCol: col - 4 >= 1 ? col - 4 : undefined,
       value: indicator => data.quarterlyData[indicator]?.[year]?.[quarter],
       shares: savedShares !== undefined && savedShares !== null ? Number(savedShares) : data.outstandingShares,
+      growthOverride: kind => data.growthOverrides[kind]?.[`${year}_${quarter}`],
     }
     profile.quarterlyRows.forEach(spec => spec.render(cell))
 

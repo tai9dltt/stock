@@ -36,6 +36,11 @@ export const saveBodySchema = z.object({
   forecastYears: z.array(z.string().regex(/^\d{4}$/)).max(30).default([]),
   // { "2025": { "Q1": 123456 } }
   sharesByQuarter: z.record(z.string(), z.record(z.string(), z.number())).nullable().optional(),
+  // Growth typed for single forecast quarters: { "revenue": { "2026_Q3": 0.3 } }
+  growthOverrides: z.object({
+    revenue: z.record(z.string().regex(/^\d{4}_Q[1-4]$/), z.number()).optional(),
+    netProfit: z.record(z.string().regex(/^\d{4}_Q[1-4]$/), z.number()).optional(),
+  }).nullable().optional(),
   // Market data shown in the sheet (fallback when no live price is available)
   currentPrice: nonNegative,
   outstandingShares: nonNegative,

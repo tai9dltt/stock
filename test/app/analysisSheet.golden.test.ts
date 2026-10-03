@@ -68,3 +68,19 @@ describe.each([
     await expect(build(state)).toMatchFileSnapshot(`__snapshots__/sheet-${symbol}-add-year.txt`)
   })
 })
+
+describe('growth typed for a forecast quarter', () => {
+  const cellOf = (text: string, addr: string) => text.split('\n').find(line => line.startsWith(`${addr} |`))
+
+  it('replaces the growth assumption in that quarter only', () => {
+    const state = load('DGW', DGW)
+    state.growthOverrides = { revenue: { '2026_Q3': 0.3 } }
+    const text = build(state)
+
+    // T35 = TT DT of 2026 Q3, U35 = 2026 Q4 (still following the input M9)
+    expect(cellOf(text, 'T35')).toMatch(/^T35 \| 0\.3 \| .*"font":"bold 11pt Calibri"/)
+    expect(cellOf(text, 'U35')).toMatch(/^U35 \| =M9 \|/)
+    // Revenue keeps projecting from the quarter's growth cell
+    expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \* \(1 \+ T35\) \|/)
+  })
+})

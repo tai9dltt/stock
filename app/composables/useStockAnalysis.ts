@@ -1,5 +1,6 @@
 /**
- * State and actions of the analysis page: load, crawl, save, add a forecast year.
+ * State and actions of the analysis page: load, crawl, save, add a forecast year,
+ * reset unsaved changes.
  */
 
 import { ref, type Ref } from 'vue';
@@ -21,6 +22,12 @@ export function useStockAnalysis(symbol: Ref<string>) {
   const state = ref<AnalysisSheetData>(createEmptyAnalysisState(symbol.value));
   const savedAnalysis = ref<StockData['analysis']>(null);
   const isLoading = ref(false);
+  // State as loaded or last saved, for "Đặt lại" (plain JSON, so a deep copy is safe)
+  const copy = (s: AnalysisSheetData): AnalysisSheetData => JSON.parse(JSON.stringify(s));
+  let savedState = copy(state.value);
+  const keepSavedState = () => {
+    savedState = copy(state.value);
+  };
 
   async function fetchLiveTradingInfo() {
     try {
@@ -46,6 +53,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
 
       state.value = buildAnalysisState(symbol.value, response.data, tradingInfo, today);
       savedAnalysis.value = response.data.analysis ?? null;
+      keepSavedState();
     } catch (error) {
       console.error(error);
     } finally {
@@ -111,6 +119,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
       // The summary bar shows the saved trading plan
       const { symbol: _symbol, forecastYears: _forecastYears, ...saved } = payload;
       savedAnalysis.value = saved;
+      keepSavedState();
 
       toast.add({
         title: 'Đã lưu',
@@ -128,5 +137,10 @@ export function useStockAnalysis(symbol: Ref<string>) {
     }
   }
 
-  return { state, savedAnalysis, isLoading, load, crawl, addYear, save };
+  /** Back to the state as loaded or last saved (assumptions, sheet edits, added years) */
+  function reset() {
+    state.value = copy(savedState);
+  }
+
+  return { state, savedAnalysis, isLoading, load, crawl, addYear, save, reset };
 }

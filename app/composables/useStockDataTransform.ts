@@ -7,7 +7,7 @@ import {
   QUARTERLY_INDICATOR_SOURCES,
   ANNUAL_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
-import type { AnalysisSheetData } from '~/spreadsheet/types';
+import type { AnalysisSheetData, GrowthKind, GrowthOverrides } from '~/spreadsheet/types';
 import { extractYearsFromData } from '~/spreadsheet/years';
 import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
 
@@ -234,6 +234,7 @@ export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
     forecastYears: [],
     forecastQuarters: [],
     peScenarios: [],
+    growthOverrides: {},
     tradingDate: '',
     currentPrice: 0,
     outstandingShares: 0,
@@ -289,6 +290,7 @@ export function buildAnalysisState(
     const overrides = sharesOverrides(saved.sharesByQuarter, saved.outstandingShares);
     if (overrides) state.quarterlyData = { outstandingShares: overrides };
     if (saved.peScenarios?.length) state.peScenarios = [...saved.peScenarios];
+    if (saved.growthOverrides) state.growthOverrides = structuredClone(saved.growthOverrides);
     if (saved.outstandingShares && !state.outstandingShares) state.outstandingShares = saved.outstandingShares;
     if (saved.currentPrice && !state.currentPrice) state.currentPrice = saved.currentPrice;
     if (saved.max52W && !state.max52W) state.max52W = saved.max52W;
@@ -358,6 +360,7 @@ export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): Save
     netProfitGrowth: state.netProfitGrowth,
     peScenarios: state.peScenarios.length > 0 ? state.peScenarios : null,
     sharesByQuarter: sharesOverrides(state.quarterlyData['outstandingShares'], state.outstandingShares),
+    growthOverrides: cleanGrowthOverrides(state.growthOverrides),
     currentPrice: state.currentPrice || null,
     outstandingShares: state.outstandingShares || null,
     max52W: state.max52W || null,
@@ -382,4 +385,14 @@ function sharesOverrides(
     }
   }
   return Object.keys(result).length > 0 ? result : null;
+}
+
+/** Per-quarter growth to save: finite values only, null when there is none */
+export function cleanGrowthOverrides(overrides: GrowthOverrides): GrowthOverrides | null {
+  const cleaned: GrowthOverrides = {};
+  for (const kind of ['revenue', 'netProfit'] as GrowthKind[]) {
+    const entries = Object.entries(overrides[kind] ?? {}).filter(([, v]) => Number.isFinite(v));
+    if (entries.length > 0) cleaned[kind] = Object.fromEntries(entries);
+  }
+  return Object.keys(cleaned).length > 0 ? cleaned : null;
 }

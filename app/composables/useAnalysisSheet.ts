@@ -4,8 +4,10 @@
  */
 
 import { shallowRef } from 'vue';
-import type { AnalysisSheetData, AnalysisSheetLayout } from '~/spreadsheet/types';
+import type { AnalysisSheetData, AnalysisSheetLayout, GrowthKind } from '~/spreadsheet/types';
 import { buildAnalysisSheet } from '~/spreadsheet/buildAnalysisSheet';
+import { styleGrowthInput } from '~/spreadsheet/cells';
+import { getCellAddr } from '~/utils/spreadjs';
 import { INPUT_AREA, INPUT_FIELDS, inputRow, VALUATION_TABLE, type InputFieldName } from '~/constants/spreadJsConstants';
 import { extractInputValues, extractPeValues, extractSharesPerQuarter } from '~/composables/useStockDataTransform';
 
@@ -15,12 +17,38 @@ export interface SheetEdits {
   sharesPerQuarter?: Record<string, Record<string, number>>;
 }
 
+/** A forecast quarter's growth was typed (value) or cleared (null) */
+type GrowthEditedCallback = (kind: GrowthKind, period: string, value: number | null) => void;
+
 export function useAnalysisSheet() {
   let GC: any = null;
   const spread = shallowRef<any>(null);
   const layout = shallowRef<AnalysisSheetLayout | null>(null);
   const INPUT_COL = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
   let onInputEdited: ((field: InputFieldName, value: number) => void) | null = null;
+  let onGrowthEdited: GrowthEditedCallback | null = null;
+
+  const GROWTH_INPUT: Record<GrowthKind, InputFieldName> = { revenue: 'revenueGrowth', netProfit: 'netProfitGrowth' };
+
+  /**
+   * After the user edits a forecast quarter's growth cell: a number is that
+   * quarter's own growth; clearing it goes back to the input above the sheet.
+   */
+  function syncGrowthCell(sheet: any, row: number, col: number) {
+    const current = layout.value;
+    if (!current) return;
+    const kind = (Object.keys(current.growthRows) as GrowthKind[]).find(k => current.growthRows[k] === row);
+    const period = kind && current.quarterlyCols.find(c => c.col === col && c.isForecast);
+    if (!kind || !period || sheet.getFormula(row, col)) return;
+
+    const value = sheet.getValue(row, col);
+    const typed = typeof value === 'number' && Number.isFinite(value);
+    if (!typed) {
+      sheet.setFormula(row, col, getCellAddr(GC, sheet, inputRow(GROWTH_INPUT[kind]), INPUT_COL));
+    }
+    styleGrowthInput(GC, sheet, row, col, typed);
+    onGrowthEdited?.(kind, `${period.year}_${period.quarter}`, typed ? value : null);
+  }
 
   async function init(spreadInstance: any) {
     if (!GC) {
@@ -66,6 +94,16 @@ export function useAnalysisSheet() {
       if (info.col !== INPUT_COL || !onInputEdited) return;
       const field = INPUT_FIELDS.find(f => inputRow(f) === info.row);
       if (field) onInputEdited(field, Number(info.newValue) || 0);
+    });
+    sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number }) => {
+      syncGrowthCell(sheet, info.row, info.col);
+    });
+    // Delete key, paste and fill change ranges instead of single values
+    sheet.unbind(GC.Spread.Sheets.Events.RangeChanged);
+    sheet.bind(GC.Spread.Sheets.Events.RangeChanged, (_event: unknown, info: { row: number; col: number; rowCount: number; colCount: number }) => {
+      for (let r = info.row; r < info.row + info.rowCount; r++) {
+        for (let c = info.col; c < info.col + info.colCount; c++) syncGrowthCell(sheet, r, c);
+      }
     });
 
     sheet.resumeCalcService(false);
@@ -133,6 +171,9 @@ export function useAnalysisSheet() {
     setInput,
     onInputEdited: (callback: (field: InputFieldName, value: number) => void) => {
       onInputEdited = callback;
+    },
+    onGrowthEdited: (callback: GrowthEditedCallback) => {
+      onGrowthEdited = callback;
     },
   };
 }
