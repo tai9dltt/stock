@@ -40,6 +40,21 @@ const groups = computed(() => [
 const update = (field: EditableField, value: number | null | undefined) => {
   emit('update', field, value ?? 0);
 };
+
+/**
+ * UInputNumber only commits on blur / Enter. Parse the text while the user
+ * types so the sheet recalculates as they go ("25" or "25%" → 0.25).
+ */
+const typingTimers = new Map<EditableField, ReturnType<typeof setTimeout>>();
+const onTyping = (field: EditableField, isPercent: boolean, event: Event) => {
+  const text = (event.target as HTMLInputElement).value.replace(/[^\d.-]/g, '');
+  if (text === '' || text === '-' || text === '.') return;
+  const value = Number(text);
+  if (!Number.isFinite(value)) return;
+
+  clearTimeout(typingTimers.get(field));
+  typingTimers.set(field, setTimeout(() => update(field, isPercent ? value / 100 : value), 200));
+};
 </script>
 
 <template>
@@ -70,6 +85,7 @@ const update = (field: EditableField, value: number | null | undefined) => {
               :ui="{ base: 'tabular-nums' }"
               class="w-full"
               @update:model-value="(v: number | null | undefined) => update(f.field, v)"
+              @input="(e: Event) => onTyping(f.field, f.format === PERCENT, e)"
             />
           </UFormField>
         </div>
