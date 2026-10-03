@@ -275,7 +275,13 @@ export function buildQuarterlyTable(
     }
   }
 
-  if (cols.length > 0) highlightGrowthRows(ctx, rows, cols[0]!.col, cols.length)
+  if (cols.length > 0) {
+    highlightGrowthRows(ctx, rows, cols[0]!.col, cols.length)
+    // Gross and net margins: green above 10%, red when negative
+    for (const margin of [rows.grossMargin, rows.netMargin, rows.netProfitMargin]) {
+      if (margin !== undefined) applyGrowthHighlightRange(GC, sheet, margin, cols[0]!.col, cols.length, 0.1)
+    }
+  }
 
   sheet.getRange(lastRow, 0, 1, nextCol).setBorder(getDoubleBorder(GC), { bottom: true })
 

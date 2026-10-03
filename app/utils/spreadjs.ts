@@ -281,13 +281,15 @@ export function setQuarterlySumFormula(
  * @param row - Row index
  * @param startCol - Starting column index
  * @param colCount - Number of columns to cover
+ * @param greenAbove - Values above this are green (default 20%)
  */
 export function applyGrowthHighlightRange(
   GC: any,
   sheet: any,
   row: number,
   startCol: number,
-  colCount: number
+  colCount: number,
+  greenAbove: number = 0.2
 ): void {
   if (colCount <= 0) return
 
@@ -296,14 +298,14 @@ export function applyGrowthHighlightRange(
   const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
   const border = getThinBorder(GC)
 
-  // Green for > 20%
+  // Green above the threshold
   const greenStyle = new GC.Spread.Sheets.Style()
   greenStyle.backColor = '#C6EFCE'
   greenStyle.borderLeft = border
   greenStyle.borderTop = border
   greenStyle.borderRight = border
   greenStyle.borderBottom = border
-  cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
+  cfs.addCellValueRule(operators.greaterThan, greenAbove, null, greenStyle, range)
 
   // Pink for < 0
   const pinkStyle = new GC.Spread.Sheets.Style()
