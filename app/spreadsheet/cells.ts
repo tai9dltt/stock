@@ -62,11 +62,15 @@ export function projectedAmount(
   }
 }
 
-/** Gross profit; in forecast quarters revenue × gross margin input */
-export function forecastGrossProfit(): Renderer {
+/**
+ * Gross profit; in forecast quarters revenue × gross margin: the input above
+ * the sheet, or the quarter's own margin cell when `marginRow` is given
+ */
+export function forecastGrossProfit(marginRow?: RowKey): Renderer {
   return (cell) => {
     if (cell.isForecast) {
-      setFormula(cell, 'grossProfit', `${addrOf(cell, 'revenue')} * ${cell.refs.grossMargin}`, AMOUNT)
+      const margin = marginRow ? addrOf(cell, marginRow) : cell.refs.grossMargin
+      setFormula(cell, 'grossProfit', `${addrOf(cell, 'revenue')} * ${margin}`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'grossProfit'), cell.col, cell.value('grossProfit'), {
         format: AMOUNT,
@@ -210,8 +214,9 @@ export function growth(key: RowKey, base: RowKey): Renderer {
   }
 }
 
-const GROWTH_INPUT: Record<GrowthKind, 'revenueGrowth' | 'netProfitGrowth'> = {
+const GROWTH_INPUT: Record<GrowthKind, 'revenueGrowth' | 'grossMargin' | 'netProfitGrowth'> = {
   revenue: 'revenueGrowth',
+  grossMargin: 'grossMargin',
   netProfit: 'netProfitGrowth',
 }
 
@@ -246,10 +251,28 @@ export function quarterlyGrowth(key: RowKey, base: RowKey, kind: GrowthKind): Re
   return (cell) => {
     if (!cell.isForecast || !cell.prevYearCol) return reported(cell)
 
-    const row = rowOf(cell, key)
-    const typed = cell.growthOverride?.(kind)
-    if (typed !== undefined) cell.sheet.setValue(row, cell.col, typed)
-    else cell.sheet.setFormula(row, cell.col, cell.refs[GROWTH_INPUT[kind]])
-    styleGrowthInput(cell.GC, cell.sheet, row, cell.col, typed !== undefined)
+    forecastInput(cell, key, kind)
   }
+}
+
+/**
+ * Quarterly margin row, e.g. gross margin. Reported quarters: numerator ÷
+ * denominator. Forecast quarters: the margin the projection uses, typed per
+ * quarter or following the input above the sheet.
+ */
+export function quarterlyMargin(key: RowKey, numerator: RowKey, denominator: RowKey): Renderer {
+  const reported = ratio(key, numerator, denominator)
+  return (cell) => {
+    if (!cell.isForecast) return reported(cell)
+    forecastInput(cell, key, 'grossMargin')
+  }
+}
+
+/** Forecast quarter cell of an assumption: the typed value, else the input */
+function forecastInput(cell: CellContext, key: RowKey, kind: GrowthKind) {
+  const row = rowOf(cell, key)
+  const typed = cell.growthOverride?.(kind)
+  if (typed !== undefined) cell.sheet.setValue(row, cell.col, typed)
+  else cell.sheet.setFormula(row, cell.col, cell.refs[GROWTH_INPUT[kind]])
+  styleGrowthInput(cell.GC, cell.sheet, row, cell.col, typed !== undefined)
 }

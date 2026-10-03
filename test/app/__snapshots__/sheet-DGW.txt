@@ -84,7 +84,7 @@ F10 | =IF(F5<>0, F8/F5, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borde
 K10 | "% Biên LN gộp" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M10 | 0 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
-N10 | "Dự phóng · biên LN gộp các quý (F)" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
+N10 | "Dự phóng · sửa riêng ở dòng Biên LN gộp" | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"left"}
 O10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
 A11 | "EPS (Vietstock)" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
@@ -217,8 +217,8 @@ P24 | 650563 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin",
 Q24 | 692378 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 R24 | 803410 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 S24 | 943207 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-T24 | =T23 * M10 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-U24 | =U23 * M10 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+T24 | =T23 * T26 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+U24 | =U23 * U26 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 A25 | "LN từ HĐKD" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
 B25 | 266003 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C25 | 174635 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -259,8 +259,8 @@ P26 | =IF(P23<>0, P24/P23, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","bo
 Q26 | =IF(Q23<>0, Q24/Q23, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 R26 | =IF(R23<>0, R24/R23, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 S26 | =IF(S23<>0, S24/S23, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-T26 | =IF(T23<>0, T24/T23, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-U26 | =IF(U23<>0, U24/U23, 0) | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+T26 | =M10 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
+U26 | =M10 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%","locked":false}
 A27 | "LNST công ty mẹ" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B27 | 210838 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
 C27 | 136885 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -965,13 +965,13 @@ cf S35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE
 cf S36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"}
 cf S41 formula =TRUE {"backColor":"#F1F5F9"}
 cf T22 formula =TRUE {"backColor":"#FCE7F3"}
-cf T26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"}
+cf T26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf T29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf T35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf T36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf T41 formula =TRUE {"backColor":"#FCE7F3"}
 cf U22 formula =TRUE {"backColor":"#FCE7F3"}
-cf U26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"}
+cf U26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf U35 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}
 cf U36 cellValue<0 {"backColor":"#FFC7CE"} ; cellValue>0.2 {"backColor":"#C6EFCE"} ; formula =TRUE {"backColor":"#FEF9C3"}

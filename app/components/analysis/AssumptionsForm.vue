@@ -8,6 +8,8 @@ const props = defineProps<{
   values: Record<EditableField, number>;
   labels: Record<InputField, string>;
   notes: Record<InputField, InputNote>;
+  /** Forecast quarters typed with their own value in the sheet, per field */
+  overrideCounts: Partial<Record<EditableField, number>>;
 }>();
 
 const emit = defineEmits<{
@@ -15,6 +17,8 @@ const emit = defineEmits<{
   apply: [changes: Partial<Record<EditableField, number>>];
   /** Replace the P/E scenarios with a ladder from the P/E history */
   regeneratePe: [];
+  /** Forecast quarters typed in the sheet follow the field again */
+  resetOverrides: [field: EditableField];
 }>();
 
 const PERCENT = { style: 'percent', maximumFractionDigits: 2 } as const;
@@ -24,12 +28,13 @@ const groups = computed(() => [
   {
     title: 'Giả định dự phóng',
     regeneratePe: false,
-    hint: 'Áp dụng cho các quý (F)',
+    hint: 'Mặc định cho các quý (F) · sửa riêng từng quý trong bảng (ô nền vàng)',
     fields: (['revenueGrowth', 'grossMargin', 'netProfitGrowth'] as const).map(field => ({
       field,
       format: PERCENT,
       step: 0.01,
       disabled: props.notes[field].kind === 'unused',
+      overrides: props.overrideCounts[field] ?? 0,
     })),
   },
   {
@@ -37,8 +42,8 @@ const groups = computed(() => [
     regeneratePe: true,
     hint: 'Giá dùng để tính P/E và giá mục tiêu',
     fields: [
-      { field: 'currentPrice' as const, format: INTEGER, step: 100, disabled: false },
-      { field: 'outstandingShares' as const, format: INTEGER, step: 1_000_000, disabled: false },
+      { field: 'currentPrice' as const, format: INTEGER, step: 100, disabled: false, overrides: 0 },
+      { field: 'outstandingShares' as const, format: INTEGER, step: 1_000_000, disabled: false, overrides: 0 },
     ],
   },
 ]);
@@ -121,6 +126,21 @@ const reset = () => {
               @update:model-value="(v: number | null | undefined) => setDraft(f.field, v)"
               @input="(e: Event) => onTyping(f.field, f.format === PERCENT, e)"
             />
+            <p v-if="f.overrides > 0" class="flex items-center gap-1 mt-1 text-xs text-amber-700 dark:text-amber-400">
+              {{ f.overrides }} quý sửa riêng
+              <span aria-hidden="true">·</span>
+              <UButton
+                type="button"
+                color="neutral"
+                variant="link"
+                size="xs"
+                class="p-0"
+                :title="`Các quý (F) dùng lại ${labels[f.field]} mặc định`"
+                @click="emit('resetOverrides', f.field)"
+              >
+                Đặt lại
+              </UButton>
+            </p>
           </UFormField>
         </div>
         <UButton

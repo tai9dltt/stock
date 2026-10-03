@@ -41,9 +41,10 @@ export const saveBodySchema = z.object({
     z.string().regex(/^\d{4}_Q[1-4]$/),
     z.object({ revenue: z.number().nullable(), netProfit: z.number().nullable(), eps: z.number().nullable() })
   ).optional(),
-  // Growth typed for single forecast quarters: { "revenue": { "2026_Q3": 0.3 } }
+  // Growth or gross margin typed for single forecast quarters: { "revenue": { "2026_Q3": 0.3 } }
   growthOverrides: z.object({
     revenue: z.record(z.string().regex(/^\d{4}_Q[1-4]$/), z.number()).optional(),
+    grossMargin: z.record(z.string().regex(/^\d{4}_Q[1-4]$/), z.number()).optional(),
     netProfit: z.record(z.string().regex(/^\d{4}_Q[1-4]$/), z.number()).optional(),
   }).nullable().optional(),
   // Market data shown in the sheet (fallback when no live price is available)

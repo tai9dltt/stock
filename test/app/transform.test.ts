@@ -63,7 +63,7 @@ describe('saved analysis', () => {
     first.peScenarios = [8, 9]
     first.currentPrice = 50000
     first.quarterlyData['outstandingShares'] = { 2025: { Q1: 1000 } }
-    first.growthOverrides = { revenue: { '2026_Q3': 0.3 }, netProfit: {} }
+    first.growthOverrides = { revenue: { '2026_Q3': 0.3 }, grossMargin: { '2026_Q4': 0.12 }, netProfit: {} }
 
     const { symbol: _symbol, forecastYears: _years, ...analysis } = toSavePayload(first, plan)
     const reloaded = buildAnalysisState('FPT', { ...crawled, analysis }, null, '2026-10-02')
@@ -72,7 +72,7 @@ describe('saved analysis', () => {
     expect(reloaded.peScenarios).toEqual([8, 9])
     expect(reloaded.currentPrice).toBe(50000)
     expect(reloaded.quarterlyData['outstandingShares']).toEqual({ 2025: { Q1: 1000 } })
-    expect(reloaded.growthOverrides).toEqual({ revenue: { '2026_Q3': 0.3 } })
+    expect(reloaded.growthOverrides).toEqual({ revenue: { '2026_Q3': 0.3 }, grossMargin: { '2026_Q4': 0.12 } })
     expect(reloaded.quarterlyData['netRevenue']['2025']['Q1']).toBe(100)
   })
 

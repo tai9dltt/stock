@@ -99,7 +99,9 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     sharesRow: quarterly.rows.shares!,
     valuationStartRow,
     quarterlyRows: quarterly.rows,
-    growthRows: { revenue: quarterly.rows.revGrowth!, netProfit: quarterly.rows.profitGrowth! },
+    growthRows: Object.fromEntries(profile.quarterlyRows
+      .filter(spec => spec.forecastInput)
+      .map(spec => [spec.forecastInput!, quarterly.rows[spec.key]!])),
     periodTables: healthTable ? [annualTable, quarterlyTable, healthTable] : [annualTable, quarterlyTable],
   }
 }

@@ -3,7 +3,7 @@
  * analysis sheet and reading the user's edits back from it.
  */
 
-import { shallowRef } from 'vue';
+import { computed, shallowRef } from 'vue';
 import type { AnalysisSheetData, AnalysisSheetLayout, GrowthKind } from '~/spreadsheet/types';
 import type { ForecastFigures } from '~/types';
 import { buildAnalysisSheet, samePeriodLastYear } from '~/spreadsheet/buildAnalysisSheet';
@@ -34,11 +34,13 @@ export function useAnalysisSheet() {
   let onInputEdited: ((field: InputFieldName, value: number) => void) | null = null;
   let onGrowthEdited: GrowthEditedCallback | null = null;
 
-  const GROWTH_INPUT: Record<GrowthKind, InputFieldName> = { revenue: 'revenueGrowth', netProfit: 'netProfitGrowth' };
+  const GROWTH_INPUT: Record<GrowthKind, InputFieldName> = {
+    revenue: 'revenueGrowth', grossMargin: 'grossMargin', netProfit: 'netProfitGrowth',
+  };
 
   /**
-   * After the user edits a forecast quarter's growth cell: a number is that
-   * quarter's own growth; clearing it goes back to the input above the sheet.
+   * After the user edits a forecast quarter's growth or margin cell: a number
+   * is that quarter's own value; clearing it goes back to the input above the sheet.
    */
   function syncGrowthCell(sheet: any, row: number, col: number) {
     const current = layout.value;
@@ -231,10 +233,16 @@ export function useAnalysisSheet() {
     return edits;
   }
 
+  /** "2026_Q3" of each forecast quarter the rendered sheet shows */
+  const forecastPeriods = computed(() => new Set(
+    (layout.value?.quarterlyCols ?? []).filter(c => c.isForecast).map(c => `${c.year}_${c.quarter}`),
+  ));
+
   return {
     init,
     isReady,
     render,
+    forecastPeriods,
     readEdits,
     exportExcel,
     setInput,

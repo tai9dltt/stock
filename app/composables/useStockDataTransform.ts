@@ -396,10 +396,10 @@ function sharesOverrides(
   return Object.keys(result).length > 0 ? result : null;
 }
 
-/** Per-quarter growth to save: finite values only, null when there is none */
+/** Per-quarter assumptions to save: finite values only, null when there is none */
 export function cleanGrowthOverrides(overrides: GrowthOverrides): GrowthOverrides | null {
   const cleaned: GrowthOverrides = {};
-  for (const kind of ['revenue', 'netProfit'] as GrowthKind[]) {
+  for (const kind of ['revenue', 'grossMargin', 'netProfit'] as GrowthKind[]) {
     const entries = Object.entries(overrides[kind] ?? {}).filter(([, v]) => Number.isFinite(v));
     if (entries.length > 0) cleaned[kind] = Object.fromEntries(entries);
   }

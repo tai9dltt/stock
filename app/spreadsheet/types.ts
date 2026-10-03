@@ -6,10 +6,13 @@ import type { InputFieldName as InputField } from '~/constants/spreadJsConstants
 
 export type StockType = 'industrial' | 'bank' | 'securities'
 
-/** Figure whose year-over-year growth can be set per forecast quarter */
-export type GrowthKind = 'revenue' | 'netProfit'
+/**
+ * Assumption that can be set per forecast quarter: revenue and net profit
+ * growth against the same quarter last year, and the gross margin
+ */
+export type GrowthKind = 'revenue' | 'grossMargin' | 'netProfit'
 
-/** Growth typed into a forecast quarter, e.g. { revenue: { "2026_Q3": 0.3 } } */
+/** Values typed into forecast quarters, e.g. { revenue: { "2026_Q3": 0.3 } } */
 export type GrowthOverrides = Partial<Record<GrowthKind, Record<string, number>>>
 
 /** SpreadJS module, workbook and the sheet being built */
@@ -78,6 +81,8 @@ export interface RowSpec {
   label: string
   /** Red label text */
   emphasize?: boolean
+  /** Its forecast quarter cells take this assumption, typed per quarter */
+  forecastInput?: GrowthKind
   render: (cell: CellContext) => void
 }
 
@@ -139,8 +144,8 @@ export interface AnalysisSheetLayout {
   valuationStartRow: number
   /** Rows of the quarterly table */
   quarterlyRows: RowMap
-  /** Quarterly growth rows, whose forecast cells take per-quarter growth */
-  growthRows: Record<GrowthKind, number>
+  /** Quarterly rows whose forecast cells take a per-quarter assumption */
+  growthRows: Partial<Record<GrowthKind, number>>
   /** Data area of the annual and quarterly tables, for same-period comparisons */
   periodTables: PeriodTable[]
 }

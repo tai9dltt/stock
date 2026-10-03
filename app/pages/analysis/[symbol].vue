@@ -115,6 +115,25 @@ const assumptionValues = computed(() => ({
   netProfitGrowth: state.value.netProfitGrowth,
 }));
 
+// Assumption field ⇄ the per-quarter values typed into the sheet
+const OVERRIDE_KIND = { revenueGrowth: 'revenue', grossMargin: 'grossMargin', netProfitGrowth: 'netProfit' } as const;
+
+/** Forecast quarters the sheet shows with their own value, per assumption field */
+const overrideCounts = computed(() => Object.fromEntries(
+  Object.entries(OVERRIDE_KIND).map(([field, kind]) => [
+    field,
+    Object.keys(state.value.growthOverrides[kind] ?? {}).filter(p => sheet.forecastPeriods.value.has(p)).length,
+  ]),
+));
+
+/** "Đặt lại" in the form: every forecast quarter follows the assumption again */
+const resetOverrides = (field: string) => {
+  if (!(field in OVERRIDE_KIND)) return;
+  const kind = OVERRIDE_KIND[field as keyof typeof OVERRIDE_KIND];
+  state.value.growthOverrides = { ...state.value.growthOverrides, [kind]: {} };
+  renderSheet();
+};
+
 const applyInput = (field: InputFieldName, value: number) => {
   state.value[field] = value;
   // Quarters without their own share count use this one, so they need a rebuild
@@ -310,7 +329,9 @@ useHead({
         :values="assumptionValues"
         :labels="profile.inputLabels"
         :notes="profile.inputNotes"
+        :override-counts="overrideCounts"
         @apply="applyAssumptions"
+        @reset-overrides="resetOverrides"
         @regenerate-pe="regeneratePe"
       />
 

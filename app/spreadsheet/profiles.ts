@@ -7,7 +7,7 @@
 
 import type { InputNote, RowSpec, StockProfile, StockType } from './types'
 import {
-  amount, assetReturn, forecastGrossProfit, growth, projectedAmount, quarterlyGrowth, quarterlyEps, quarterlyPe,
+  amount, assetReturn, forecastGrossProfit, growth, projectedAmount, quarterlyGrowth, quarterlyMargin, quarterlyEps, quarterlyPe,
   ratio, reported, shares, trailingEps,
 } from './cells'
 
@@ -21,8 +21,8 @@ const COMMON_INPUT_NOTES: StockProfile['inputNotes'] = {
   min52W: { kind: 'actual', text: 'Thực tế (Vietstock)' },
   // Forecast quarters (F) = same quarter last year × (1 + %), unless the quarter has its own % typed in its growth row
   revenueGrowth: { kind: 'forecast', text: 'Dự phóng · YoY, sửa riêng ở dòng TT' },
-  // Gross profit of forecast quarters = revenue × %
-  grossMargin: { kind: 'forecast', text: 'Dự phóng · biên LN gộp các quý (F)' },
+  // Gross profit of forecast quarters = revenue × %, unless the quarter has its own % typed in its margin row
+  grossMargin: { kind: 'forecast', text: 'Dự phóng · sửa riêng ở dòng Biên LN gộp' },
   netProfitGrowth: { kind: 'forecast', text: 'Dự phóng · YoY, sửa riêng ở dòng TT' },
 }
 
@@ -66,7 +66,7 @@ const growthRow = (key: 'revGrowth' | 'profitGrowth', label: string, base: 'reve
 
 /** Quarterly growth row; its forecast cells take the growth the projection uses */
 const quarterlyGrowthRow = (key: 'revGrowth' | 'profitGrowth', label: string, base: 'revenue' | 'netProfit'): RowSpec => ({
-  key, label, emphasize: true, render: quarterlyGrowth(key, base, base),
+  key, label, emphasize: true, forecastInput: base, render: quarterlyGrowth(key, base, base),
 })
 
 // ─── Industrial (default) ───────────────────────────────────────────
@@ -95,9 +95,12 @@ const industrial: StockProfile = {
   ],
   quarterlyRows: [
     { key: 'revenue', label: 'Doanh thu thuần', render: projectedAmount('revenue', 'netRevenue', 'revenueGrowth', 'revGrowth') },
-    { key: 'grossProfit', label: 'Lợi nhuận gộp', render: forecastGrossProfit() },
+    { key: 'grossProfit', label: 'Lợi nhuận gộp', render: forecastGrossProfit('grossMargin') },
     { key: 'operatingProfit', label: 'LN từ HĐKD', render: amount('operatingProfit', 'operatingProfit') },
-    { key: 'grossMargin', label: 'Biên lợi nhuận gộp', render: ratio('grossMargin', 'grossProfit', 'revenue') },
+    {
+      key: 'grossMargin', label: 'Biên lợi nhuận gộp', forecastInput: 'grossMargin',
+      render: quarterlyMargin('grossMargin', 'grossProfit', 'revenue'),
+    },
     {
       key: 'netProfit', label: 'LNST công ty mẹ', emphasize: true,
       render: projectedAmount('netProfit', 'netProfit', 'netProfitGrowth', 'profitGrowth'),

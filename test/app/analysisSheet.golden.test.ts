@@ -90,6 +90,17 @@ describe('growth typed for a forecast quarter', () => {
     // Revenue keeps projecting from the quarter's growth cell
     expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \* \(1 \+ T35\) \|/)
   })
+
+  it('takes a gross margin typed for one quarter', () => {
+    const state = load('DGW', DGW)
+    state.growthOverrides = { grossMargin: { '2026_Q4': 0.12 } }
+    const text = build(state)
+
+    // T26/U26 = gross margin of 2026 Q3/Q4; gross profit = revenue × that cell
+    expect(cellOf(text, 'T26')).toMatch(/^T26 \| =M10 \|/)
+    expect(cellOf(text, 'U26')).toMatch(/^U26 \| 0\.12 \| .*"font":"bold 11pt Calibri"/)
+    expect(cellOf(text, 'U24')).toMatch(/^U24 \| =U23 \* U26 \|/)
+  })
 })
 
 describe('same period last year', () => {
