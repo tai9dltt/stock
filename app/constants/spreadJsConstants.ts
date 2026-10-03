@@ -15,6 +15,10 @@ export const SPREADJS_COLORS = {
   DISPLAY: '#F1F5F9',
   /** Every other row of the tables, to follow a row across many columns */
   STRIPE: '#EEF2F6',
+  /** Lines between cells of a table */
+  GRID: '#CBD5E1',
+  /** Table frame, under headers, between years */
+  FRAME: '#64748B',
   /** Outline of the same period last year as the selected cell */
   COMPARISON: '#F59E0B', // read-only inputs
   DEFAULT_HIGHLIGHT: '#FEF3C7', // default P/E row in the valuation table

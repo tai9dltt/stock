@@ -13,29 +13,32 @@ import { SPREADJS_COLORS } from '~/constants/spreadJsConstants'
 // ============ CACHED BORDER SINGLETONS ============
 
 let _cachedThinBorder: any = null
-let _cachedDoubleBorder: any = null
+let _cachedSeparatorBorder: any = null
 let _cachedBorderGC: any = null // Track which GC the borders were created for
 
-/**
- * Get or create a cached thin LineBorder singleton
- */
+function cacheBorders(GC: any) {
+  if (_cachedBorderGC === GC) return
+  _cachedThinBorder = new GC.Spread.Sheets.LineBorder(SPREADJS_COLORS.GRID, GC.Spread.Sheets.LineStyle.thin)
+  _cachedSeparatorBorder = new GC.Spread.Sheets.LineBorder(SPREADJS_COLORS.FRAME, GC.Spread.Sheets.LineStyle.medium)
+  _cachedBorderGC = GC
+}
+
+/** Light line between the cells of a table */
 export function getThinBorder(GC: any): any {
-  if (!_cachedThinBorder || _cachedBorderGC !== GC) {
-    _cachedThinBorder = new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.thin)
-    _cachedBorderGC = GC
-  }
+  cacheBorders(GC)
   return _cachedThinBorder
 }
 
-/**
- * Get or create a cached double LineBorder singleton
- */
-export function getDoubleBorder(GC: any): any {
-  if (!_cachedDoubleBorder || _cachedBorderGC !== GC) {
-    _cachedDoubleBorder = new GC.Spread.Sheets.LineBorder('black', GC.Spread.Sheets.LineStyle.double)
-    _cachedBorderGC = GC
-  }
-  return _cachedDoubleBorder
+/** Darker line: table frame, under headers, between years */
+export function getSeparatorBorder(GC: any): any {
+  cacheBorders(GC)
+  return _cachedSeparatorBorder
+}
+
+/** Frame a table with the separator line */
+export function outlineRange(GC: any, sheet: any, row: number, col: number, rowCount: number, colCount: number): void {
+  if (rowCount <= 0 || colCount <= 0) return
+  sheet.getRange(row, col, rowCount, colCount).setBorder(getSeparatorBorder(GC), { outline: true })
 }
 
 // ============ CORE UTILITIES ============
@@ -338,24 +341,15 @@ export function applyGrowthHighlightRange(
   const cfs = sheet.conditionalFormats
   const range = [new GC.Spread.Sheets.Range(row, startCol, 1, colCount)]
   const operators = GC.Spread.Sheets.ConditionalFormatting.ComparisonOperators
-  const border = getThinBorder(GC)
-
+  // Background only: the cell keeps its own borders
   // Green for > 20%
   const greenStyle = new GC.Spread.Sheets.Style()
   greenStyle.backColor = '#C6EFCE'
-  greenStyle.borderLeft = border
-  greenStyle.borderTop = border
-  greenStyle.borderRight = border
-  greenStyle.borderBottom = border
   cfs.addCellValueRule(operators.greaterThan, 0.2, null, greenStyle, range)
 
   // Pink for < 0
   const pinkStyle = new GC.Spread.Sheets.Style()
   pinkStyle.backColor = '#FFC7CE'
-  pinkStyle.borderLeft = border
-  pinkStyle.borderTop = border
-  pinkStyle.borderRight = border
-  pinkStyle.borderBottom = border
   cfs.addCellValueRule(operators.lessThan, 0, null, pinkStyle, range)
 }
 
@@ -389,15 +383,10 @@ export function applyYoyChangeHighlight(
   const curr = relativeAddr(row, startCol)
   const prev = relativeAddr(row, startCol - lag)
   const bothNumbers = `ISNUMBER(${curr}), ISNUMBER(${prev}), ${prev}<>0`
-  const border = getThinBorder(GC)
-
+  // Background only: the cell keeps its own borders
   const style = (backColor: string) => {
     const s = new GC.Spread.Sheets.Style()
     s.backColor = backColor
-    s.borderLeft = border
-    s.borderTop = border
-    s.borderRight = border
-    s.borderBottom = border
     return s
   }
 

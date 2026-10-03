@@ -3,7 +3,10 @@
  */
 
 import type { AnalysisSheetData, AnalysisSheetLayout, PeriodTable, SheetContext } from './types'
-import { ANNUAL_TABLE, INPUT_AREA, QUARTERLY_TABLE, VALUATION_TABLE } from '~/constants/spreadJsConstants'
+import {
+  ANNUAL_TABLE, INPUT_AREA, INPUT_FIELDS, inputRow, QUARTERLY_TABLE, VALUATION_TABLE,
+} from '~/constants/spreadJsConstants'
+import { getSeparatorBorder, outlineRange } from '~/utils/spreadjs'
 import { detectStockType, STOCK_PROFILES } from './profiles'
 import {
   applyFinalStyling, buildAnnualTable, buildInputSection, buildQuarterlyTable, buildTitleSection,
@@ -49,6 +52,26 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   stripeRows(ctx, annualTable.firstRow, annualTable.lastRow, annualTable.lastCol)
   stripeRows(ctx, quarterlyTable.firstRow, quarterlyTable.lastRow, quarterlyTable.lastCol)
   stripeRows(ctx, valuationStartRow + 2, valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS, quarterly.nextCol - 1)
+
+  // Frames: each table outlined, a line under its headers
+  const { GC, sheet } = ctx
+  const underHeader = (row: number, lastCol: number) =>
+    sheet.getRange(row, 0, 1, lastCol + 1).setBorder(getSeparatorBorder(GC), { bottom: true })
+  const quarterlyHeaderRow = quarterlyTable.firstRow - 2
+  const valuationLastRow = valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS
+
+  underHeader(ANNUAL_TABLE.START_ROW, annualTable.lastCol)
+  outlineRange(GC, sheet, ANNUAL_TABLE.START_ROW, 0, annualTable.lastRow - ANNUAL_TABLE.START_ROW + 1, annualTable.lastCol + 1)
+  underHeader(quarterlyHeaderRow + 1, quarterlyTable.lastCol)
+  outlineRange(GC, sheet, quarterlyHeaderRow, 0, quarterlyTable.lastRow - quarterlyHeaderRow + 1, quarterlyTable.lastCol + 1)
+  underHeader(valuationStartRow + 1, quarterlyTable.lastCol)
+  outlineRange(GC, sheet, valuationStartRow, 0, valuationLastRow - valuationStartRow + 1, quarterlyTable.lastCol + 1)
+
+  const inputLastRow = inputRow(INPUT_FIELDS[INPUT_FIELDS.length - 1]!)
+  const inputLastCol = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET + INPUT_AREA.NOTE_SPAN
+  sheet.getRange(INPUT_AREA.ROW_START, INPUT_AREA.COL, 1, inputLastCol - INPUT_AREA.COL + 1)
+    .setBorder(getSeparatorBorder(GC), { bottom: true })
+  outlineRange(GC, sheet, INPUT_AREA.ROW_START, INPUT_AREA.COL, inputLastRow - INPUT_AREA.ROW_START + 1, inputLastCol - INPUT_AREA.COL + 1)
 
   applyFinalStyling(ctx, maxCol, valuationStartRow)
 

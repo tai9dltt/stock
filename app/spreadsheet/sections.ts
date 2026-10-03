@@ -11,7 +11,7 @@ import {
   ANNUAL_TABLE, INPUT_AREA, inputRow, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
 } from '~/constants/spreadJsConstants'
 import {
-  applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getDoubleBorder,
+  applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getSeparatorBorder,
   getThinBorder, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
 import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
@@ -269,9 +269,9 @@ export function buildQuarterlyTable(
     }
     profile.quarterlyRows.forEach(spec => spec.render(cell))
 
-    // Double border after each year
+    // Separator after each year
     if (quarter === 'Q4') {
-      sheet.getRange(startRow, col, lastRow - startRow + 1, 1).setBorder(getDoubleBorder(GC), { right: true })
+      sheet.getRange(startRow, col, lastRow - startRow + 1, 1).setBorder(getSeparatorBorder(GC), { right: true })
     }
   }
 
@@ -285,8 +285,6 @@ export function buildQuarterlyTable(
       }
     }
   }
-
-  sheet.getRange(lastRow, 0, 1, nextCol).setBorder(getDoubleBorder(GC), { bottom: true })
 
   return { cols, rows, lastRow, nextCol }
 }
@@ -468,7 +466,7 @@ export function buildValuationTable(
 
   for (const { quarter, col } of quarterlyCols) {
     if (quarter === 'Q4') {
-      sheet.getRange(startRow, col, totalRows + 2, 1).setBorder(getDoubleBorder(GC), { right: true })
+      sheet.getRange(startRow, col, totalRows + 2, 1).setBorder(getSeparatorBorder(GC), { right: true })
     }
   }
 
@@ -485,6 +483,10 @@ export function applyFinalStyling(ctx: SheetContext, maxCol: number, valuationSt
   sheet.setColumnCount(Math.max(maxCol, 30))
   sheet.setRowCount(valuationStartRow + VALUATION_TABLE.TOTAL_ROWS + 4)
   sheet.frozenColumnCount(1)
+  // No grid outside the tables: empty cells stay blank
+  sheet.options.gridline = { showVerticalGridline: false, showHorizontalGridline: false }
+  // The tables draw their own frame; no line down the empty rows
+  sheet.options.frozenlineColor = 'transparent'
 
   spread.options.scrollbarMaxAlign = true
   spread.options.scrollbarShowMax = true

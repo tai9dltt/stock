@@ -109,6 +109,7 @@ export function createFakeSheet() {
   }
 
   const sheet = {
+    options: {} as Record<string, unknown>,
     conditionalFormats: {
       addCellValueRule(op: string, value: unknown, _v2: unknown, style: Style, ranges: Range[]) {
         cfRules.push({ kind: 'cellValue', op, value, style: { ...style }, ranges })
@@ -159,14 +160,21 @@ export function createFakeSheet() {
       const range = new Range(row, col, rowCount, colCount)
       return Object.assign(range, {
         setBorder(border: LineBorder, opts: Record<string, boolean>) {
+          const lastRow = range.row + range.rowCount - 1
+          const lastCol = range.col + range.colCount - 1
+          const left = opts.left || opts.outline
+          const right = opts.right || opts.outline
+          const top = opts.top || opts.outline
+          const bottom = opts.bottom || opts.outline
           forEachCell(range, (r, c) => {
-            const style = cell(r, c).style
-            const lastRow = range.row + range.rowCount - 1
-            const lastCol = range.col + range.colCount - 1
-            if (opts.all || (opts.left && c === range.col)) style.borderLeft = border
-            if (opts.all || (opts.right && c === lastCol)) style.borderRight = border
-            if (opts.all || (opts.top && r === range.row)) style.borderTop = border
-            if (opts.all || (opts.bottom && r === lastRow)) style.borderBottom = border
+            const sides = {
+              borderLeft: opts.all || (left && c === range.col),
+              borderRight: opts.all || (right && c === lastCol),
+              borderTop: opts.all || (top && r === range.row),
+              borderBottom: opts.all || (bottom && r === lastRow),
+            }
+            // Only touch cells that get a border (an outline leaves the inside alone)
+            for (const [side, on] of Object.entries(sides)) if (on) cell(r, c).style[side] = border
           })
         },
         backColor(color: string) {
