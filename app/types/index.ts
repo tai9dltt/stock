@@ -29,6 +29,8 @@ export interface AnalysisInputs {
 
 export interface SaveAnalysisPayload extends AnalysisInputs {
   symbol: string;
+  /** Forecast years shown in the sheet, including ones added with "Add Year" */
+  forecastYears: string[];
 }
 
 /** data of GET /api/stock/get */

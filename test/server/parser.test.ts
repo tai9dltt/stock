@@ -82,6 +82,27 @@ describe('parseFinanceInfoPages', () => {
     ])
   })
 
+  it('derives the yearly period end from its start, not from Vietstock PeriodEnd', () => {
+    const year = (begin: string, end: string) => ({ YearPeriod: 2025, TermCode: 'N', PeriodBegin: begin, PeriodEnd: end, ID: 1 })
+    const ends = (begin: string, end: string) =>
+      parseFinanceInfoPages('year', [page([year(begin, end)], {})]).periods[0]?.periodEnd
+
+    expect(ends('202501', '202612')).toBe('2025-12-31') // calendar year, wrong end from Vietstock
+    expect(ends('202407', '202506')).toBe('2025-06-30') // fiscal year July–June
+  })
+
+  it('derives the yearly period start from its end when the start is invalid', () => {
+    const data = parseFinanceInfoPages('year', [
+      page([{ YearPeriod: 2026, TermCode: 'N', PeriodBegin: '202595', PeriodEnd: '202606', ID: 1 }], {}),
+    ])
+    expect(data.periods[0]).toMatchObject({ periodBegin: '2025-07-01', periodEnd: '2026-06-30' })
+  })
+
+  it('rejects impossible dates instead of failing the crawl', () => {
+    expect(parseVietstockDate('202595')).toBeNull()
+    expect(parseVietstockDate('20250230')).toBeNull()
+  })
+
   it('stores yearly data with quarter 0', () => {
     const data = parseFinanceInfoPages('year', [
       page([{ YearPeriod: 2025, TermCode: 'N', PeriodBegin: '202501', PeriodEnd: '202512', ID: 1 }], {

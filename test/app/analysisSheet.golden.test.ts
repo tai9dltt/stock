@@ -29,7 +29,7 @@ const load = (symbol: string, response: any) =>
   buildAnalysisState(symbol, JSON.parse(JSON.stringify(response.data)), TRADING, '2026-10-02')
 
 function addYear(state: AnalysisSheetData) {
-  const year = nextForecastYear(state.annualData, state.forecastYears)
+  const year = nextForecastYear(state.annualData, state.quarterlyData, state.forecastYears)
   state.forecastYears.push(year)
   state.forecastQuarters.push(...['Q1', 'Q2', 'Q3', 'Q4'].map(q => `${year}_${q}`))
 }

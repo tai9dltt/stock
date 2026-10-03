@@ -76,7 +76,11 @@ export function useStockAnalysis(symbol: Ref<string>) {
 
   function addYear() {
     const s = state.value;
-    const year = nextForecastYear(s.annualData, s.forecastYears);
+    if (Object.keys(s.annualData).length === 0 && Object.keys(s.quarterlyData).length === 0) {
+      toast.add({ title: 'Chưa có dữ liệu', description: 'Đợi tải xong dữ liệu rồi thêm năm', color: 'warning' });
+      return;
+    }
+    const year = nextForecastYear(s.annualData, s.quarterlyData, s.forecastYears);
     s.forecastYears.push(year);
     s.forecastQuarters.push(...['Q1', 'Q2', 'Q3', 'Q4'].map(q => `${year}_${q}`));
 

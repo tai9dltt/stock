@@ -32,6 +32,8 @@ export const saveBodySchema = z.object({
   grossMargin: z.number().default(0),
   netProfitGrowth: z.number().default(0),
   peScenarios: z.array(z.number()).max(50).nullable().optional(),
+  // Years added with "Add Year" (stored as forecast periods)
+  forecastYears: z.array(z.string().regex(/^\d{4}$/)).max(30).default([]),
   // { "2025": { "Q1": 123456 } }
   sharesByQuarter: z.record(z.string(), z.record(z.string(), z.number())).nullable().optional(),
   // Market data shown in the sheet (fallback when no live price is available)

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildAnalysisState, overlayAnnualMetrics, overlayQuarterlyMetrics, toSavePayload,
+  buildAnalysisState, nextForecastYear, overlayAnnualMetrics, overlayQuarterlyMetrics, toSavePayload,
 } from '~/composables/useStockDataTransform'
 
 describe('metric overlay priority', () => {
@@ -49,7 +49,7 @@ describe('saved analysis', () => {
     const payload = toSavePayload(state, plan)
 
     expect(payload).toEqual({
-      symbol: 'FPT', revenueGrowth: 0.2, grossMargin: 0, netProfitGrowth: 0,
+      symbol: 'FPT', forecastYears: [], revenueGrowth: 0.2, grossMargin: 0, netProfitGrowth: 0,
       peScenarios: [10, 12], sharesByQuarter: { 2025: { Q1: 1000 } },
       currentPrice: null, outstandingShares: null, max52W: null, min52W: null,
       ...plan,
@@ -64,7 +64,7 @@ describe('saved analysis', () => {
     first.currentPrice = 50000
     first.quarterlyData['outstandingShares'] = { 2025: { Q1: 1000 } }
 
-    const { symbol: _symbol, ...analysis } = toSavePayload(first, plan)
+    const { symbol: _symbol, forecastYears: _years, ...analysis } = toSavePayload(first, plan)
     const reloaded = buildAnalysisState('FPT', { ...crawled, analysis }, null, '2026-10-02')
 
     expect(reloaded.grossMargin).toBe(0.3)
@@ -78,5 +78,23 @@ describe('saved analysis', () => {
     const analysis = { ...toSavePayload(buildAnalysisState('FPT', crawled, null, ''), plan), currentPrice: 1 }
     const live = { lastPrice: 2, outstandingShares: 0, listedShares: 0, min52W: 0, max52W: 0, vol52W: 0 }
     expect(buildAnalysisState('FPT', { ...crawled, analysis }, live, '2026-10-02').currentPrice).toBe(2)
+  })
+})
+
+describe('nextForecastYear', () => {
+  it('continues after the last forecast year', () => {
+    expect(nextForecastYear({ netRevenue: { 2024: 1, 2025: 1 } }, {}, ['2026', '2027'])).toBe('2028')
+  })
+
+  it('works for banks, which have no netRevenue', () => {
+    const annual = { netInterestIncome: { 2024: 1, 2025: 1 } }
+    const quarterly = { netInterestIncome: { 2026: { Q1: 1, Q2: 1 } } }
+    expect(nextForecastYear(annual, quarterly, [])).toBe('2027')
+  })
+
+  it('never returns a year that is already shown', () => {
+    const annual = { netRevenue: { 2025: 1 } }
+    const quarterly = { netRevenue: { 2026: { Q1: 1 } } }
+    expect(nextForecastYear(annual, quarterly, [])).toBe('2027')
   })
 })

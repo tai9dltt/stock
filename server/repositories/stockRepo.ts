@@ -41,8 +41,8 @@ export async function loadMetricIds(conn: PoolConnection): Promise<Map<string, n
 /**
  * Bulk upsert periods and return a `${year}_${quarter}` → period id map.
  *
- * - quarter: existing periods are left untouched
- * - year: existing periods are marked as actual (is_forecast = FALSE)
+ * Existing periods get the dates Vietstock reports now; existing yearly periods
+ * are also marked as actual (is_forecast = FALSE).
  */
 export async function upsertPeriods(
   conn: PoolConnection,
@@ -54,7 +54,12 @@ export async function upsertPeriods(
     const rows = periods.map(p => [
       companyId, p.year, p.quarter, p.periodBegin, p.periodEnd, source, false,
     ])
-    const onDuplicate = source === 'year' ? 'is_forecast = FALSE' : 'id = id'
+    // Dates always follow Vietstock (older crawls stored some wrong ones)
+    const onDuplicate = [
+      'period_begin = COALESCE(VALUES(period_begin), period_begin)',
+      'period_end = COALESCE(VALUES(period_end), period_end)',
+      ...(source === 'year' ? ['is_forecast = FALSE'] : []),
+    ].join(', ')
 
     await conn.query(
       `INSERT INTO periods (company_id, year, quarter, period_begin, period_end, source, is_forecast)
@@ -205,5 +210,21 @@ export async function upsertTradingSnapshot(
       info.lastPrice ?? null, info.outstandingShares ?? null, info.listedShares ?? null,
       marketCap, info.min52W ?? null, info.max52W ?? null, info.vol52W ?? null,
     ]
+  )
+}
+
+/**
+ * Add yearly forecast periods for years the user added with "Add Year".
+ * Existing periods (actual or forecast) are left untouched; a later crawl
+ * marks a year as actual once Vietstock reports it.
+ */
+export async function ensureForecastYears(conn: PoolConnection, companyId: number, years: number[]): Promise<void> {
+  if (years.length === 0) return
+
+  const rows = years.map(year => [companyId, year, 0, `${year}-01-01`, `${year}-12-31`, 'year', true])
+  await conn.query(
+    `INSERT INTO periods (company_id, year, quarter, period_begin, period_end, source, is_forecast)
+     VALUES ? ON DUPLICATE KEY UPDATE id = id`,
+    [rows]
   )
 }

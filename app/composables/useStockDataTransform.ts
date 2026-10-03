@@ -8,6 +8,7 @@ import {
   ANNUAL_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
 import type { AnalysisSheetData } from '~/spreadsheet/types';
+import { extractYearsFromData } from '~/spreadsheet/years';
 import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
 
 /**
@@ -310,12 +311,18 @@ export function buildAnalysisState(
 }
 
 /**
- * The year "Add Year" appends: the year after the last known one.
+ * The year "Add Year" appends: the year after the last one the sheet shows
+ * (any indicator counts, since banks have no netRevenue).
  */
-export function nextForecastYear(annualData: Record<string, any>, forecastYears: string[]): string {
-  const years = [...Object.keys(annualData['netRevenue'] || {}), ...forecastYears].sort();
-  const lastYear = years[years.length - 1];
-  return lastYear ? String(parseInt(lastYear) + 1) : String(new Date().getFullYear());
+export function nextForecastYear(
+  annualData: Record<string, any>,
+  quarterlyData: Record<string, any>,
+  forecastYears: string[]
+): string {
+  const years = [...extractYearsFromData(annualData), ...extractYearsFromData(quarterlyData), ...forecastYears]
+    .map(Number)
+    .filter(Number.isFinite);
+  return years.length > 0 ? String(Math.max(...years) + 1) : String(new Date().getFullYear());
 }
 
 /**
@@ -344,6 +351,7 @@ export interface TradingPlan {
 export function toSavePayload(state: AnalysisSheetData, plan: TradingPlan): SaveAnalysisPayload {
   return {
     symbol: state.symbol,
+    forecastYears: [...state.forecastYears],
     revenueGrowth: state.revenueGrowth,
     grossMargin: state.grossMargin,
     netProfitGrowth: state.netProfitGrowth,
