@@ -40,3 +40,18 @@ describe('saveBodySchema', () => {
     expect(saveBodySchema.safeParse({ symbol: 'FPT', entryPrice: 'abc' }).success).toBe(false)
   })
 })
+
+describe('saveBodySchema forecast', () => {
+  it('accepts forecast figures keyed by quarter', () => {
+    const body = saveBodySchema.parse({
+      symbol: 'DGW',
+      forecast: { '2026_Q3': { revenue: 7_390_637, netProfit: 166_440, eps: null } },
+    })
+    expect(body.forecast?.['2026_Q3']?.netProfit).toBe(166_440)
+  })
+
+  it('rejects other keys', () => {
+    const bad = { symbol: 'DGW', forecast: { '2026Q3': { revenue: 1, netProfit: 1, eps: 1 } } }
+    expect(saveBodySchema.safeParse(bad).success).toBe(false)
+  })
+})

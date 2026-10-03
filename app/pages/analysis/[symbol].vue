@@ -31,13 +31,21 @@ const sheet = useAnalysisSheet();
 const toast = useToast();
 
 const tradingNoteRef = ref<TradingNoteInstance | null>(null);
-const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart
+const activeTab = ref('0'); // Index-based: 0 = spreadsheet, 1 = chart, 2 = forecast journal
 // The assumptions form opens from the "Giả định" button next to the tabs
 const showAssumptions = ref(false);
 const tabItems = [
   { label: 'Bảng tính', icon: 'i-lucide-table-2' },
   { label: 'Biểu đồ', icon: 'i-lucide-bar-chart-2' },
+  { label: 'Nhật ký', icon: 'i-lucide-notebook-pen' },
 ];
+
+// The journal tab is created on first open; it reloads after each save
+const journalOpened = ref(false);
+const journalReloadKey = ref(0);
+watch(activeTab, (tab) => {
+  if (tab === '2') journalOpened.value = true;
+});
 
 const stockType = computed(() =>
   detectStockType(stockSymbol.value, state.value.annualData, state.value.quarterlyData),
@@ -224,9 +232,9 @@ const secondaryActions = computed(() => [
   },
 ]);
 
-const handleGlobalSave = () => {
+const handleGlobalSave = async () => {
   if (!tradingNoteRef.value) return;
-  analysis.save(tradingNoteRef.value.getTradingData(), sheet.readEdits());
+  if (await analysis.save(tradingNoteRef.value.getTradingData(), sheet.readEdits())) journalReloadKey.value++;
 };
 
 // ============ LIFECYCLE ============
@@ -324,6 +332,16 @@ useHead({
           :quarterly-data="state.quarterlyData"
           :annual-data="state.annualData"
           :stock-type="stockType"
+        />
+      </UCard>
+
+      <!-- Forecast journal -->
+      <UCard v-if="journalOpened" v-show="activeTab === '2'" :ui="{ body: 'p-3 sm:p-4' }">
+        <AnalysisForecastJournal
+          :symbol="stockSymbol"
+          :stock-type="stockType"
+          :quarterly-data="state.quarterlyData"
+          :reload-key="journalReloadKey"
         />
       </UCard>
 

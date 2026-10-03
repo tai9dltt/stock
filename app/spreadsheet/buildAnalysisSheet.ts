@@ -83,6 +83,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     quarterlyCols: quarterly.cols,
     sharesRow: quarterly.rows.shares!,
     valuationStartRow,
+    quarterlyRows: quarterly.rows,
     growthRows: { revenue: quarterly.rows.revGrowth!, netProfit: quarterly.rows.profitGrowth! },
     periodTables: [annualTable, quarterlyTable],
   }

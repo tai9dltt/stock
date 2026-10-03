@@ -98,11 +98,11 @@ export function useStockAnalysis(symbol: Ref<string>) {
     toast.add({ title: 'Đã thêm năm', description: `Đã thêm năm ${year} vào bảng phân tích`, color: 'success' });
   }
 
-  /** Apply edits read from the sheet, then save everything */
-  async function save(plan: TradingPlan, edits: SheetEdits | null) {
+  /** Apply edits read from the sheet, then save everything. Returns true when saved. */
+  async function save(plan: TradingPlan, edits: SheetEdits | null): Promise<boolean> {
     if (!symbol.value) {
       toast.add({ title: 'Lỗi', description: 'Vui lòng nhập mã cổ phiếu', color: 'error' });
-      return;
+      return false;
     }
 
     const s = state.value;
@@ -115,7 +115,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
     loadingStore.show('Đang lưu dữ liệu...');
     try {
       const payload = toSavePayload({ ...s, symbol: symbol.value }, plan);
-      await saveStockAnalysis(payload);
+      await saveStockAnalysis({ ...payload, forecast: edits?.forecast });
       // The summary bar shows the saved trading plan
       const { symbol: _symbol, forecastYears: _forecastYears, ...saved } = payload;
       savedAnalysis.value = saved;
@@ -126,6 +126,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
         description: `Kịch bản cho ${symbol.value.toUpperCase()} đã được lưu`,
         color: 'success',
       });
+      return true;
     } catch (error) {
       toast.add({
         title: 'Lỗi lưu dữ liệu',
@@ -135,6 +136,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
     } finally {
       loadingStore.hide();
     }
+    return false;
   }
 
   /** Back to the state as loaded or last saved (assumptions, sheet edits, added years) */

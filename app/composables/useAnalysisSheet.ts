@@ -5,6 +5,7 @@
 
 import { shallowRef } from 'vue';
 import type { AnalysisSheetData, AnalysisSheetLayout, GrowthKind } from '~/spreadsheet/types';
+import type { ForecastFigures } from '~/types';
 import { buildAnalysisSheet, samePeriodLastYear } from '~/spreadsheet/buildAnalysisSheet';
 import { styleGrowthInput } from '~/spreadsheet/cells';
 import { peFormat, peLadder } from '~/spreadsheet/peLadder';
@@ -16,6 +17,8 @@ import { extractInputValues, extractPeValues, extractSharesPerQuarter } from '~/
 
 export interface SheetEdits {
   inputs: ReturnType<typeof extractInputValues>;
+  /** Revenue, net profit and EPS the forecast quarters show (forecast journal) */
+  forecast?: ForecastFigures;
   peValues?: number[];
   sharesPerQuarter?: Record<string, Record<string, number>>;
 }
@@ -191,6 +194,22 @@ export function useAnalysisSheet() {
     URL.revokeObjectURL(url);
   }
 
+  /** Computed figures of the forecast quarters, rounded (amounts in million VND, EPS in VND) */
+  function readForecast(sheet: any, current: AnalysisSheetLayout): ForecastFigures {
+    const figure = (key: 'revenue' | 'netProfit' | 'eps', col: number) => {
+      const row = current.quarterlyRows[key];
+      const value = row === undefined ? null : Number(sheet.getValue(row, col));
+      return value !== null && Number.isFinite(value) ? Math.round(value) : null;
+    };
+    return Object.fromEntries(current.quarterlyCols
+      .filter(q => q.isForecast)
+      .map(({ year, quarter, col }) => [`${year}_${quarter}`, {
+        revenue: figure('revenue', col),
+        netProfit: figure('netProfit', col),
+        eps: figure('eps', col),
+      }]));
+  }
+
   /** Values the user may have edited: inputs, P/E scenarios, shares per quarter */
   function readEdits(): SheetEdits | null {
     if (!spread.value) return null;
@@ -207,6 +226,7 @@ export function useAnalysisSheet() {
     if (current && current.sharesRow > 0 && current.quarterlyCols.length > 0) {
       edits.sharesPerQuarter = extractSharesPerQuarter(sheet, current.sharesRow, current.quarterlyCols);
     }
+    if (current) edits.forecast = readForecast(sheet, current);
 
     return edits;
   }

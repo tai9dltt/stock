@@ -137,6 +137,8 @@ export interface AnalysisSheetLayout {
   quarterlyCols: QuarterlyColumnInfo[]
   sharesRow: number
   valuationStartRow: number
+  /** Rows of the quarterly table */
+  quarterlyRows: RowMap
   /** Quarterly growth rows, whose forecast cells take per-quarter growth */
   growthRows: Record<GrowthKind, number>
   /** Data area of the annual and quarterly tables, for same-period comparisons */

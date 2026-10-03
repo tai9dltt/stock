@@ -56,6 +56,31 @@ export default defineEventHandler(async (event) => {
           body.entryPrice ?? null, body.targetPrice ?? null, body.stopLoss ?? null, body.noteHtml ?? null,
         ]
       )
+
+      // Forecast journal: one entry per save that changed the forecast
+      if (body.forecast && Object.keys(body.forecast).length > 0) {
+        const assumptions = {
+          revenueGrowth: body.revenueGrowth,
+          grossMargin: body.grossMargin,
+          netProfitGrowth: body.netProfitGrowth,
+          growthOverrides: body.growthOverrides ?? null,
+          currentPrice: body.currentPrice ?? null,
+          targetPrice: body.targetPrice ?? null,
+        }
+        const [last] = await conn.query<any[]>(
+          'SELECT assumptions, forecast FROM forecast_snapshots WHERE company_id = ? ORDER BY created_at DESC, id DESC LIMIT 1',
+          [company.id]
+        )
+        const unchanged = last[0]
+          && canonical(last[0].assumptions) === canonical(assumptions)
+          && canonical(last[0].forecast) === canonical(body.forecast)
+        if (!unchanged) {
+          await conn.query(
+            'INSERT INTO forecast_snapshots (company_id, assumptions, forecast) VALUES (?, ?, ?)',
+            [company.id, JSON.stringify(assumptions), JSON.stringify(body.forecast)]
+          )
+        }
+      }
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -64,3 +89,12 @@ export default defineEventHandler(async (event) => {
 
   return { success: true, message: `Stock analysis for ${body.symbol} saved successfully` }
 })
+
+/** JSON with sorted keys, so MySQL's reordering of JSON keys does not count as a change */
+function canonical(value: unknown): string {
+  const parsed = typeof value === 'string' ? JSON.parse(value) : value
+  return JSON.stringify(parsed, (_key, v) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)))
+      : v)
+}
