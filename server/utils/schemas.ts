@@ -46,13 +46,6 @@ export const saveBodySchema = z.object({
   noteHtml: z.string().max(1_000_000).nullable().optional(),
 })
 
-export const chatBodySchema = z.object({
-  messages: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    content: z.string().max(20_000),
-  })).min(1).max(100),
-})
-
 export const vietstockLoginBodySchema = z.object({
   email: z.email().optional(),
   password: z.string().min(1).optional(),

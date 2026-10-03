@@ -15,7 +15,6 @@ export default defineNuxtConfig({
     vietstockToken: process.env.VIETSTOCK_TOKEN || '',
     vietstockEmail: process.env.VIETSTOCK_EMAIL || '',
     vietstockPassword: process.env.VIETSTOCK_PASSWORD || '',
-    geminiApiKey: process.env.GEMINI_API_KEY || '',
     // Database config
     dbHost: process.env.DB_HOST || 'localhost',
     dbPort: process.env.DB_PORT || '3306',
