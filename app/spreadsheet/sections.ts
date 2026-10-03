@@ -373,22 +373,21 @@ function resolvePeScenarios(data: AnalysisSheetData): { values: number[]; labels
  * Price targets: each row is a P/E scenario × trailing EPS of every quarter.
  * Returns the first row of the table.
  */
-export function buildValuationTable(
+/**
+ * Year and quarter headers over the quarterly columns, as in the quarterly
+ * table, for the tables below it. Labels go in column A.
+ */
+export function writePeriodHeaders(
   ctx: SheetContext,
   quarterlyCols: QuarterlyColumnInfo[],
-  quarterlyRows: RowMap,
-  quarterlyLastRow: number,
-  data: AnalysisSheetData
-): number {
+  data: AnalysisSheetData,
+  startRow: number,
+  yearLabel: string,
+  quarterLabel: string
+): void {
   const { GC, sheet } = ctx
   const currentYear = new Date().getFullYear()
-  const startRow = quarterlyLastRow + 4
-  const totalRows = VALUATION_TABLE.TOTAL_ROWS
 
-  const { values: peScenarios, labels: peLabels } = resolvePeScenarios(data)
-  const current = currentPe(data)
-
-  // Year headers
   sheet.setRowHeight(startRow, 30)
   for (const year of new Set(quarterlyCols.map(q => q.year))) {
     const yearCols = quarterlyCols.filter(q => q.year === year)
@@ -400,7 +399,6 @@ export function buildValuationTable(
     sheet.getRange(startRow, firstCol, 1, yearCols.length).setBorder(getThinBorder(GC), { all: true })
   }
 
-  // Quarter headers
   for (const { quarter, col, isForecast } of quarterlyCols) {
     const qIdx = parseInt(quarter.replace('Q', '')) - 1
     setCell(GC, sheet, startRow + 1, col, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[qIdx]}`, {
@@ -412,10 +410,27 @@ export function buildValuationTable(
   }
 
   const labelStyle = { bold: true, border: true, align: 'center' as const, bg: SPREADJS_COLORS.HEADER }
-  setCell(GC, sheet, startRow, 0, 'Niên độ:', labelStyle)
-  // Ladder levels come from the reported P/E of the last 5 years
-  setCell(GC, sheet, startRow + 1, 0, 'Giả sử P/E\n(lịch sử 5 năm)', labelStyle)
+  setCell(GC, sheet, startRow, 0, yearLabel, labelStyle)
+  setCell(GC, sheet, startRow + 1, 0, quarterLabel, labelStyle)
   sheet.getCell(startRow + 1, 0).wordWrap(true)
+}
+
+export function buildValuationTable(
+  ctx: SheetContext,
+  quarterlyCols: QuarterlyColumnInfo[],
+  quarterlyRows: RowMap,
+  afterRow: number,
+  data: AnalysisSheetData
+): number {
+  const { GC, sheet } = ctx
+  const startRow = afterRow + 4
+  const totalRows = VALUATION_TABLE.TOTAL_ROWS
+
+  const { values: peScenarios, labels: peLabels } = resolvePeScenarios(data)
+  const current = currentPe(data)
+
+  // Ladder levels come from the reported P/E of the last 5 years
+  writePeriodHeaders(ctx, quarterlyCols, data, startRow, 'Niên độ:', 'Giả sử P/E\n(lịch sử 5 năm)')
 
   // Scenario rows
   const endCol = quarterlyCols.length > 0 ? quarterlyCols[quarterlyCols.length - 1]!.col + 1 : 1

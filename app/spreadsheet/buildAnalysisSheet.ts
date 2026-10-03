@@ -13,6 +13,7 @@ import {
   buildValuationTable, linkAnnualToQuarterly, stripeRows,
 } from './sections'
 import { buildSensitivityTable } from './sensitivity'
+import { buildHealthTable } from './health'
 
 export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): AnalysisSheetLayout {
   const stockType = detectStockType(data.symbol, data.annualData, data.quarterlyData)
@@ -26,7 +27,8 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
 
   linkAnnualToQuarterly(ctx, profile, annual.colMap, annual.rows, quarterly.cols, quarterly.rows, refs)
 
-  const valuationStartRow = buildValuationTable(ctx, quarterly.cols, quarterly.rows, quarterly.lastRow, data)
+  const health = buildHealthTable(ctx, stockType, data, quarterly.cols, quarterly.rows, quarterly.lastRow)
+  const valuationStartRow = buildValuationTable(ctx, quarterly.cols, quarterly.rows, health?.lastRow ?? quarterly.lastRow, data)
   const valuationLastRow = valuationStartRow + 1 + VALUATION_TABLE.TOTAL_ROWS
   const sensitivity = buildSensitivityTable(ctx, data, refs, quarterly.cols, quarterly.rows, valuationLastRow)
 
@@ -51,9 +53,18 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     lag: 4,
   }
 
+  const healthTable: PeriodTable | null = health && {
+    firstRow: health.firstDataRow,
+    lastRow: health.lastRow,
+    firstCol: quarterlyTable.firstCol,
+    lastCol: quarterlyTable.lastCol,
+    lag: 4,
+  }
+
   // Last: stripes only fill cells that have no colour of their own
   stripeRows(ctx, annualTable.firstRow, annualTable.lastRow, annualTable.lastCol)
   stripeRows(ctx, quarterlyTable.firstRow, quarterlyTable.lastRow, quarterlyTable.lastCol)
+  if (healthTable) stripeRows(ctx, healthTable.firstRow, healthTable.lastRow, healthTable.lastCol)
   stripeRows(ctx, valuationStartRow + 2, valuationLastRow, quarterly.nextCol - 1)
   if (sensitivity) stripeRows(ctx, sensitivity.firstDataRow, sensitivity.lastRow, sensitivity.lastCol)
 
@@ -67,6 +78,10 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   outlineRange(GC, sheet, ANNUAL_TABLE.START_ROW, 0, annualTable.lastRow - ANNUAL_TABLE.START_ROW + 1, annualTable.lastCol + 1)
   underHeader(quarterlyHeaderRow + 1, quarterlyTable.lastCol)
   outlineRange(GC, sheet, quarterlyHeaderRow, 0, quarterlyTable.lastRow - quarterlyHeaderRow + 1, quarterlyTable.lastCol + 1)
+  if (health) {
+    underHeader(health.startRow + 1, quarterlyTable.lastCol)
+    outlineRange(GC, sheet, health.startRow, 0, health.lastRow - health.startRow + 1, quarterlyTable.lastCol + 1)
+  }
   underHeader(valuationStartRow + 1, quarterlyTable.lastCol)
   outlineRange(GC, sheet, valuationStartRow, 0, valuationLastRow - valuationStartRow + 1, quarterlyTable.lastCol + 1)
 
@@ -85,7 +100,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     valuationStartRow,
     quarterlyRows: quarterly.rows,
     growthRows: { revenue: quarterly.rows.revGrowth!, netProfit: quarterly.rows.profitGrowth! },
-    periodTables: [annualTable, quarterlyTable],
+    periodTables: healthTable ? [annualTable, quarterlyTable, healthTable] : [annualTable, quarterlyTable],
   }
 }
 

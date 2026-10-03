@@ -111,3 +111,34 @@ describe('same period last year', () => {
     expect(samePeriodLastYear(layout, 8, 12)).toBeNull()
   })
 })
+
+describe('financial health table', () => {
+  it('shows the ratios of reported quarters under the quarterly table', async () => {
+    const state = load('DGW', DGW)
+    const quarters: [string, string][] = [['2025', 'Q1'], ['2025', 'Q2'], ['2025', 'Q3'], ['2025', 'Q4'], ['2026', 'Q1'], ['2026', 'Q2']]
+    const ratios = {
+      cfoToOperatingProfit: [-521.95, 574.14, -260.83, 211.59, 120, 80],
+      borrowingsToEquity: [96.7, 83.49, 75.93, 85.52, 90, 110],
+      debtToEquity: [180.04, 224.17, 173, 233.56, 190, 210],
+      currentRatio: [1.46, 1.38, 1.49, 1.36, 1.4, 0.95],
+      inventoryTurnover: [2.06, 1.96, 2.16, 1.5, 2.3, 2.1],
+      interestCoverage: [4.91, 6.3, 6.14, 8.17, 1.5, 6],
+    }
+    for (const [indicator, values] of Object.entries(ratios)) {
+      state.quarterlyData[indicator] = {}
+      quarters.forEach(([year, quarter], i) => {
+        (state.quarterlyData[indicator][year] ??= {})[quarter] = values[i]
+      })
+    }
+
+    const { sheet, serialize } = createFakeSheet()
+    const layout = buildAnalysisSheet({ GC: FakeGC, spread: createFakeSpread(), sheet }, state)
+    const health = layout.periodTables[2]!
+    const text = serialize()
+    const rowsOf = (from: number, to: number) => text.split('\n')
+      .filter(line => { const m = /^[A-Z]+(\d+) \|/.exec(line); return m && Number(m[1]) >= from && Number(m[1]) <= to })
+    await expect(rowsOf(health.firstRow - 1, health.lastRow + 1).join('\n')).toMatchFileSnapshot('__snapshots__/health-DGW.txt')
+    // The valuation table moved below it
+    expect(layout.valuationStartRow).toBeGreaterThan(health.lastRow)
+  })
+})

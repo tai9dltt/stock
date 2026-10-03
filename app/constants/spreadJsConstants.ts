@@ -122,6 +122,16 @@ export const QUARTERLY_INDICATOR_SOURCES: Record<string, string[]> = {
   shortTermLiabilities: ['SHORT_TERM_LIABILITIES'],
   equity: ['EQUITY'],
   minorityInterest: ['MINORITY_INTEREST'],
+  // Financial ratios (Vietstock "Chỉ số tài chính"), in % or times
+  cfoToOperatingProfit: ['CFO_TO_OPERATING_PROFIT'],
+  borrowingsToEquity: ['BORROWINGS_TO_EQUITY'],
+  debtToEquity: ['DEBT_TO_EQUITY'],
+  currentRatio: ['CURRENT_RATIO'],
+  inventoryTurnover: ['INVENTORY_TURNOVER'],
+  interestCoverage: ['INTEREST_COVERAGE'],
+  nim: ['NIM'],
+  cir: ['CIR'],
+  ldr: ['LDR'],
 };
 
 export const ANNUAL_INDICATOR_SOURCES: Record<string, string[]> = {
