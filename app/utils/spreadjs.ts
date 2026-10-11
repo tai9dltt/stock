@@ -318,10 +318,11 @@ export function setQuarterlySumFormula(
     sheet.getRange(quarterlyRow, q4Col, 1, 1)
   );
 
+  // Empty unless all 4 quarters have a figure
   sheet.setFormula(
     annualRow,
     annualCol,
-    `${q1Addr} + ${q2Addr} + ${q3Addr} + ${q4Addr}`
+    `IF(COUNT(${q1Addr}, ${q2Addr}, ${q3Addr}, ${q4Addr})=4, ${q1Addr} + ${q2Addr} + ${q3Addr} + ${q4Addr}, "")`
   );
   sheet.setFormatter(annualRow, annualCol, format);
 }

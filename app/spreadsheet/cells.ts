@@ -64,7 +64,8 @@ export function projectedAmount(
     if (cell.isForecast && cell.prevYearCol) {
       const rate = growthRow ? addrOf(cell, growthRow) : cell.refs[growthRef]
       const prev = addrOf(cell, key, cell.prevYearCol)
-      setFormula(cell, key, `${prev} + ABS(${prev}) * ${rate}`, AMOUNT)
+      // Empty without last year's figure (new listing, missing quarter), not 0
+      setFormula(cell, key, `IF(ISNUMBER(${prev}), ${prev} + ABS(${prev}) * ${rate}, "")`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, cell.value(indicator), { format: AMOUNT, border: true })
     }
@@ -80,7 +81,8 @@ export function forecastGrossProfit(marginRow?: RowKey): Renderer {
   return (cell) => {
     if (cell.isForecast) {
       const margin = marginRow ? addrOf(cell, marginRow) : cell.refs.grossMargin
-      setFormula(cell, 'grossProfit', `${addrOf(cell, 'revenue')} * ${margin}`, AMOUNT)
+      const revenue = addrOf(cell, 'revenue')
+      setFormula(cell, 'grossProfit', `IF(ISNUMBER(${revenue}), ${revenue} * ${margin}, "")`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'grossProfit'), cell.col, cell.value('grossProfit'), {
         format: AMOUNT,
@@ -164,7 +166,8 @@ export function shares(): Renderer {
 export function quarterlyEps(): Renderer {
   return (cell) => {
     const sharesAddr = addrOf(cell, 'shares')
-    setFormula(cell, 'eps', `IF(${sharesAddr}<>0, (${addrOf(cell, 'netProfit')} * 1000000) / ${sharesAddr}, 0)`, AMOUNT)
+    const profit = addrOf(cell, 'netProfit')
+    setFormula(cell, 'eps', `IF(AND(ISNUMBER(${profit}), N(${sharesAddr})<>0), ${profit} * 1000000 / ${sharesAddr}, "")`, AMOUNT)
     border(cell, 'eps')
   }
 }
@@ -190,9 +193,11 @@ export function trailingEps(): Renderer {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'epsTtm'), cell.col, reportedTtm, { format: AMOUNT, border: true })
     } else if (cell.col >= 4) {
       const sharesAddr = addrOf(cell, 'shares')
+      const profits = lastFourQuarters(cell, 'netProfit')
+      // All 4 quarters, or the EPS of 2-3 quarters would pass for a year's
       setFormula(
         cell, 'epsTtm',
-        `IF(${sharesAddr}<>0, SUM(${lastFourQuarters(cell, 'netProfit')}) * 1000000 / ${sharesAddr}, 0)`,
+        `IF(AND(COUNT(${profits})=4, N(${sharesAddr})<>0), SUM(${profits}) * 1000000 / ${sharesAddr}, "")`,
         AMOUNT
       )
     }

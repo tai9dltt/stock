@@ -89,7 +89,7 @@ describe('growth typed for a forecast quarter', () => {
     expect(cellOf(text, 'U35')).toMatch(/^U35 \| =M9 \|/)
     // Revenue keeps projecting from the quarter's growth cell; for a loss last
     // year, a positive growth shrinks the loss (|last year| × growth)
-    expect(cellOf(text, 'T23')).toMatch(/^T23 \| =P23 \+ ABS\(P23\) \* T35 \|/)
+    expect(cellOf(text, 'T23')).toMatch(/^T23 \| =IF\(ISNUMBER\(P23\), P23 \+ ABS\(P23\) \* T35, ""\) \|/)
   })
 
   it('takes a gross margin typed for one quarter', () => {
@@ -100,7 +100,7 @@ describe('growth typed for a forecast quarter', () => {
     // T26/U26 = gross margin of 2026 Q3/Q4; gross profit = revenue × that cell
     expect(cellOf(text, 'T26')).toMatch(/^T26 \| =M10 \|/)
     expect(cellOf(text, 'U26')).toMatch(/^U26 \| 0\.12 \| .*"font":"bold 11pt Calibri"/)
-    expect(cellOf(text, 'U24')).toMatch(/^U24 \| =U23 \* U26 \|/)
+    expect(cellOf(text, 'U24')).toMatch(/^U24 \| =IF\(ISNUMBER\(U23\), U23 \* U26, ""\) \|/)
   })
 })
 
@@ -111,6 +111,22 @@ describe('annual totals from quarters', () => {
     const text = build(state)
     // C6 = 2023 gross profit: Vietstock's annual figure, not Q1 + Q3 + Q4
     expect(text.split('\n').find(line => line.startsWith('C6 |'))).toMatch(/^C6 \| 1559496 \|/)
+  })
+})
+
+describe('missing quarters', () => {
+  const lineOf = (text: string, addr: string) => text.split('\n').find(line => line.startsWith(`${addr} |`))
+
+  it('leaves an old year missing Q4 reported, even when flagged as a forecast', () => {
+    const state = load('DGW', DGW)
+    for (const series of Object.values(state.quarterlyData)) delete series?.['2023']?.['Q4']
+    state.forecastYears.push('2023') // the crawler flags a year without Q4
+    const text = build(state)
+    // I = 2023 Q4: an empty quarter, not "(F)" projected from 2022 Q4
+    expect(lineOf(text, 'I22')).toMatch(/^I22 \| "Q4\\n/)
+    expect(lineOf(text, 'I23')).not.toMatch(/\| =/)
+    // The 2023 annual figures stay Vietstock's
+    expect(lineOf(text, 'C5')).toMatch(/^C5 \| 18817475 \|/)
   })
 })
 

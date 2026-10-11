@@ -245,10 +245,14 @@ export function buildQuarterlyTable(
     sheet.addSpan(startRow, nextCol, 1, 4)
     sheet.getRange(startRow, nextCol, 1, 4).setBorder(getThinBorder(GC), { all: true })
 
+    // Before last year a quarter without figures is missing, not a forecast
+    // (the crawler flags any year without Q4); its reported annual figures stay
+    const isPastYear = parseInt(year) < currentYear - 1
+
     QUARTERS.forEach((quarter, i) => {
-      const isForecast = !hasActualData(year, quarter) && (
-        data.forecastQuarters.includes(`${year}_${quarter}`) || data.forecastYears.includes(year) || isYearForecast
-      )
+      const isForecast = !hasActualData(year, quarter) && (isYearForecast || (!isPastYear && (
+        data.forecastQuarters.includes(`${year}_${quarter}`) || data.forecastYears.includes(year)
+      )))
 
       sheet.setColumnWidth(nextCol, QUARTERLY_TABLE.COLUMN_WIDTH)
       setCell(GC, sheet, startRow + 1, nextCol, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[i]}`, {
@@ -349,7 +353,8 @@ export function linkAnnualToQuarterly(
       sheet.getRange(quarterlyRows.shares!, quarterCols[0]!, 1, 4)
     )
     const profit = getCellAddr(GC, sheet, annualRows.netProfit!, annualCol)
-    sheet.setFormula(annualRows.eps!, annualCol, `IF(AVERAGE(${shares})<>0, ${profit} * 1000000 / AVERAGE(${shares}), 0)`)
+    sheet.setFormula(annualRows.eps!, annualCol,
+      `IF(AND(ISNUMBER(${profit}), N(AVERAGE(${shares}))<>0), ${profit} * 1000000 / AVERAGE(${shares}), "")`)
     sheet.setFormatter(annualRows.eps!, annualCol, '#,##0')
     applyBorder(GC, sheet, annualRows.eps!, annualCol)
 
@@ -362,7 +367,8 @@ export function linkAnnualToQuarterly(
     if (annualRows.ros !== undefined) {
       const profitAddr = getCellAddr(GC, sheet, annualRows.netProfit!, annualCol)
       const revAddr = getCellAddr(GC, sheet, annualRows.revenue!, annualCol)
-      sheet.setFormula(annualRows.ros, annualCol, `IF(${revAddr}<>0, ${profitAddr} / ${revAddr}, 0)`)
+      sheet.setFormula(annualRows.ros, annualCol,
+        `IF(AND(ISNUMBER(${profitAddr}), ISNUMBER(${revAddr}), ${revAddr}<>0), ${profitAddr} / ${revAddr}, "")`)
       sheet.setFormatter(annualRows.ros, annualCol, '0.00%')
       applyBorder(GC, sheet, annualRows.ros, annualCol)
     }
