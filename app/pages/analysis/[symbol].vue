@@ -149,8 +149,10 @@ const resetOverrides = (field: string) => {
 
 const applyInput = (field: InputFieldName, value: number) => {
   state.value[field] = value;
-  // Quarters without their own share count use this one, so they need a rebuild
-  if (field === 'outstandingShares') scheduleRender();
+  // Rebuild for the inputs not read by formulas alone: quarters without their
+  // own share count use this one; the current P/E (its label and highlighted
+  // row in the P/E table) follows the price
+  if (field === 'outstandingShares' || field === 'currentPrice') scheduleRender();
 };
 
 /** "Áp dụng" in the form: update the state and the input cells (formulas recalculate) */

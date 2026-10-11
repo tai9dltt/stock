@@ -154,6 +154,13 @@ export function useAnalysisSheet() {
       sheet = workbook.getSheet(0);
     }
     sheet.name('Analysis');
+    // A rebuild (save, add a year, new price...) keeps the user's place
+    const view = layout.value && {
+      top: sheet.getViewportTopRow(1),
+      left: sheet.getViewportLeftColumn(1),
+      row: sheet.getActiveRowIndex(),
+      col: sheet.getActiveColumnIndex(),
+    };
     sheet.reset();
 
     // Don't recalculate formulas while building
@@ -194,6 +201,14 @@ export function useAnalysisSheet() {
     comparisonRule = null;
     sheet.unbind(GC.Spread.Sheets.Events.SelectionChanged);
     sheet.bind(GC.Spread.Sheets.Events.SelectionChanged, () => showComparisonCell(sheet));
+
+    if (view) {
+      const lastRow = sheet.getRowCount() - 1;
+      const lastCol = sheet.getColumnCount() - 1;
+      sheet.setActiveCell(Math.min(view.row, lastRow), Math.min(view.col, lastCol));
+      sheet.showRow(Math.min(view.top, lastRow), GC.Spread.Sheets.VerticalPosition.top);
+      sheet.showColumn(Math.min(view.left, lastCol), GC.Spread.Sheets.HorizontalPosition.left);
+    }
 
     sheet.resumeCalcService(false);
     workbook.resumePaint();

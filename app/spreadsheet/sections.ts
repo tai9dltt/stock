@@ -12,7 +12,7 @@ import {
 } from '~/constants/spreadJsConstants'
 import {
   applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getSeparatorBorder,
-  getThinBorder, setCell, setQuarterlySumFormula,
+  getThinBorder, ownBackColor, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
 import { currentPe, distinctPe, peFormat, peLadder } from './peLadder'
 import { defaultShares } from './shares'
@@ -49,8 +49,7 @@ function writeRowLabels(ctx: SheetContext, specs: RowSpec[], rows: RowMap) {
 export function stripeRows(ctx: SheetContext, firstRow: number, lastRow: number, lastCol: number): void {
   for (let row = firstRow + 1; row <= lastRow; row += 2) {
     for (let col = 0; col <= lastCol; col++) {
-      const cell = ctx.sheet.getCell(row, col)
-      if (!cell.backColor()) cell.backColor(SPREADJS_COLORS.STRIPE)
+      if (!ownBackColor(ctx.sheet, row, col)) ctx.sheet.getCell(row, col).backColor(SPREADJS_COLORS.STRIPE)
     }
   }
 }

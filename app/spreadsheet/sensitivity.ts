@@ -62,12 +62,15 @@ export function buildSensitivityTable(
   if (lastCol > 1) sheet.addSpan(startRow, 1, 1, lastCol)
 
   // P/E columns: the ladder levels with their meaning above. Not editable,
-  // so a label always matches its value (scenarios are edited in the P/E table)
+  // so a label always matches its value (scenarios are edited in the P/E table).
+  // The current P/E is price ÷ that EPS, not rounded and following the price
+  // input, so its 0% cell is exactly today's price
   setCell(GC, sheet, labelRow, 0, '', { ...HEADER })
   setCell(GC, sheet, peRow, 0, 'TT LNST \\ P/E', { ...HEADER, align: 'center' })
-  ladder.forEach(({ value, label }, i) => {
+  ladder.forEach(({ value, label, current }, i) => {
     setCell(GC, sheet, labelRow, 1 + i, label, { border: true, bg: SPREADJS_COLORS.HEADER, align: 'center', color: SPREADJS_COLORS.NOTE })
     setCell(GC, sheet, peRow, 1 + i, value, { ...HEADER, align: 'center', format: '0.00' })
+    if (current) sheet.setFormula(peRow, 1 + i, `IF(${epsAddr}>0, ${refs.currentPrice} / ${epsAddr}, "")`)
   })
 
   // Growth rows, editable; each cell is EPS × (1 + growth) × P/E
@@ -91,13 +94,14 @@ export function buildSensitivityTable(
   return { startRow, firstDataRow, lastRow, lastCol }
 }
 
-/** Green: at least 20% above the price; yellow: above it; red: below it */
+/** Green: at least 20% above the price; yellow: above it; red: below it (to the dong) */
 function highlightAgainstPrice(ctx: SheetContext, priceAddr: string, firstRow: number, lastRow: number, lastCol: number) {
   const { GC, sheet } = ctx
   if (lastCol < 1) return
   const range = [new GC.Spread.Sheets.Range(firstRow, 1, lastRow - firstRow + 1, lastCol)]
   // Relative to the first cell of the range, like Excel
   const cell = relativeAddr(firstRow, 1)
+  const rounded = `ROUND(${cell}, 0)`
   const style = (backColor: string) => {
     const s = new GC.Spread.Sheets.Style()
     s.backColor = backColor
@@ -105,7 +109,7 @@ function highlightAgainstPrice(ctx: SheetContext, priceAddr: string, firstRow: n
   }
   const good = `${priceAddr} * ${SENSITIVITY_TABLE.GOOD_UPSIDE}`
   const cfs = sheet.conditionalFormats
-  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${priceAddr}>0, ${cell}>=${good})`, style('#C6EFCE'), range)
-  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${priceAddr}>0, ${cell}>=${priceAddr}, ${cell}<${good})`, style('#FEF3C7'), range)
-  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${priceAddr}>0, ${cell}<${priceAddr})`, style('#FFC7CE'), range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${priceAddr}>0, ${rounded}>=${good})`, style('#C6EFCE'), range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${priceAddr}>0, ${rounded}>=${priceAddr}, ${rounded}<${good})`, style('#FEF3C7'), range)
+  cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${priceAddr}>0, ${rounded}<${priceAddr})`, style('#FFC7CE'), range)
 }

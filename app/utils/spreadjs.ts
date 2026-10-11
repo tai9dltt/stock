@@ -174,6 +174,15 @@ export function applyRowHighlightOnSelect(
  * headers, highlighted P/E), so the selected-row colour does not cover it.
  * Zebra stripes are left out: the selected row may cover them.
  */
+/**
+ * Background the cell was given (input, header, highlighted P/E). Not
+ * getCell().backColor(), which also returns a conditional colour: a growth
+ * shown green would be kept green after the value changes.
+ */
+export function ownBackColor(sheet: any, row: number, col: number): string | undefined {
+  return sheet.getStyle(row, col)?.backColor || undefined
+}
+
 function keepCellColours(GC: any, sheet: any, rowCount: number, colCount: number): any[] {
   const rangesByColour = new Map<string, any[]>()
   for (let row = 0; row < rowCount; row++) {
@@ -181,7 +190,7 @@ function keepCellColours(GC: any, sheet: any, rowCount: number, colCount: number
     let runColour = ''
     // Merge runs of same-coloured cells in a row into one range
     for (let col = 0; col <= colCount; col++) {
-      const colour = col < colCount ? sheet.getCell(row, col).backColor() : undefined
+      const colour = col < colCount ? ownBackColor(sheet, row, col) : undefined
       const own = colour && colour !== SPREADJS_COLORS.STRIPE ? colour : ''
       if (own === runColour) continue
       if (runColour) {
