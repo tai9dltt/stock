@@ -74,8 +74,10 @@ export function buildSensitivityTable(
     if (current) sheet.setFormula(peRow, 1 + i, `IF(${epsAddr}>0, ${refs.currentPrice} / ${epsAddr}, "")`)
   })
 
-  // Growth rows, editable; each cell is EPS × (1 + growth) × P/E
-  SENSITIVITY_TABLE.GROWTHS.forEach((growth, r) => {
+  // Growth rows, editable (the values typed stay over rebuilds); each cell
+  // is EPS × (1 + growth) × P/E
+  SENSITIVITY_TABLE.GROWTHS.forEach((defaultGrowth, r) => {
+    const growth = data.sensitivityGrowths[r] ?? defaultGrowth
     const row = firstDataRow + r
     setCell(GC, sheet, row, 0, growth, { bold: true, border: true, align: 'center', format: '+0%;-0%;0%' })
     sheet.getCell(row, 0).locked(false)

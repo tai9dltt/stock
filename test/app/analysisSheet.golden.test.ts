@@ -130,6 +130,17 @@ describe('missing quarters', () => {
   })
 })
 
+describe('sensitivity table', () => {
+  it('shows the growths typed earlier after a rebuild', () => {
+    const state = load('DGW', DGW)
+    state.sensitivityGrowths = [-0.2, 0, 0.05, 0.15, 0.25]
+    const lines = build(state).split('\n')
+    const growths = ['A57', 'A58', 'A59', 'A60', 'A61']
+      .map(addr => lines.find(line => line.startsWith(`${addr} |`))!.split(' | ')[1])
+    expect(growths).toEqual(['-0.2', '0', '0.05', '0.15', '0.25'])
+  })
+})
+
 describe('many forecast years', () => {
   it('moves the input area right of the annual table instead of overwriting it', () => {
     const state = load('DGW', DGW)

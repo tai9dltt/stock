@@ -126,6 +126,8 @@ export interface AnalysisSheetData {
   peScenarios: number[]
   /** Per-quarter growth that replaces the growth assumption in forecast quarters */
   growthOverrides: GrowthOverrides
+  /** Growth rows typed into the sensitivity table (empty: the defaults); kept for the session, not saved */
+  sensitivityGrowths: number[]
   tradingDate: string
   currentPrice: number
   outstandingShares: number
@@ -148,6 +150,8 @@ export interface AnalysisSheetLayout {
   quarterlyRows: RowMap
   /** Quarterly rows whose forecast cells take a per-quarter assumption */
   growthRows: Partial<Record<GrowthKind, number>>
+  /** Rows of the sensitivity table's growth cells (column A), if it is shown */
+  sensitivityGrowthRows: { first: number; last: number } | null
   /** Data area of the annual and quarterly tables, for same-period comparisons */
   periodTables: PeriodTable[]
 }

@@ -237,6 +237,7 @@ export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
     forecastQuarters: [],
     peScenarios: [],
     growthOverrides: {},
+    sensitivityGrowths: [],
     tradingDate: '',
     currentPrice: 0,
     outstandingShares: 0,

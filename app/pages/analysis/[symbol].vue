@@ -184,10 +184,11 @@ sheet.onGrowthEdited((kind, period, value) => {
   state.value.growthOverrides[kind] = value === null ? others : { ...others, [period]: value };
 });
 
-/** From the sheet: P/E scenarios or shares per quarter typed, kept over re-renders */
-sheet.onTableEdited(({ peValues, sharesPerQuarter }) => syncFromSheet(() => {
+/** From the sheet: P/E scenarios, shares per quarter or sensitivity growths typed, kept over re-renders */
+sheet.onTableEdited(({ peValues, sharesPerQuarter, sensitivityGrowths }) => syncFromSheet(() => {
   const s = state.value;
   if (peValues) s.peScenarios = peValues;
+  if (sensitivityGrowths) s.sensitivityGrowths = sensitivityGrowths;
   // Only the counts the user typed; the others keep following their defaults
   if (sharesPerQuarter) s.quarterlyData['outstandingShares'] = sharesOverrides(sharesPerQuarter, s.quarterlyData, s.outstandingShares) ?? {};
 }));

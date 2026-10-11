@@ -106,6 +106,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     growthRows: Object.fromEntries(profile.quarterlyRows
       .filter(spec => spec.forecastInput)
       .map(spec => [spec.forecastInput!, quarterly.rows[spec.key]!])),
+    sensitivityGrowthRows: sensitivity && { first: sensitivity.firstDataRow, last: sensitivity.lastRow },
     periodTables: healthTable ? [annualTable, quarterlyTable, healthTable] : [annualTable, quarterlyTable],
   }
 }

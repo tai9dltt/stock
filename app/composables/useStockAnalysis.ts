@@ -70,6 +70,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
         for (const year of forecastYears) {
           if (!kept.forecastYears.includes(year)) kept.forecastYears.push(year);
         }
+        kept.sensitivityGrowths = [...state.value.sensitivityGrowths];
         state.value = kept;
       } else {
         state.value = loaded;
