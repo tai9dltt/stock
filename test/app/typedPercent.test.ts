@@ -9,8 +9,14 @@ describe('typedPercent', () => {
     expect(typedPercent('7,5%%')).toBe(0.075)
   })
 
+  it('reads a decimal comma ("7,5" typed shows as "7,5%")', () => {
+    expect(typedPercent('7,5%')).toBe(0.075)
+    expect(typedPercent('-7,5%')).toBe(-0.075)
+  })
+
   it('leaves other input to SpreadJS', () => {
     expect(typedPercent('5%')).toBeNull() // "5" typed: SpreadJS already gives 0.05
+    expect(typedPercent('7.5%')).toBeNull()
     expect(typedPercent('5')).toBeNull()
     expect(typedPercent('abc%%')).toBeNull()
     expect(typedPercent(null)).toBeNull()

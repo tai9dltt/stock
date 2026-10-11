@@ -83,6 +83,16 @@ const onTyping = (field: EditableField, isPercent: boolean, event: Event) => {
   if (Number.isFinite(value)) draft[field] = isPercent ? value / 100 : value;
 };
 
+/**
+ * Percent fields: a decimal comma ("7,5") would read as 75 in this en-US
+ * number input, so it is typed as a point
+ */
+const decimalComma = (event: KeyboardEvent) => {
+  if (event.key !== ',') return;
+  event.preventDefault();
+  document.execCommand('insertText', false, '.');
+};
+
 const apply = () => {
   if (changedFields.value.length === 0) return;
   emit('apply', Object.fromEntries(changedFields.value.map(f => [f, draft[f]])));
@@ -125,6 +135,7 @@ const reset = () => {
               class="w-full"
               @update:model-value="(v: number | null | undefined) => setDraft(f.field, v)"
               @input="(e: Event) => onTyping(f.field, f.format === PERCENT, e)"
+              @keydown="(e: KeyboardEvent) => f.format === PERCENT && decimalComma(e)"
             />
             <p v-if="f.overrides > 0" class="flex items-center gap-1 mt-1 text-xs text-amber-700 dark:text-amber-400">
               {{ f.overrides }} quý sửa riêng

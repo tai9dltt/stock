@@ -368,12 +368,17 @@ export function applyGrowthHighlightRange(
 
 /**
  * Typing into a percent cell, SpreadJS appends "%" itself, so a user typing
- * "5%" ends with "5%%", stored as text ("-5%%" even as -0.0005). The
- * fraction they meant (0.05), or null when the text isn't such a case.
+ * "5%" ends with "5%%", stored as text ("-5%%" even as -0.0005), and a
+ * decimal comma ("7,5" → "7,5%") is not read as a number either. The
+ * fraction meant (0.05, 0.075), or null for text SpreadJS reads correctly.
  */
 export function typedPercent(editingText: unknown): number | null {
-  const match = /^\s*([+-]?\d+(?:[.,]\d+)?)\s*%\s*%\s*$/.exec(String(editingText ?? ''))
-  return match ? Number(match[1]!.replace(',', '.')) / 100 : null
+  const text = String(editingText ?? '')
+  const match = /^\s*([+-]?\d+(?:[.,]\d+)?)\s*((?:%\s*)+)$/.exec(text)
+  if (!match) return null
+  const doubled = match[2]!.replaceAll(/\s/g, '').length > 1
+  if (!doubled && !match[1]!.includes(',')) return null
+  return Number(match[1]!.replace(',', '.')) / 100
 }
 
 /** Column letters, e.g. 0 → "A", 26 → "AA" */
