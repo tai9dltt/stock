@@ -33,7 +33,8 @@ export function useAnalysisSheet() {
   let GC: any = null;
   const spread = shallowRef<any>(null);
   const layout = shallowRef<AnalysisSheetLayout | null>(null);
-  const INPUT_COL = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
+  // Column of the input values: K + 2, further right when there are many years
+  const inputCol = () => layout.value?.inputValueCol ?? INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
   let onInputEdited: ((field: InputFieldName, value: number) => void) | null = null;
   let onGrowthEdited: GrowthEditedCallback | null = null;
   let onTableEdited: TableEditedCallback | null = null;
@@ -56,10 +57,17 @@ export function useAnalysisSheet() {
     const value = sheet.getValue(row, col);
     const typed = typeof value === 'number' && Number.isFinite(value);
     if (!typed) {
-      sheet.setFormula(row, col, getCellAddr(GC, sheet, inputRow(GROWTH_INPUT[kind]), INPUT_COL));
+      sheet.setFormula(row, col, getCellAddr(GC, sheet, inputRow(GROWTH_INPUT[kind]), inputCol()));
     }
     styleGrowthInput(GC, sheet, row, col, typed);
     onGrowthEdited?.(kind, `${period.year}_${period.quarter}`, typed ? value : null);
+  }
+
+  /** An input cell (price, shares, an assumption) was typed, cleared or pasted into */
+  function syncInputCell(sheet: any, row: number, col: number) {
+    if (col !== inputCol() || !onInputEdited) return;
+    const field = INPUT_FIELDS.find(f => inputRow(f) === row);
+    if (field) onInputEdited(field, Number(sheet.getValue(row, col)) || 0);
   }
 
   async function init(spreadInstance: any) {
@@ -159,14 +167,10 @@ export function useAnalysisSheet() {
 
     layout.value = buildAnalysisSheet({ GC, spread: workbook, sheet }, data);
 
-    // Report edits the user makes directly in the input cells
+    // Report edits the user makes directly in the sheet
     sheet.unbind(GC.Spread.Sheets.Events.ValueChanged);
-    sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number; newValue: unknown }) => {
-      if (info.col !== INPUT_COL || !onInputEdited) return;
-      const field = INPUT_FIELDS.find(f => inputRow(f) === info.row);
-      if (field) onInputEdited(field, Number(info.newValue) || 0);
-    });
     sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number }) => {
+      syncInputCell(sheet, info.row, info.col);
       syncGrowthCell(sheet, info.row, info.col);
       relabelPeCell(sheet, info.row, info.col);
       reportTableEdits(sheet, [[info.row, info.col]]);
@@ -177,6 +181,7 @@ export function useAnalysisSheet() {
       const cells: Array<[number, number]> = [];
       for (let r = info.row; r < info.row + info.rowCount; r++) {
         for (let c = info.col; c < info.col + info.colCount; c++) {
+          syncInputCell(sheet, r, c);
           syncGrowthCell(sheet, r, c);
           relabelPeCell(sheet, r, c);
           cells.push([r, c]);
@@ -197,7 +202,7 @@ export function useAnalysisSheet() {
   /** Write an input value into its cell; formulas that use it recalculate */
   function setInput(field: InputFieldName, value: number) {
     if (!isReady()) return;
-    spread.value.getSheet(0)?.setValue(inputRow(field), INPUT_COL, value);
+    spread.value.getSheet(0)?.setValue(inputRow(field), inputCol(), value);
   }
 
   /**
@@ -248,7 +253,7 @@ export function useAnalysisSheet() {
     const sheet = spread.value.getActiveSheet();
 
     const edits: SheetEdits = {
-      inputs: extractInputValues(sheet, INPUT_AREA.ROW_START, INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET),
+      inputs: extractInputValues(sheet, INPUT_AREA.ROW_START, inputCol()),
     };
 
     const current = layout.value;

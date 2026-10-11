@@ -139,6 +139,8 @@ export interface AnalysisSheetData {
 /** Positions the page needs to read user edits back from the sheet */
 export interface AnalysisSheetLayout {
   stockType: StockType
+  /** Column of the input values (price, shares, assumptions); rows from inputRow() */
+  inputValueCol: number
   quarterlyCols: QuarterlyColumnInfo[]
   sharesRow: number
   valuationStartRow: number

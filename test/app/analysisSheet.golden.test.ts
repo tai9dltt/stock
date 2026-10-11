@@ -104,6 +104,31 @@ describe('growth typed for a forecast quarter', () => {
   })
 })
 
+describe('many forecast years', () => {
+  it('moves the input area right of the annual table instead of overwriting it', () => {
+    const state = load('DGW', DGW)
+    build(state)
+    for (let i = 0; i < 7; i++) addYear(state)
+    const { sheet, serialize } = createFakeSheet()
+    const layout = buildAnalysisSheet({ GC: FakeGC, spread: createFakeSpread(), sheet }, state)
+    const text = serialize()
+    const lineOf = (addr: string) => text.split('\n').find(line => line.startsWith(`${addr} |`))
+
+    // 2022–2033 fill B..M; one empty column, the labels from O, the values in Q
+    expect(lineOf('M4')).toMatch(/^M4 \| "2033 \(F\)/)
+    expect(lineOf('N5')).toBeUndefined()
+    expect(lineOf('O5')).toMatch(/^O5 \| "Giá cổ phiếu"/)
+    expect(layout.inputValueCol).toBe(16)
+    expect(lineOf('Q5')).toMatch(/^Q5 \| 25000 \|/)
+    // Formulas use the moved inputs: P/E reads the price, forecast growth the assumption
+    expect(lineOf('U32')).toMatch(/^U32 \| =IF\(U31<>0, Q5 \/ U31, 0\)/)
+    expect(lineOf('U35')).toMatch(/^U35 \| =Q9 \|/)
+    // M5 is now 2033 revenue: only its own column (margins, growth) reads it
+    const readers = text.split('\n').filter(line => /\| =.*\bM5\b/.test(line) && !/^M\d+ /.test(line))
+    expect(readers).toEqual([])
+  })
+})
+
 describe('same period last year', () => {
   it('points a quarter to the same quarter a year earlier, a year to the year before', async () => {
     const { samePeriodLastYear } = await import('~/spreadsheet/buildAnalysisSheet')

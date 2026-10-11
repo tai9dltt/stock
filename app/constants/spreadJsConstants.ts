@@ -57,11 +57,18 @@ export const INPUT_FIELDS = [
 
 export type InputFieldName = (typeof INPUT_FIELDS)[number];
 
+/**
+ * First column of the input area: K, unless the annual table (columns B..)
+ * would reach it; then one empty column after the last year. Otherwise added
+ * years would overwrite the inputs every formula references.
+ */
+export const inputAreaCol = (annualColumnCount: number) => Math.max(INPUT_AREA.COL, annualColumnCount + 2);
+
 /** Sheet row of an input value */
 export const inputRow = (field: InputFieldName) => INPUT_AREA.ROW_START + 1 + INPUT_FIELDS.indexOf(field);
 
 export const INPUT_AREA = {
-  COL: 10, // Column K
+  COL: 10, // Column K, or further right when the annual table needs the room (see inputAreaCol)
   ROW_START: 3,
   VALUE_COL_OFFSET: 2, // Values in COL + 2
   NOTE_SPAN: 3, // Note ("actual" / "forecast") right of the values, over 3 columns

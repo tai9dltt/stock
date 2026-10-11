@@ -73,16 +73,16 @@ export function buildTitleSection(ctx: SheetContext, profile: StockProfile, symb
 }
 
 /**
- * Input area at K4: price, shares, 52-week range and the growth assumptions
- * the forecast formulas reference.
+ * Input area at row 4 from column `col` (see inputAreaCol): price, shares,
+ * 52-week range and the growth assumptions the forecast formulas reference.
  */
 export function buildInputSection(
   ctx: SheetContext,
   profile: StockProfile,
-  data: AnalysisSheetData
+  data: AnalysisSheetData,
+  col: number
 ): InputCellReferences {
   const { GC, sheet } = ctx
-  const col = INPUT_AREA.COL
   const startRow = INPUT_AREA.ROW_START
   const valueCol = col + INPUT_AREA.VALUE_COL_OFFSET
   const noteCol = valueCol + 1
@@ -143,6 +143,15 @@ export function buildInputSection(
 
 // ─── Annual table ───────────────────────────────────────────────────
 
+/** Years of the annual table, one column each from column B */
+export function annualYears(data: AnalysisSheetData): string[] {
+  return resolveDisplayYears(
+    [...extractYearsFromData(data.annualData), ...data.forecastYears],
+    data.quarterlyData,
+    new Date().getFullYear()
+  )
+}
+
 export function buildAnnualTable(
   ctx: SheetContext,
   profile: StockProfile,
@@ -154,11 +163,7 @@ export function buildAnnualTable(
   const startRow = ANNUAL_TABLE.START_ROW
   const rows = layoutRows(profile.annualRows, startRow + 1)
 
-  const years = resolveDisplayYears(
-    [...extractYearsFromData(data.annualData), ...data.forecastYears],
-    data.quarterlyData,
-    currentYear
-  )
+  const years = annualYears(data)
   const colMap: Record<string, number> = Object.fromEntries(years.map((year, i) => [year, 1 + i]))
   const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
 
