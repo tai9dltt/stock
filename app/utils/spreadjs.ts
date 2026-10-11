@@ -101,7 +101,8 @@ export function setDivisionFormula(
 ): void {
   const numAddr = getCellAddr(GC, sheet, numeratorRow, numeratorCol);
   const denAddr = getCellAddr(GC, sheet, denominatorRow, denominatorCol);
-  sheet.setFormula(targetRow, targetCol, `IF(${denAddr}<>0, ${numAddr}/${denAddr}, 0)`);
+  // Empty without both figures: a missing quarter is no 0% margin
+  sheet.setFormula(targetRow, targetCol, `IF(AND(ISNUMBER(${numAddr}), ISNUMBER(${denAddr}), ${denAddr}<>0), ${numAddr}/${denAddr}, "")`);
   sheet.setFormatter(targetRow, targetCol, format);
 }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildAnalysisState, nextForecastYear, overlayAnnualMetrics, overlayQuarterlyMetrics, sharesOverrides, toSavePayload,
+  trailingGrossMargin,
 } from '~/composables/useStockDataTransform'
 
 describe('metric overlay priority', () => {
@@ -138,5 +139,34 @@ describe('shares per quarter', () => {
     // The share count changes later: nothing else is frozen at 10,000
     state.outstandingShares = 11_000
     expect(toSavePayload(state, plan).sharesByQuarter).toEqual({ 2026: { Q2: 9_000 } })
+  })
+})
+
+describe('default gross margin', () => {
+  const quarters = {
+    netRevenue: { 2025: { Q1: 1000, Q2: 1000, Q3: 1000, Q4: 1000 }, 2026: { Q1: 2000, Q2: null } },
+    grossProfit: { 2025: { Q1: 50, Q2: 100, Q3: 100, Q4: 100 }, 2026: { Q1: 300 } },
+  }
+
+  it('is Σ gross profit ÷ Σ revenue of the last 4 quarters with both', () => {
+    // 2025 Q2..Q4 and 2026 Q1: (100 + 100 + 100 + 300) / (1000 × 3 + 2000)
+    expect(trailingGrossMargin(quarters)).toBe(0.12)
+    expect(trailingGrossMargin({})).toBeNull()
+  })
+
+  it('replaces a missing or 0% margin for stocks that forecast gross profit only', () => {
+    const crawled = {
+      metrics: {
+        REVENUE_NET: { '2025_Q3': '1000', '2025_Q4': '1000' },
+        GROSS_PROFIT: { '2025_Q3': '100', '2025_Q4': '150' },
+      },
+      yearlyMetrics: {},
+    }
+    expect(buildAnalysisState('DGW', crawled, null, '').grossMargin).toBe(0.125)
+    const saved = { ...toSavePayload(buildAnalysisState('DGW', crawled, null, ''), { noteHtml: '', entryPrice: null, targetPrice: null, stopLoss: null }) }
+    expect(buildAnalysisState('DGW', { ...crawled, analysis: { ...saved, grossMargin: 0.2 } }, null, '').grossMargin).toBe(0.2)
+    expect(buildAnalysisState('DGW', { ...crawled, analysis: { ...saved, grossMargin: 0 } }, null, '').grossMargin).toBe(0.125)
+    // Securities don't use it
+    expect(buildAnalysisState('SSI', crawled, null, '').grossMargin).toBe(0)
   })
 })

@@ -14,6 +14,7 @@ import {
   applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getSeparatorBorder,
   getThinBorder, ownBackColor, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
+import { NOT_MEANINGFUL, priceToEarnings } from './cells'
 import { currentPe, distinctPe, peFormat, peLadder } from './peLadder'
 import { defaultShares } from './shares'
 import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
@@ -328,7 +329,14 @@ export function linkAnnualToQuarterly(
     const sumOfQuarters = (key: keyof RowMap) =>
       setQuarterlySumFormula(GC, sheet, quarterlyRows[key]!, annualRows[key]!, annualCol, quarterCols as number[])
 
-    profile.annualSumOfQuarters.forEach(sumOfQuarters)
+    // Only with a figure (reported or forecast) in all 4 quarters: a year in
+    // progress whose row is never forecast (bank opex, securities gross
+    // profit) stays empty instead of showing half a year; an old year with a
+    // missing quarter keeps its reported figure
+    const hasFigure = (row: number, col: number) => !!sheet.getFormula(row, col) || typeof sheet.getValue(row, col) === 'number'
+    profile.annualSumOfQuarters
+      .filter(key => quarterCols.every(col => hasFigure(quarterlyRows[key]!, col!)))
+      .forEach(sumOfQuarters)
 
     // Historical years keep the reported figures
     if (!yearQuarters.some(q => q.isForecast)) continue
@@ -346,8 +354,9 @@ export function linkAnnualToQuarterly(
     applyBorder(GC, sheet, annualRows.eps!, annualCol)
 
     const epsAddr = getCellAddr(GC, sheet, annualRows.eps!, annualCol)
-    sheet.setFormula(annualRows.pe!, annualCol, `IF(${epsAddr}<>0, ${refs.currentPrice} / ${epsAddr}, 0)`)
+    sheet.setFormula(annualRows.pe!, annualCol, priceToEarnings(refs.currentPrice, epsAddr))
     sheet.setFormatter(annualRows.pe!, annualCol, '0.00')
+    sheet.getCell(annualRows.pe!, annualCol).hAlign(GC.Spread.Sheets.HorizontalAlign.right)
     applyBorder(GC, sheet, annualRows.pe!, annualCol)
 
     if (annualRows.ros !== undefined) {
@@ -452,7 +461,9 @@ export function buildValuationTable(
     const peAddr = `$A${row + 1}`
     for (const { col } of quarterlyCols) {
       const epsAddr = getCellAddr(GC, sheet, quarterlyRows.epsTtm!, col)
-      sheet.setFormula(row, col, `IF(AND(ISNUMBER(${peAddr}), ISNUMBER(${epsAddr})), ${peAddr} * ${epsAddr}, "-")`)
+      // "-" without a P/E, or from a loss (no price target)
+      sheet.setFormula(row, col,
+        `IF(AND(ISNUMBER(${peAddr}), ISNUMBER(${epsAddr}), ${epsAddr}>0), ${peAddr} * ${epsAddr}, "${NOT_MEANINGFUL}")`)
       sheet.setFormatter(row, col, '#,##0')
       sheet.getCell(row, col).hAlign(GC.Spread.Sheets.HorizontalAlign.right)
       applyBorder(GC, sheet, row, col)

@@ -15,6 +15,13 @@ const PERCENT = '0.00%'
 
 const isPresent = (v: unknown) => v !== undefined && v !== null
 
+/** Shown where a ratio has no meaning, e.g. P/E or a price target from a loss */
+export const NOT_MEANINGFUL = '-'
+
+/** Price ÷ EPS, "-" for a loss or no EPS */
+export const priceToEarnings = (price: string, eps: string) =>
+  `IF(AND(ISNUMBER(${eps}), ${eps}>0), ${price} / ${eps}, "${NOT_MEANINGFUL}")`
+
 function rowOf(cell: CellContext, key: RowKey): number {
   const row = cell.rows[key]
   if (row === undefined) throw new Error(`Row "${key}" is not part of this table`)
@@ -91,6 +98,8 @@ interface ReportedOptions {
   historicalOnly?: boolean
   /** Don't touch the cell when there is no value */
   skipEmpty?: boolean
+  /** Only meaningful above 0, e.g. P/E of a loss: shown as "-" */
+  positive?: boolean
 }
 
 /** Reported ratio or per-share figure (EPS, P/E, ROE, ...) */
@@ -101,7 +110,11 @@ export function reported(key: RowKey, indicator: string, format: string, options
 
     if (!skip) {
       const value = options.fromPercent ? (isPresent(raw) ? Number(raw) / 100 : null) : raw
-      setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, value, { format, border: true })
+      if (options.positive && isPresent(value) && !(Number(value) > 0)) {
+        setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, NOT_MEANINGFUL, { border: true, align: 'right' })
+      } else {
+        setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, value, { format, border: true })
+      }
     }
     border(cell, key)
   }
@@ -194,12 +207,14 @@ export function trailingEps(): Renderer {
 export function quarterlyPe(reportedInForecast: boolean): Renderer {
   return (cell) => {
     const pe = cell.value('pe')
+    const row = rowOf(cell, 'pe')
 
     if (isPresent(pe) && (reportedInForecast || !cell.isForecast)) {
-      setCell(cell.GC, cell.sheet, rowOf(cell, 'pe'), cell.col, pe, { format: '0.00', border: true })
+      if (Number(pe) > 0) setCell(cell.GC, cell.sheet, row, cell.col, pe, { format: '0.00', border: true })
+      else setCell(cell.GC, cell.sheet, row, cell.col, NOT_MEANINGFUL, { border: true, align: 'right' })
     } else if (cell.isForecast && cell.col >= 4) {
-      const epsTtm = addrOf(cell, 'epsTtm')
-      setFormula(cell, 'pe', `IF(${epsTtm}<>0, ${cell.refs.currentPrice} / ${epsTtm}, 0)`, '0.00')
+      setFormula(cell, 'pe', priceToEarnings(cell.refs.currentPrice, addrOf(cell, 'epsTtm')), '0.00')
+      cell.sheet.getCell(row, cell.col).hAlign(cell.GC.Spread.Sheets.HorizontalAlign.right)
     }
     border(cell, 'pe')
   }

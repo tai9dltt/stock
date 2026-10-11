@@ -104,6 +104,16 @@ describe('growth typed for a forecast quarter', () => {
   })
 })
 
+describe('annual totals from quarters', () => {
+  it('keeps the reported figure of an old year with a missing quarter', () => {
+    const state = load('DGW', DGW)
+    delete state.quarterlyData['grossProfit']!['2023']!['Q2']
+    const text = build(state)
+    // C6 = 2023 gross profit: Vietstock's annual figure, not Q1 + Q3 + Q4
+    expect(text.split('\n').find(line => line.startsWith('C6 |'))).toMatch(/^C6 \| 1559496 \|/)
+  })
+})
+
 describe('many forecast years', () => {
   it('moves the input area right of the annual table instead of overwriting it', () => {
     const state = load('DGW', DGW)
@@ -121,7 +131,7 @@ describe('many forecast years', () => {
     expect(layout.inputValueCol).toBe(16)
     expect(lineOf('Q5')).toMatch(/^Q5 \| 25000 \|/)
     // Formulas use the moved inputs: P/E reads the price, forecast growth the assumption
-    expect(lineOf('U32')).toMatch(/^U32 \| =IF\(U31<>0, Q5 \/ U31, 0\)/)
+    expect(lineOf('U32')).toMatch(/^U32 \| =IF\(AND\(ISNUMBER\(U31\), U31>0\), Q5 \/ U31, "-"\)/)
     expect(lineOf('U35')).toMatch(/^U35 \| =Q9 \|/)
     // M5 is now 2033 revenue: only its own column (margins, growth) reads it
     const readers = text.split('\n').filter(line => /\| =.*\bM5\b/.test(line) && !/^M\d+ /.test(line))

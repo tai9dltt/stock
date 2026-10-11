@@ -10,6 +10,7 @@ import {
 import type { AnalysisSheetData, GrowthKind, GrowthOverrides } from '~/spreadsheet/types';
 import { extractYearsFromData } from '~/spreadsheet/years';
 import { defaultShares } from '~/spreadsheet/shares';
+import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
 import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
 
 /**
@@ -308,6 +309,13 @@ export function buildAnalysisState(
   // Years that only have annual data still get (empty) quarter columns
   state.quarterlyData = syncYearsToQuarterly(state.annualData, state.quarterlyData);
 
+  // No gross margin chosen yet (a 0% margin is never a real forecast): the
+  // last 4 reported quarters', where the profile forecasts gross profit
+  const type = detectStockType(symbol, state.annualData, state.quarterlyData);
+  if (!state.grossMargin && STOCK_PROFILES[type].inputNotes.grossMargin.kind !== 'unused') {
+    state.grossMargin = trailingGrossMargin(state.quarterlyData) ?? 0;
+  }
+
   // Shares per quarter are the only per-period figures the user enters;
   // compared with the defaults, which need the crawled equity / BVPS
   // (older saves stored every quarter at the share count of the time)
@@ -315,6 +323,27 @@ export function buildAnalysisState(
   if (overrides) state.quarterlyData.outstandingShares = overrides;
 
   return state;
+}
+
+/**
+ * Gross margin of the last 4 quarters with both revenue and gross profit:
+ * Σ gross profit ÷ Σ revenue, to 4 decimals (12.34%). Null without them.
+ */
+export function trailingGrossMargin(quarterlyData: Record<string, any>): number | null {
+  const quarters: { key: string; revenue: number; grossProfit: number }[] = [];
+  for (const [year, byQuarter] of Object.entries(quarterlyData['netRevenue'] ?? {})) {
+    for (const [quarter, raw] of Object.entries(byQuarter as Record<string, unknown>)) {
+      const gp = quarterlyData['grossProfit']?.[year]?.[quarter];
+      if (raw === null || raw === undefined || gp === null || gp === undefined) continue;
+      const revenue = Number(raw);
+      const grossProfit = Number(gp);
+      if (Number.isFinite(revenue) && Number.isFinite(grossProfit)) quarters.push({ key: `${year}_${quarter}`, revenue, grossProfit });
+    }
+  }
+  const last4 = quarters.sort((a, b) => a.key.localeCompare(b.key)).slice(-4);
+  const revenue = last4.reduce((sum, q) => sum + q.revenue, 0);
+  if (last4.length === 0 || revenue <= 0) return null;
+  return Math.round(last4.reduce((sum, q) => sum + q.grossProfit, 0) / revenue * 10_000) / 10_000;
 }
 
 /**

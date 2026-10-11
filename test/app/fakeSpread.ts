@@ -129,6 +129,9 @@ export function createFakeSheet() {
     getValue(r: number, c: number) {
       return cells.get(`${r},${c}`)?.value
     },
+    getFormula(r: number, c: number) {
+      return cells.get(`${r},${c}`)?.formula
+    },
     setFormula(r: number, c: number, formula: string) {
       const entry = cell(r, c)
       entry.formula = formula

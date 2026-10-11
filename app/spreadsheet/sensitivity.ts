@@ -12,6 +12,7 @@ import type { AnalysisSheetData, InputCellReferences, QuarterlyColumnInfo, RowMa
 import { SPREADJS_COLORS } from '~/constants/spreadJsConstants'
 import { applyBorder, columnName, getCellAddr, getSeparatorBorder, outlineRange, relativeAddr, setCell } from '~/utils/spreadjs'
 import { peLadder } from './peLadder'
+import { NOT_MEANINGFUL } from './cells'
 
 export const SENSITIVITY_TABLE = {
   /** Empty rows between the valuation table and this one */
@@ -79,8 +80,11 @@ export function buildSensitivityTable(
     setCell(GC, sheet, row, 0, growth, { bold: true, border: true, align: 'center', format: '+0%;-0%;0%' })
     sheet.getCell(row, 0).locked(false)
     for (let col = 1; col <= lastCol; col++) {
-      sheet.setFormula(row, col, `${epsAddr} * (1 + $A${row + 1}) * ${columnName(col)}$${peRow + 1}`)
+      // "-" from a loss: no price target
+      sheet.setFormula(row, col,
+        `IF(AND(ISNUMBER(${epsAddr}), ${epsAddr}>0), ${epsAddr} * (1 + $A${row + 1}) * ${columnName(col)}$${peRow + 1}, "${NOT_MEANINGFUL}")`)
       sheet.setFormatter(row, col, '#,##0')
+      sheet.getCell(row, col).hAlign(GC.Spread.Sheets.HorizontalAlign.right)
       applyBorder(GC, sheet, row, col)
     }
   })
