@@ -136,22 +136,6 @@ export function ratio(key: RowKey, numerator: RowKey, denominator: RowKey): Rend
   }
 }
 
-/** Bank return on assets: net profit / total assets, else reported ROA */
-export function assetReturn(): Renderer {
-  return (cell) => {
-    const netProfit = cell.value('netProfit')
-    const totalAssets = cell.value('totalAssets')
-    const roa = cell.value('roa')
-
-    let value: number | null = null
-    if (totalAssets && totalAssets > 0 && netProfit) value = netProfit / totalAssets
-    else if (roa) value = roa / 100
-
-    setCell(cell.GC, cell.sheet, rowOf(cell, 'assetReturn'), cell.col, value, { format: PERCENT, border: true })
-    border(cell, 'assetReturn')
-  }
-}
-
 /** Outstanding shares of the quarter (editable) */
 export function shares(): Renderer {
   return (cell) => {
@@ -186,10 +170,10 @@ function lastFourQuarters(cell: CellContext, key: RowKey): string {
  */
 export function trailingEps(): Renderer {
   return (cell) => {
-    // Vietstock reports TTM EPS under both 'epsTtm' and 'eps'
-    const reportedTtm = [cell.value('epsTtm'), cell.value('eps')].find(isPresent)
+    // 'eps' is Vietstock's "EPS 4 quý" (see QUARTERLY_INDICATOR_SOURCES)
+    const reportedTtm = cell.value('eps')
 
-    if (!cell.isForecast && reportedTtm !== undefined) {
+    if (!cell.isForecast && isPresent(reportedTtm)) {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'epsTtm'), cell.col, reportedTtm, { format: AMOUNT, border: true })
     } else if (cell.col >= 4) {
       const sharesAddr = addrOf(cell, 'shares')

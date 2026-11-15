@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
-  buildAnalysisState, nextForecastYear, overlayAnnualMetrics, overlayQuarterlyMetrics, sharesOverrides, toSavePayload,
-  trailingGrossMargin,
+  buildAnalysisState, nextForecastYear, overlayAnnualMetrics, overlayQuarterlyMetrics, periodRanges, sharesOverrides,
+  toSavePayload, trailingGrossMargin,
 } from '~/composables/useStockDataTransform'
 
 describe('metric overlay priority', () => {
@@ -24,6 +24,11 @@ describe('metric overlay priority', () => {
   it('prefers basic EPS over trailing EPS in annual data', () => {
     const metrics = { EPS_BASIC: { 2024: '3000' }, EPS_TTM: { 2024: '3100', 2023: '2900' } }
     expect(overlayAnnualMetrics(metrics, {}).eps).toEqual({ 2024: 3000, 2023: 2900 })
+  })
+
+  it('reads only trailing EPS in quarterly data, not the basic EPS of one quarter', () => {
+    const metrics = { EPS_BASIC: { '2025_Q1': '700', '2025_Q2': '800' }, EPS_TTM: { '2025_Q1': '3100' } }
+    expect(overlayQuarterlyMetrics(metrics, {}).eps['2025']).toEqual({ Q1: 3100 })
   })
 
   it('overrides saved values and keeps unrelated indicators', () => {
@@ -168,5 +173,46 @@ describe('default gross margin', () => {
     expect(buildAnalysisState('DGW', { ...crawled, analysis: { ...saved, grossMargin: 0 } }, null, '').grossMargin).toBe(0.125)
     // Securities don't use it
     expect(buildAnalysisState('SSI', crawled, null, '').grossMargin).toBe(0)
+  })
+})
+
+describe('period date ranges', () => {
+  const period = (year: number, quarter: number, begin: string | null, end: string | null, forecast = false) => ({
+    year, quarter, source: quarter === 0 ? 'year' : 'quarter', is_forecast: forecast, period_begin: begin, period_end: end,
+  })
+  const CALENDAR = {
+    quarterRanges: ['01/01-31/03', '01/04-30/06', '01/07-30/09', '01/10-31/12'],
+    annualRange: '01/01-31/12',
+  }
+
+  it('is the calendar year without stored dates', () => {
+    expect(periodRanges(undefined)).toEqual(CALENDAR)
+    expect(periodRanges([period(2025, 4, null, null), period(2025, 0, null, null)])).toEqual(CALENDAR)
+  })
+
+  it('follows a fiscal year that starts in October', () => {
+    const ranges = periodRanges([
+      period(2026, 1, '2025-10-01', '2025-12-31'),
+      period(2026, 2, '2026-01-01', '2026-03-31'),
+      period(2025, 3, '2025-04-01', '2025-06-30'),
+      period(2025, 4, '2025-07-01', '2025-09-30'),
+      period(2025, 0, '2024-10-01', '2025-09-30'),
+      // A forecast year is stored with calendar dates
+      period(2026, 0, '2026-01-01', '2026-12-31', true),
+    ])
+    expect(ranges).toEqual({
+      quarterRanges: ['01/10-31/12', '01/01-31/03', '01/04-30/06', '01/07-30/09'],
+      annualRange: '01/10-30/09',
+    })
+  })
+
+  it('ignores dates that are not a whole quarter or year, and takes the latest usable ones', () => {
+    const ranges = periodRanges([
+      period(2026, 1, '2026-01-01', '2026-12-31'), // a year, not a quarter
+      period(2025, 1, '2024-10-01', '2024-12-31'),
+      period(2025, 0, '2025-01-01', '2026-12-31'), // 24 months
+    ])
+    expect(ranges.quarterRanges[0]).toBe('01/10-31/12')
+    expect(ranges.annualRange).toBe('01/01-31/12')
   })
 })

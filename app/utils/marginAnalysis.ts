@@ -7,6 +7,8 @@
  * with margin = NP / Rev. Only meaningful when last year's net profit and revenue are positive.
  */
 
+import { QUARTERS } from '~/spreadsheet/years'
+
 export interface PeriodFigures {
   /** Display label, e.g. "Q1/25" or "2025" */
   label: string
@@ -48,7 +50,7 @@ export function quarterlyFigures(
 
   const result: PeriodFigures[] = []
   for (const year of [...years].sort()) {
-    for (const q of ['Q1', 'Q2', 'Q3', 'Q4']) {
+    for (const q of QUARTERS) {
       const revenue = num(quarterlyData[revenueKey]?.[year]?.[q])
       const netProfit = num(quarterlyData.netProfit?.[year]?.[q])
       if (revenue === null && netProfit === null) continue

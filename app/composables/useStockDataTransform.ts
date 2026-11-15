@@ -4,11 +4,16 @@
  */
 
 import {
-  QUARTERLY_INDICATOR_SOURCES,
+  ANNUAL_DATE_RANGE,
   ANNUAL_INDICATOR_SOURCES,
+  INPUT_FIELDS,
+  inputRow,
+  QUARTER_DATE_RANGES,
+  QUARTERLY_INDICATOR_SOURCES,
 } from '~/constants/spreadJsConstants';
+import type { InputFieldName } from '~/constants/spreadJsConstants';
 import type { AnalysisSheetData, GrowthKind, GrowthOverrides } from '~/spreadsheet/types';
-import { extractYearsFromData } from '~/spreadsheet/years';
+import { extractYearsFromData, QUARTERS } from '~/spreadsheet/years';
 import { defaultShares } from '~/spreadsheet/shares';
 import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
 import type { SaveAnalysisPayload, StockData, TradingInfo } from '~/types';
@@ -36,6 +41,49 @@ export function processForecasts(periods: any[]): {
   return {
     forecastYears: Array.from(fYears),
     forecastQuarters: Array.from(fQuarters),
+  };
+}
+
+type Period = NonNullable<StockData['periods']>[number];
+
+/** "2025-10-01" → "01/10" */
+const dayMonth = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
+
+/**
+ * "dd/mm-dd/mm" of a stored period, if its dates are whole months spanning
+ * `months` (3 for a quarter, 12 for a year); null for missing or odd dates
+ */
+function rangeOf(period: Period, months: number): string | null {
+  const { period_begin: begin, period_end: end } = period;
+  if (!begin || !end) return null;
+  const [beginYear, beginMonth, beginDay] = begin.slice(0, 10).split('-').map(Number) as [number, number, number];
+  const [endYear, endMonth, endDay] = end.slice(0, 10).split('-').map(Number) as [number, number, number];
+  const lastDay = new Date(Date.UTC(endYear, endMonth, 0)).getUTCDate();
+  const span = (endYear - beginYear) * 12 + endMonth - beginMonth + 1;
+  if (beginDay !== 1 || endDay !== lastDay || span !== months) return null;
+  return `${dayMonth(begin)}-${dayMonth(end)}`;
+}
+
+/**
+ * Date ranges shown in the period headers: those of the latest reported
+ * quarters and year, so a fiscal year that is not the calendar year (HSG:
+ * October to September) is labelled as the company reports it. Calendar
+ * ranges where the stock has no usable dates.
+ */
+export function periodRanges(periods: Period[] | undefined): { quarterRanges: string[]; annualRange: string } {
+  const newestFirst = [...(periods ?? [])].sort((a, b) => b.year - a.year || b.quarter - a.quarter);
+  const latest = (isWanted: (p: Period) => boolean, months: number) => {
+    for (const period of newestFirst) {
+      const range = isWanted(period) ? rangeOf(period, months) : null;
+      if (range) return range;
+    }
+    return null;
+  };
+  return {
+    quarterRanges: QUARTER_DATE_RANGES.map((calendar, i) =>
+      latest(p => p.source === 'quarter' && p.quarter === i + 1, 3) ?? calendar),
+    // Forecast years are stored with calendar dates
+    annualRange: latest(p => p.source === 'year' && !p.is_forecast, 12) ?? ANNUAL_DATE_RANGE,
   };
 }
 
@@ -197,33 +245,11 @@ export function extractPeValues(
 /**
  * Read input values from spreadsheet input section
  */
-export function extractInputValues(
-  sheet: any,
-  inputRowStart: number,
-  valueCol: number
-): {
-  currentPrice: number;
-  outstandingShares: number;
-  max52W: number;
-  min52W: number;
-  revenueGrowth: number;
-  grossMargin: number;
-  netProfitGrowth: number;
-} {
-  const getValue = (row: number): number => {
-    const val = sheet.getValue(row, valueCol);
-    return val !== null && val !== undefined ? Number(val) || 0 : 0;
-  };
-
-  return {
-    currentPrice: getValue(inputRowStart + 1),
-    outstandingShares: getValue(inputRowStart + 2),
-    max52W: getValue(inputRowStart + 3),
-    min52W: getValue(inputRowStart + 4),
-    revenueGrowth: getValue(inputRowStart + 5),
-    grossMargin: getValue(inputRowStart + 6),
-    netProfitGrowth: getValue(inputRowStart + 7),
-  };
+export function extractInputValues(sheet: any, valueCol: number): Record<InputFieldName, number> {
+  return Object.fromEntries(INPUT_FIELDS.map(field => [
+    field,
+    Number(sheet.getValue(inputRow(field), valueCol)) || 0,
+  ])) as Record<InputFieldName, number>;
 }
 
 // ============ PAGE STATE ============
@@ -238,6 +264,8 @@ export function createEmptyAnalysisState(symbol: string): AnalysisSheetData {
     peScenarios: [],
     growthOverrides: {},
     sensitivityGrowths: [],
+    quarterRanges: [...QUARTER_DATE_RANGES],
+    annualRange: ANNUAL_DATE_RANGE,
     tradingDate: '',
     currentPrice: 0,
     outstandingShares: 0,
@@ -268,6 +296,7 @@ export function buildAnalysisState(
     const forecasts = processForecasts(data.periods);
     state.forecastYears = forecasts.forecastYears;
     state.forecastQuarters = forecasts.forecastQuarters;
+    Object.assign(state, periodRanges(data.periods));
   }
 
   const snapshot = data.tradingSnapshot;
@@ -368,7 +397,7 @@ export function nextForecastYear(
 export function withForecastYearQuarters(forecastYears: string[], forecastQuarters: string[]): string[] {
   const result = [...forecastQuarters];
   for (const year of forecastYears) {
-    for (const q of ['Q1', 'Q2', 'Q3', 'Q4']) {
+    for (const q of QUARTERS) {
       if (!result.includes(`${year}_${q}`)) result.push(`${year}_${q}`);
     }
   }

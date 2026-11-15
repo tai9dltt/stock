@@ -109,8 +109,8 @@ describe('annual totals from quarters', () => {
     const state = load('DGW', DGW)
     delete state.quarterlyData['grossProfit']!['2023']!['Q2']
     const text = build(state)
-    // C6 = 2023 gross profit: Vietstock's annual figure, not Q1 + Q3 + Q4
-    expect(text.split('\n').find(line => line.startsWith('C6 |'))).toMatch(/^C6 \| 1559496 \|/)
+    // D6 = 2023 gross profit: Vietstock's annual figure, not Q1 + Q3 + Q4
+    expect(text.split('\n').find(line => line.startsWith('D6 |'))).toMatch(/^D6 \| 1559496 \|/)
   })
 })
 
@@ -126,7 +126,7 @@ describe('missing quarters', () => {
     expect(lineOf(text, 'I22')).toMatch(/^I22 \| "Q4\\n/)
     expect(lineOf(text, 'I23')).not.toMatch(/\| =/)
     // The 2023 annual figures stay Vietstock's
-    expect(lineOf(text, 'C5')).toMatch(/^C5 \| 18817475 \|/)
+    expect(lineOf(text, 'D5')).toMatch(/^D5 \| 18817475 \|/)
   })
 })
 
@@ -151,17 +151,17 @@ describe('many forecast years', () => {
     const text = serialize()
     const lineOf = (addr: string) => text.split('\n').find(line => line.startsWith(`${addr} |`))
 
-    // 2022–2033 fill B..M; one empty column, the labels from O, the values in Q
-    expect(lineOf('M4')).toMatch(/^M4 \| "2033 \(F\)/)
-    expect(lineOf('N5')).toBeUndefined()
-    expect(lineOf('O5')).toMatch(/^O5 \| "Giá cổ phiếu"/)
-    expect(layout.inputValueCol).toBe(16)
-    expect(lineOf('Q5')).toMatch(/^Q5 \| 25000 \|/)
+    // 2021–2033 fill B..N; one empty column, the labels from P, the values in R
+    expect(lineOf('N4')).toMatch(/^N4 \| "2033 \(F\)/)
+    expect(lineOf('O5')).toBeUndefined()
+    expect(lineOf('P5')).toMatch(/^P5 \| "Giá cổ phiếu"/)
+    expect(layout.inputValueCol).toBe(17)
+    expect(lineOf('R5')).toMatch(/^R5 \| 25000 \|/)
     // Formulas use the moved inputs: P/E reads the price, forecast growth the assumption
-    expect(lineOf('U32')).toMatch(/^U32 \| =IF\(AND\(ISNUMBER\(U31\), U31>0\), Q5 \/ U31, "-"\)/)
-    expect(lineOf('U35')).toMatch(/^U35 \| =Q9 \|/)
-    // M5 is now 2033 revenue: only its own column (margins, growth) reads it
-    const readers = text.split('\n').filter(line => /\| =.*\bM5\b/.test(line) && !/^M\d+ /.test(line))
+    expect(lineOf('U32')).toMatch(/^U32 \| =IF\(AND\(ISNUMBER\(U31\), U31>0\), R5 \/ U31, "-"\)/)
+    expect(lineOf('U35')).toMatch(/^U35 \| =R9 \|/)
+    // N5 is now 2033 revenue: only its own column (margins, growth) reads it
+    const readers = text.split('\n').filter(line => /\| =.*\bN5\b/.test(line) && !/^N\d+ /.test(line))
     expect(readers).toEqual([])
   })
 })

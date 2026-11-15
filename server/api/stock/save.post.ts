@@ -71,8 +71,9 @@ export default defineEventHandler(async (event) => {
           'SELECT assumptions, forecast FROM forecast_snapshots WHERE company_id = ? ORDER BY created_at DESC, id DESC LIMIT 1',
           [company.id]
         )
+        // The price moves every day: alone it is no new forecast
         const unchanged = last[0]
-          && canonical(last[0].assumptions) === canonical(assumptions)
+          && canonical(withoutPrice(last[0].assumptions)) === canonical(withoutPrice(assumptions))
           && canonical(last[0].forecast) === canonical(body.forecast)
         if (!unchanged) {
           await conn.query(
@@ -89,6 +90,14 @@ export default defineEventHandler(async (event) => {
 
   return { success: true, message: `Stock analysis for ${body.symbol} saved successfully` }
 })
+
+/** Assumptions of a journal entry without the market price of the day */
+function withoutPrice(assumptions: unknown): unknown {
+  const parsed = typeof assumptions === 'string' ? JSON.parse(assumptions) : assumptions
+  if (!parsed || typeof parsed !== 'object') return parsed
+  const { currentPrice: _currentPrice, ...others } = parsed as Record<string, unknown>
+  return others
+}
 
 /** JSON with sorted keys, so MySQL's reordering of JSON keys does not count as a change */
 function canonical(value: unknown): string {

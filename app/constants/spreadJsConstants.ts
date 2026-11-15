@@ -12,7 +12,7 @@ export const SPREADJS_COLORS = {
   FORECAST: '#FCE7F3', // forecast period headers (F)
   FORECAST_TEXT: '#9D174D', // text on forecast headers and forecast notes
   INPUT: '#FEF9C3', // editable inputs
-  DISPLAY: '#F1F5F9',
+  DISPLAY: '#F1F5F9', // read-only inputs
   /** Every other row of the tables, to follow a row across many columns */
   STRIPE: '#EEF2F6',
   /** Lines between cells of a table */
@@ -20,7 +20,7 @@ export const SPREADJS_COLORS = {
   /** Table frame, under headers, between years */
   FRAME: '#64748B',
   /** Outline of the same period last year as the selected cell */
-  COMPARISON: '#F59E0B', // read-only inputs
+  COMPARISON: '#F59E0B',
   DEFAULT_HIGHLIGHT: '#FEF3C7', // default P/E row in the valuation table
   TEXT_RED: '#B91C1C', // emphasized row labels
   TITLE: '#0F172A',
@@ -92,6 +92,8 @@ export const VALUATION_TABLE = {
 };
 
 // ============ DATE RANGES ============
+// Calendar fiscal year; a stock with its own period dates overrides them (see periodRanges)
+export const ANNUAL_DATE_RANGE = '01/01-31/12';
 export const QUARTER_DATE_RANGES = [
   '01/01-31/03',
   '01/04-30/06',
@@ -108,7 +110,6 @@ const SHARED_INDICATOR_SOURCES: Record<string, string[]> = {
   operatingProfit: ['OPERATING_PROFIT'],
   // Profit attributable to the parent company; total profit after tax as fallback
   netProfit: ['NET_PROFIT', 'PROFIT_AFTER_TAX'],
-  eps: ['EPS_BASIC', 'EPS_TTM'],
   pe: ['PE'],
   roe: ['ROE'],
   roa: ['ROA'],
@@ -118,15 +119,13 @@ const SHARED_INDICATOR_SOURCES: Record<string, string[]> = {
   // Bank-specific
   netInterestIncome: ['NET_INTEREST_INCOME'],
   operatingExpenses: ['OPERATING_EXPENSES'],
-  totalOperatingIncome: ['TOTAL_OPERATING_INCOME'],
-  totalNetProfit: ['TOTAL_NET_PROFIT'],
 };
 
 export const QUARTERLY_INDICATOR_SOURCES: Record<string, string[]> = {
   ...SHARED_INDICATOR_SOURCES,
-  netMargin: ['ROS'],
-  currentAssets: ['CURRENT_ASSETS'],
-  shortTermLiabilities: ['SHORT_TERM_LIABILITIES'],
+  // Trailing 4-quarter EPS: P/E, price targets and the summary read it as such,
+  // so a quarter's own basic EPS must never stand in for it
+  eps: ['EPS_TTM'],
   equity: ['EQUITY'],
   minorityInterest: ['MINORITY_INTEREST'],
   // Financial ratios (Vietstock "Chỉ số tài chính"), in % or times
@@ -143,5 +142,6 @@ export const QUARTERLY_INDICATOR_SOURCES: Record<string, string[]> = {
 
 export const ANNUAL_INDICATOR_SOURCES: Record<string, string[]> = {
   ...SHARED_INDICATOR_SOURCES,
+  eps: ['EPS_BASIC', 'EPS_TTM'],
   ros: ['ROS'],
 };

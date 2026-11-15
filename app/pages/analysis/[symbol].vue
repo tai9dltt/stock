@@ -4,9 +4,9 @@ import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
 import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
 import type { InputFieldName } from '~/constants/spreadJsConstants';
-import { sharesOverrides, withForecastYearQuarters } from '~/composables/useStockDataTransform';
+import { sharesOverrides, withForecastYearQuarters, type TradingPlan } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
-import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
+import { useStockAnalysis } from '~/composables/useStockAnalysis';
 import { preloadGoogleCharts } from '~/utils/googleCharts';
 import { stockSummary } from '~/utils/stockSummary';
 

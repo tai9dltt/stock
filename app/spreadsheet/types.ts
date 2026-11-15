@@ -42,7 +42,6 @@ export type RowKey =
   | 'grossMargin'
   | 'netMargin'
   | 'netProfitMargin'
-  | 'assetReturn'
   | 'eps'
   | 'epsTtm'
   | 'pe'
@@ -128,6 +127,9 @@ export interface AnalysisSheetData {
   growthOverrides: GrowthOverrides
   /** Growth rows typed into the sensitivity table (empty: the defaults); kept for the session, not saved */
   sensitivityGrowths: number[]
+  /** "dd/mm-dd/mm" of Q1..Q4 and of the year, as the company reports them (its fiscal year) */
+  quarterRanges: string[]
+  annualRange: string
   tradingDate: string
   currentPrice: number
   outstandingShares: number

@@ -7,7 +7,7 @@
 
 import type { InputNote, RowSpec, StockProfile, StockType } from './types'
 import {
-  amount, assetReturn, forecastGrossProfit, growth, projectedAmount, quarterlyGrowth, quarterlyMargin, quarterlyEps, quarterlyPe,
+  amount, forecastGrossProfit, growth, projectedAmount, quarterlyGrowth, quarterlyMargin, quarterlyEps, quarterlyPe,
   ratio, reported, shares, trailingEps,
 } from './cells'
 
@@ -135,7 +135,6 @@ const bank: StockProfile = {
     { key: 'operatingExpenses', label: 'Chi phí hoạt động', render: amount('operatingExpenses', 'operatingExpenses') },
     { key: 'netProfit', label: 'LNST', render: amount('netProfit', 'netProfit') },
     { key: 'netProfitMargin', label: 'Biên LN ròng (%)', render: ratio('netProfitMargin', 'netProfit', 'revenue') },
-    { key: 'assetReturn', label: 'ROA (%)', render: assetReturn() },
     { key: 'eps', label: 'EPS (Vietstock)', render: reported('eps', 'eps', AMOUNT, { historicalOnly: true }) },
     { key: 'pe', label: 'P/E (Vietstock)', render: reported('pe', 'pe', '0.00', { historicalOnly: true, positive: true }) },
     { key: 'roe', label: 'ROE (%)', render: reported('roe', 'roe', PERCENT, { fromPercent: true }) },
@@ -155,7 +154,6 @@ const bank: StockProfile = {
     },
     { key: 'shares', label: 'KL CP lưu hành', render: shares() },
     { key: 'netProfitMargin', label: 'Biên LN ròng (%)', render: ratio('netProfitMargin', 'netProfit', 'revenue') },
-    { key: 'assetReturn', label: 'ROA (%)', render: assetReturn() },
     ...quarterlyPerShareRows({ peReportedInForecast: true, percentReturns: true }),
     quarterlyGrowthRow('revGrowth', 'TT Thu nhập lãi (%)', 'revenue'),
     quarterlyGrowthRow('profitGrowth', 'TT LNST (%)', 'netProfit'),

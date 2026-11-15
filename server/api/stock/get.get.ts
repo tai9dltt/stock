@@ -20,8 +20,13 @@ export default defineEventHandler(async (event) => {
     }
 
     // 2. Get all periods for this company
-    const periods = await query<{ id: number; year: number; quarter: number; source: string; is_forecast: number }>(
-      `SELECT id, year, quarter, source, is_forecast
+    const periods = await query<{
+      id: number; year: number; quarter: number; source: string; is_forecast: number
+      period_begin: string | null; period_end: string | null
+    }>(
+      `SELECT id, year, quarter, source, is_forecast,
+              DATE_FORMAT(period_begin, '%Y-%m-%d') AS period_begin,
+              DATE_FORMAT(period_end, '%Y-%m-%d') AS period_end
        FROM periods
        WHERE company_id = ?
        ORDER BY year DESC, quarter DESC`,

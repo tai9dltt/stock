@@ -21,29 +21,14 @@ export default defineEventHandler(async (event) => {
 
       const companyId = companies[0].id;
 
-      // Delete stock_analysis (CASCADE will handle related data)
+      // The user's inputs only: crawled figures and price snapshots are kept,
+      // so opening the stock again shows them without a new crawl
       await connection.query(
         'DELETE FROM stock_analysis WHERE company_id = ?',
         [companyId]
       );
       // and the forecast journal
       await connection.query('DELETE FROM forecast_snapshots WHERE company_id = ?', [companyId]);
-
-      // Check if there are any remaining references
-      const [periods] = await connection.query<any[]>(
-        'SELECT COUNT(*) as count FROM periods WHERE company_id = ?',
-        [companyId]
-      );
-
-      const [snapshots] = await connection.query<any[]>(
-        'SELECT COUNT(*) as count FROM trading_snapshots WHERE company_id = ?',
-        [companyId]
-      );
-
-      // If no other data exists, delete the company
-      if (periods[0].count === 0 && snapshots[0].count === 0) {
-        await connection.query('DELETE FROM companies WHERE id = ?', [companyId]);
-      }
 
       return { symbol: symbol.toUpperCase() };
     });

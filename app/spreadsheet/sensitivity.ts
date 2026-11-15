@@ -71,7 +71,7 @@ export function buildSensitivityTable(
   ladder.forEach(({ value, label, current }, i) => {
     setCell(GC, sheet, labelRow, 1 + i, label, { border: true, bg: SPREADJS_COLORS.HEADER, align: 'center', color: SPREADJS_COLORS.NOTE })
     setCell(GC, sheet, peRow, 1 + i, value, { ...HEADER, align: 'center', format: '0.00' })
-    if (current) sheet.setFormula(peRow, 1 + i, `IF(${epsAddr}>0, ${refs.currentPrice} / ${epsAddr}, "")`)
+    if (current) sheet.setFormula(peRow, 1 + i, `IF(AND(ISNUMBER(${epsAddr}), ${epsAddr}>0), ${refs.currentPrice} / ${epsAddr}, "")`)
   })
 
   // Growth rows, editable (the values typed stay over rebuilds); each cell

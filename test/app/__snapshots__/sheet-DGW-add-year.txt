@@ -4,12 +4,13 @@ C1 | "TẦM SOÁT CỔ PHIẾU" | {"font":"bold 11pt Calibri","foreColor":"#0F17
 E1 | "NGÀY" | {"font":"bold 11pt Calibri"}
 F1 | date:2026-10-02T03:00:00.000Z | {"formatter":"dd/mm/yyyy"}
 A4 | "Chỉ số" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
-B4 | "2022\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-C4 | "2023\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-D4 | "2024\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-E4 | "2025\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
-F4 | "2026 (F)\n01/01-31/12" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
-G4 | "2027 (F)\n01/01-31/12" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"undefined","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+B4 | "2021\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+C4 | "2022\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+D4 | "2023\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+E4 | "2024\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+F4 | "2025\n01/01-31/12" | {"backColor":"#F1F5F9","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
+G4 | "2026 (F)\n01/01-31/12" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
+H4 | "2027 (F)\n01/01-31/12" | {"backColor":"#FCE7F3","borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"undefined","font":"bold 11pt Calibri","foreColor":"#9D174D","hAlign":"center","wordWrap":true}
 K4 | "Ngày: 02/10/2026" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"left"}
 L4 | {"borderBottom":"undefined","borderTop":"undefined"}
 M4 | {"borderBottom":"undefined","borderTop":"undefined"}
@@ -17,12 +18,13 @@ N4 | "Loại số liệu" | {"backColor":"#E2E8F0","borderBottom":"undefined","b
 O4 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"undefined"}
 P4 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"undefined"}
 A5 | "Doanh thu thuần" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B5 | 22028135 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-C5 | 18817475 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-D5 | 22078832 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-E5 | 26631546 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F5 | =IF(COUNT(R23, S23, T23, U23)=4, R23 + S23 + T23 + U23, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G5 | =IF(COUNT(V23, W23, X23, Y23)=4, V23 + W23 + X23 + Y23, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+B5 | 20922813 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C5 | 22028135 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D5 | 18817475 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E5 | 22078832 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F5 | 26631546 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G5 | =IF(COUNT(R23, S23, T23, U23)=4, R23 + S23 + T23 + U23, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+H5 | =IF(COUNT(V23, W23, X23, Y23)=4, V23 + W23 + X23 + Y23, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 K5 | "Giá cổ phiếu" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M5 | 25000 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -30,12 +32,13 @@ N5 | "Thực tế · dùng tính P/E" | {"borderBottom":"thin","borderLeft":"thi
 O5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P5 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
 A6 | "Lợi nhuận gộp" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B6 | =IF(COUNT(B24, C24, D24, E24)=4, B24 + C24 + D24 + E24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-C6 | =IF(COUNT(F24, G24, H24, I24)=4, F24 + G24 + H24 + I24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-D6 | =IF(COUNT(J24, K24, L24, M24)=4, J24 + K24 + L24 + M24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-E6 | =IF(COUNT(N24, O24, P24, Q24)=4, N24 + O24 + P24 + Q24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F6 | =IF(COUNT(R24, S24, T24, U24)=4, R24 + S24 + T24 + U24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G6 | =IF(COUNT(V24, W24, X24, Y24)=4, V24 + W24 + X24 + Y24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+B6 | 1507994 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C6 | =IF(COUNT(B24, C24, D24, E24)=4, B24 + C24 + D24 + E24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D6 | =IF(COUNT(F24, G24, H24, I24)=4, F24 + G24 + H24 + I24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E6 | =IF(COUNT(J24, K24, L24, M24)=4, J24 + K24 + L24 + M24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F6 | =IF(COUNT(N24, O24, P24, Q24)=4, N24 + O24 + P24 + Q24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G6 | =IF(COUNT(R24, S24, T24, U24)=4, R24 + S24 + T24 + U24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+H6 | =IF(COUNT(V24, W24, X24, Y24)=4, V24 + W24 + X24 + Y24, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 K6 | "Số lượng CP lưu hành" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M6 | 500000000 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0","locked":false}
@@ -43,12 +46,13 @@ N6 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","bor
 O6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
 A7 | "LN từ HĐKD" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B7 | 868058 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-C7 | 469338 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-D7 | 556489 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-E7 | 667780 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+B7 | 821392 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C7 | 868058 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D7 | 469338 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E7 | 556489 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F7 | 667780 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+H7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 K7 | "Giá cao nhất 52T" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M7 | 32000 | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -56,12 +60,13 @@ N7 | "Thực tế (Vietstock)" | {"borderBottom":"thin","borderLeft":"thin","bor
 O7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P7 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
 A8 | "LNST công ty mẹ" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B8 | 683783 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-C8 | 354392 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-D8 | 443877 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-E8 | 547331 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F8 | =IF(COUNT(R27, S27, T27, U27)=4, R27 + S27 + T27 + U27, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G8 | =IF(COUNT(V27, W27, X27, Y27)=4, V27 + W27 + X27 + Y27, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+B8 | 654373 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C8 | 683783 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D8 | 354392 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E8 | 443877 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F8 | 547331 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G8 | =IF(COUNT(R27, S27, T27, U27)=4, R27 + S27 + T27 + U27, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+H8 | =IF(COUNT(V27, W27, X27, Y27)=4, V27 + W27 + X27 + Y27, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 K8 | "Giá thấp nhất 52T" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L8 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M8 | 20000 | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
@@ -74,7 +79,8 @@ C9 | =IF(AND(ISNUMBER(C6), ISNUMBER(C5), C5<>0), C6/C5, "") | {"borderBottom":"t
 D9 | =IF(AND(ISNUMBER(D6), ISNUMBER(D5), D5<>0), D6/D5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E9 | =IF(AND(ISNUMBER(E6), ISNUMBER(E5), E5<>0), E6/E5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F9 | =IF(AND(ISNUMBER(F6), ISNUMBER(F5), F5<>0), F6/F5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G9 | =IF(AND(ISNUMBER(G6), ISNUMBER(G5), G5<>0), G6/G5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+G9 | =IF(AND(ISNUMBER(G6), ISNUMBER(G5), G5<>0), G6/G5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H9 | =IF(AND(ISNUMBER(H6), ISNUMBER(H5), H5<>0), H6/H5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 K9 | "% TT Doanh thu" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L9 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M9 | 0 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
@@ -87,7 +93,8 @@ C10 | =IF(AND(ISNUMBER(C8), ISNUMBER(C5), C5<>0), C8/C5, "") | {"backColor":"#EE
 D10 | =IF(AND(ISNUMBER(D8), ISNUMBER(D5), D5<>0), D8/D5, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E10 | =IF(AND(ISNUMBER(E8), ISNUMBER(E5), E5<>0), E8/E5, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F10 | =IF(AND(ISNUMBER(F8), ISNUMBER(F5), F5<>0), F8/F5, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G10 | =IF(AND(ISNUMBER(G8), ISNUMBER(G5), G5<>0), G8/G5, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+G10 | =IF(AND(ISNUMBER(G8), ISNUMBER(G5), G5<>0), G8/G5, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H10 | =IF(AND(ISNUMBER(H8), ISNUMBER(H5), H5<>0), H8/H5, "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 K10 | "% Biên LN gộp" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M10 | 0.0992 | {"backColor":"#FEF9C3","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
@@ -95,12 +102,13 @@ N10 | "Dự phóng · sửa riêng ở dòng Biên LN gộp" | {"borderBottom":"
 O10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P10 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
 A11 | "EPS (Vietstock)" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B11 | 5421 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-C11 | 2123 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-D11 | 2441 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-E11 | 2494 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-F11 | =IF(AND(ISNUMBER(F8), N(AVERAGE(R28:U28))<>0), F8 * 1000000 / AVERAGE(R28:U28), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
-G11 | =IF(AND(ISNUMBER(G8), N(AVERAGE(V28:Y28))<>0), G8 * 1000000 / AVERAGE(V28:Y28), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
+B11 | 11135 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+C11 | 5421 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+D11 | 2123 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+E11 | 2441 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+F11 | 2494 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+G11 | =IF(AND(ISNUMBER(G8), N(AVERAGE(R28:U28))<>0), G8 * 1000000 / AVERAGE(R28:U28), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"#,##0"}
+H11 | =IF(AND(ISNUMBER(H8), N(AVERAGE(V28:Y28))<>0), H8 * 1000000 / AVERAGE(V28:Y28), "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"#,##0"}
 K11 | "% TT LNST" | {"borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"left"}
 L11 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 M11 | 0 | {"backColor":"#FEF9C3","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%","locked":false}
@@ -108,47 +116,53 @@ N11 | "Dự phóng · YoY, sửa riêng ở dòng TT" | {"borderBottom":"undefin
 O11 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 P11 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin"}
 A12 | "P/E (Vietstock)" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B12 | 6.96 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-C12 | 24.63 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-D12 | 16.47 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-E12 | 15.64 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-F12 | =IF(AND(ISNUMBER(F11), F11>0), M5 / F11, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"right"}
-G12 | =IF(AND(ISNUMBER(G11), G11>0), M5 / G11, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00","hAlign":"right"}
+B12 | 11.13 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+C12 | 6.96 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+D12 | 24.63 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+E12 | 16.47 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+F12 | 15.64 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+G12 | =IF(AND(ISNUMBER(G11), G11>0), M5 / G11, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00","hAlign":"right"}
+H12 | =IF(AND(ISNUMBER(H11), H11>0), M5 / H11, "-") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00","hAlign":"right"}
 A13 | "ROS (%)" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B13 | 0.031 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-C13 | 0.019299999999999998 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-D13 | 0.0203 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-E13 | 0.0208 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-F13 | =IF(AND(ISNUMBER(F8), ISNUMBER(F5), F5<>0), F8 / F5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G13 | =IF(AND(ISNUMBER(G8), ISNUMBER(G5), G5<>0), G8 / G5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+B13 | 0.0313 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+C13 | 0.031 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+D13 | 0.019299999999999998 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+E13 | 0.0203 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+F13 | 0.0208 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+G13 | =IF(AND(ISNUMBER(G8), ISNUMBER(G5), G5<>0), G8 / G5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H13 | =IF(AND(ISNUMBER(H8), ISNUMBER(H5), H5<>0), H8 / H5, "") | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 A14 | "ROE (%)" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B14 | 32.77 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-C14 | 14.21 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-D14 | 15.94 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-E14 | 17.09 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-F14 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-G14 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00"}
+B14 | 44.57 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+C14 | 32.77 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+D14 | 14.21 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+E14 | 15.94 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+F14 | 17.09 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+G14 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+H14 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00"}
 A15 | "ROA (%)" | {"borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin"}
-B15 | 10.6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-C15 | 5.13 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-D15 | 5.56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-E15 | 5.54 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-F15 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
-G15 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00"}
+B15 | 13.61 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+C15 | 10.6 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+D15 | 5.13 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+E15 | 5.56 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+F15 | 5.54 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+G15 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00"}
+H15 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00"}
 A16 | "TT tăng trưởng DT" | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B16 | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 C16 | =IF(AND(ISNUMBER(C5), ISNUMBER(B5), B5<>0), (C5-B5)/ABS(B5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 D16 | =IF(AND(ISNUMBER(D5), ISNUMBER(C5), C5<>0), (D5-C5)/ABS(C5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E16 | =IF(AND(ISNUMBER(E5), ISNUMBER(D5), D5<>0), (E5-D5)/ABS(D5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F16 | =IF(AND(ISNUMBER(F5), ISNUMBER(E5), E5<>0), (F5-E5)/ABS(E5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G16 | =IF(AND(ISNUMBER(G5), ISNUMBER(F5), F5<>0), (G5-F5)/ABS(F5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+G16 | =IF(AND(ISNUMBER(G5), ISNUMBER(F5), F5<>0), (G5-F5)/ABS(F5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H16 | =IF(AND(ISNUMBER(H5), ISNUMBER(G5), G5<>0), (H5-G5)/ABS(G5), "") | {"backColor":"#EEF2F6","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 A17 | "TT tăng trưởng LNST" | {"borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","foreColor":"#B91C1C"}
 B17 | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin"}
 C17 | =IF(AND(ISNUMBER(C8), ISNUMBER(B8), B8<>0), (C8-B8)/ABS(B8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 D17 | =IF(AND(ISNUMBER(D8), ISNUMBER(C8), C8<>0), (D8-C8)/ABS(C8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 E17 | =IF(AND(ISNUMBER(E8), ISNUMBER(D8), D8<>0), (E8-D8)/ABS(D8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
 F17 | =IF(AND(ISNUMBER(F8), ISNUMBER(E8), E8<>0), (F8-E8)/ABS(E8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
-G17 | =IF(AND(ISNUMBER(G8), ISNUMBER(F8), F8<>0), (G8-F8)/ABS(F8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
+G17 | =IF(AND(ISNUMBER(G8), ISNUMBER(F8), F8<>0), (G8-F8)/ABS(F8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","formatter":"0.00%"}
+H17 | =IF(AND(ISNUMBER(H8), ISNUMBER(G8), G8<>0), (H8-G8)/ABS(G8), "") | {"borderBottom":"undefined","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","formatter":"0.00%"}
 A21 | "Niên độ \nChỉ số" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"undefined","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center","wordWrap":true}
 B21 | "2022" | {"backColor":"#F1F5F9","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined","font":"bold 11pt Calibri","hAlign":"center"}
 C21 | {"borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"undefined"}
@@ -864,7 +878,7 @@ E55 | "trung vị" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"
 F55 | "vùng cao" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"thin","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
 G55 | "cao nhất" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
 A56 | "TT LNST \\ P/E" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
-B56 | =IF(S31>0, M5 / S31, "") | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+B56 | =IF(AND(ISNUMBER(S31), S31>0), M5 / S31, "") | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
 C56 | 6.96 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
 D56 | 12.24 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
 E56 | 15.82 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
@@ -980,7 +994,7 @@ cf F26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1
 cf F29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf F35 formula =AND(ISNUMBER(B35), B35<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B35), B35>0.2) {"backColor":"#C6EFCE"}
 cf F36 formula =AND(ISNUMBER(B36), B36<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B36), B36>0.2) {"backColor":"#C6EFCE"}
-cf F4 formula =TRUE {"backColor":"#FCE7F3"}
+cf F4 formula =TRUE {"backColor":"#F1F5F9"}
 cf F40 formula =TRUE {"backColor":"#F1F5F9"}
 cf F41 formula =TRUE {"backColor":"#F1F5F9"}
 cf F55 formula =TRUE {"backColor":"#E2E8F0"}
@@ -1006,11 +1020,14 @@ cf G58 formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)<M5) {"backColor":"#FFC7CE
 cf G59 formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)>=M5, ROUND(B57, 0)<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf G60 formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)>=M5, ROUND(B57, 0)<M5 * 1.2) {"backColor":"#FEF3C7"}
 cf G61 formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)<M5) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)>=M5 * 1.2) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(B57), M5>0, ROUND(B57, 0)>=M5, ROUND(B57, 0)<M5 * 1.2) {"backColor":"#FEF3C7"}
+cf H16 formula =AND(ISNUMBER(B16), B16<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B16), B16>0.2) {"backColor":"#C6EFCE"}
+cf H17 formula =AND(ISNUMBER(B17), B17<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B17), B17>0.2) {"backColor":"#C6EFCE"}
 cf H22 formula =TRUE {"backColor":"#F1F5F9"}
 cf H26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"}
 cf H29 formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, (F29-B29)/ABS(B29)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F29), ISNUMBER(B29), B29<>0, F29<B29) {"backColor":"#FFC7CE"}
 cf H35 formula =AND(ISNUMBER(B35), B35<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B35), B35>0.2) {"backColor":"#C6EFCE"}
 cf H36 formula =AND(ISNUMBER(B36), B36<0) {"backColor":"#FFC7CE"} ; formula =AND(ISNUMBER(B36), B36>0.2) {"backColor":"#C6EFCE"}
+cf H4 formula =TRUE {"backColor":"#FCE7F3"}
 cf H41 formula =TRUE {"backColor":"#F1F5F9"}
 cf I22 formula =TRUE {"backColor":"#F1F5F9"}
 cf I26 formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, (F26-B26)/ABS(B26)>0.1) {"backColor":"#C6EFCE"} ; formula =AND(ISNUMBER(F26), ISNUMBER(B26), B26<>0, F26<B26) {"backColor":"#FFC7CE"}

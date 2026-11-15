@@ -317,7 +317,7 @@ export function useAnalysisSheet() {
     const sheet = spread.value.getActiveSheet();
 
     const edits: SheetEdits = {
-      inputs: extractInputValues(sheet, INPUT_AREA.ROW_START, inputCol()),
+      inputs: extractInputValues(sheet, inputCol()),
     };
 
     const current = layout.value;

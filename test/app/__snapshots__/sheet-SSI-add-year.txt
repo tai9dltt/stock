@@ -865,7 +865,7 @@ F55 | "vùng cao" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"t
 G55 | "cao nhất" | {"backColor":"#E2E8F0","borderBottom":"thin","borderLeft":"thin","borderRight":"undefined","borderTop":"thin","foreColor":"#64748B","hAlign":"center"}
 A56 | "TT LNST \\ P/E" | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"undefined","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","hAlign":"center"}
 B56 | 6.06 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
-C56 | =IF(Q31>0, M5 / Q31, "") | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
+C56 | =IF(AND(ISNUMBER(Q31), Q31>0), M5 / Q31, "") | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
 D56 | 13.86 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
 E56 | 15.02 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}
 F56 | 20.48 | {"backColor":"#E2E8F0","borderBottom":"undefined","borderLeft":"thin","borderRight":"thin","borderTop":"thin","font":"bold 11pt Calibri","formatter":"0.00","hAlign":"center"}

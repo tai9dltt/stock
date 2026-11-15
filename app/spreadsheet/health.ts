@@ -7,6 +7,7 @@
 
 import type { AnalysisSheetData, QuarterlyColumnInfo, RowMap, SheetContext, StockType } from './types'
 import { applyBorder, applyYoyChangeHighlight, getSeparatorBorder, relativeAddr, setCell } from '~/utils/spreadjs'
+import { NOT_MEANINGFUL } from './cells'
 import { writePeriodHeaders } from './sections'
 
 interface HealthRow {
@@ -85,7 +86,7 @@ export function buildHealthTable(
   const rowOf = (index: number) => firstDataRow + index
   const cashRow = rows.findIndex(r => r.source === 'operatingCashFlow')
 
-  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Sức khoẻ tài chính', 'Chỉ số (Vietstock)')
+  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Sức khoẻ tài chính', 'Chỉ số (Vietstock)', data.quarterRanges)
 
   rows.forEach((spec, i) => {
     const row = rowOf(i)
@@ -106,8 +107,13 @@ export function buildHealthTable(
         if (col - 3 >= firstCol && cashRow >= 0 && quarterlyRows.netProfit !== undefined) {
           const cash = relativeRange(rowOf(cashRow), col)
           const profit = relativeRange(quarterlyRows.netProfit, col)
-          sheet.setFormula(row, col, `IF(AND(COUNT(${cash})=4, SUM(${profit})<>0), SUM(${cash})/SUM(${profit}), "")`)
+          // "-" from a 4-quarter loss: a negative cash flow over a loss would
+          // read as a healthy positive ratio
+          const complete = `COUNT(${cash})=4, COUNT(${profit})=4`
+          sheet.setFormula(row, col,
+            `IF(AND(${complete}, SUM(${profit})>0), SUM(${cash})/SUM(${profit}), IF(AND(${complete}), "${NOT_MEANINGFUL}", ""))`)
           sheet.setFormatter(row, col, spec.format)
+          sheet.getCell(row, col).hAlign(GC.Spread.Sheets.HorizontalAlign.right)
         }
         applyBorder(GC, sheet, row, col)
       } else {

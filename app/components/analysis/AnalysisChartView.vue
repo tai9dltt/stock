@@ -10,6 +10,7 @@ import {
   type GrowthBreakdown,
   type MarginPoint,
 } from "~/utils/marginAnalysis";
+import { QUARTERS } from "~/spreadsheet/years";
 
 // Props
 const props = defineProps<{
@@ -45,7 +46,7 @@ const extractQuarterlyChartData = (metricKey: string) => {
     const quarters = data[year];
     if (!quarters) return;
 
-    ["Q1", "Q2", "Q3", "Q4"].forEach((q) => {
+    QUARTERS.forEach((q) => {
       const value = quarters[q];
       if (value === null || value === undefined) return;
 
