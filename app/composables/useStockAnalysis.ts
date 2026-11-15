@@ -9,11 +9,17 @@ import type { SheetEdits } from '~/composables/useAnalysisSheet';
 import type { StockData } from '~/types';
 import type { TradingPlan } from '~/composables/useStockDataTransform';
 import { crawlStockData, fetchTradingInfo, getStockData, saveStockAnalysis } from '~/services';
+import { QUARTERS } from '~/spreadsheet/years';
 import {
   buildAnalysisState, createEmptyAnalysisState, nextForecastYear, sharesOverrides, toSavePayload,
 } from '~/composables/useStockDataTransform';
 
-export type { TradingPlan } from '~/composables/useStockDataTransform';
+/** Message of a failed request: the server's (h3 statusMessage) when there is one */
+function errorMessage(error: unknown): string {
+  const response = error as { data?: { statusMessage?: string; message?: string } } | null;
+  return response?.data?.statusMessage || response?.data?.message
+    || (error instanceof Error ? error.message : 'Lỗi không xác định');
+}
 
 const NO_PLAN: TradingPlan = { noteHtml: '', entryPrice: null, targetPrice: null, stopLoss: null };
 
@@ -56,7 +62,8 @@ export function useStockAnalysis(symbol: Ref<string>) {
       if (!response.success || !response.data) return;
 
       const tradingInfo = await fetchLiveTradingInfo();
-      const today = new Date().toISOString().split('T')[0]!;
+      // The trading day in Vietnam, as the stored snapshots (UTC is a day behind until 7:00)
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
 
       const loaded = buildAnalysisState(symbol.value, response.data, tradingInfo, today);
       savedState = copy(loaded);
@@ -70,6 +77,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
         for (const year of forecastYears) {
           if (!kept.forecastYears.includes(year)) kept.forecastYears.push(year);
         }
+        kept.sensitivityGrowths = [...state.value.sensitivityGrowths];
         state.value = kept;
       } else {
         state.value = loaded;
@@ -77,6 +85,11 @@ export function useStockAnalysis(symbol: Ref<string>) {
       savedAnalysis.value = response.data.analysis ?? null;
     } catch (error) {
       console.error(error);
+      toast.add({
+        title: 'Không tải được dữ liệu',
+        description: errorMessage(error),
+        color: 'error',
+      });
     } finally {
       isLoading.value = false;
       loadingStore.hide();
@@ -114,7 +127,7 @@ export function useStockAnalysis(symbol: Ref<string>) {
     }
     const year = nextForecastYear(s.annualData, s.quarterlyData, s.forecastYears);
     s.forecastYears.push(year);
-    s.forecastQuarters.push(...['Q1', 'Q2', 'Q3', 'Q4'].map(q => `${year}_${q}`));
+    s.forecastQuarters.push(...QUARTERS.map(q => `${year}_${q}`));
 
     toast.add({ title: 'Đã thêm năm', description: `Đã thêm năm ${year} vào bảng phân tích`, color: 'success' });
   }

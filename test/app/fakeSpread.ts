@@ -129,6 +129,9 @@ export function createFakeSheet() {
     getValue(r: number, c: number) {
       return cells.get(`${r},${c}`)?.value
     },
+    getFormula(r: number, c: number) {
+      return cells.get(`${r},${c}`)?.formula
+    },
     setFormula(r: number, c: number, formula: string) {
       const entry = cell(r, c)
       entry.formula = formula
@@ -139,6 +142,10 @@ export function createFakeSheet() {
     },
     setStyle(r: number, c: number, style: Style) {
       cell(r, c).style = { ...style }
+    },
+    getStyle(r: number, c: number) {
+      const style = cells.get(`${r},${c}`)?.style
+      return style ? { ...style } : undefined
     },
     getCell(r: number, c: number) {
       // Like SpreadJS: no argument reads the value (without creating the

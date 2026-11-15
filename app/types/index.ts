@@ -60,7 +60,15 @@ export interface SaveAnalysisPayload extends AnalysisInputs {
 export interface StockData {
   metrics: Record<string, Record<string, number | string | null>>;
   yearlyMetrics: Record<string, Record<string, number | string | null>>;
-  periods?: { year: number; quarter: number; source: string; is_forecast: number | boolean }[];
+  periods?: {
+    year: number;
+    quarter: number;
+    source: string;
+    is_forecast: number | boolean;
+    /** "YYYY-MM-DD", as Vietstock reports the period */
+    period_begin?: string | null;
+    period_end?: string | null;
+  }[];
   tradingSnapshot?: {
     outstandingShares?: number;
     lastPrice?: number;

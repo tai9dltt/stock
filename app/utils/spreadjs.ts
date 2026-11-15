@@ -101,7 +101,8 @@ export function setDivisionFormula(
 ): void {
   const numAddr = getCellAddr(GC, sheet, numeratorRow, numeratorCol);
   const denAddr = getCellAddr(GC, sheet, denominatorRow, denominatorCol);
-  sheet.setFormula(targetRow, targetCol, `IF(${denAddr}<>0, ${numAddr}/${denAddr}, 0)`);
+  // Empty without both figures: a missing quarter is no 0% margin
+  sheet.setFormula(targetRow, targetCol, `IF(AND(ISNUMBER(${numAddr}), ISNUMBER(${denAddr}), ${denAddr}<>0), ${numAddr}/${denAddr}, "")`);
   sheet.setFormatter(targetRow, targetCol, format);
 }
 
@@ -174,6 +175,15 @@ export function applyRowHighlightOnSelect(
  * headers, highlighted P/E), so the selected-row colour does not cover it.
  * Zebra stripes are left out: the selected row may cover them.
  */
+/**
+ * Background the cell was given (input, header, highlighted P/E). Not
+ * getCell().backColor(), which also returns a conditional colour: a growth
+ * shown green would be kept green after the value changes.
+ */
+export function ownBackColor(sheet: any, row: number, col: number): string | undefined {
+  return sheet.getStyle(row, col)?.backColor || undefined
+}
+
 function keepCellColours(GC: any, sheet: any, rowCount: number, colCount: number): any[] {
   const rangesByColour = new Map<string, any[]>()
   for (let row = 0; row < rowCount; row++) {
@@ -181,7 +191,7 @@ function keepCellColours(GC: any, sheet: any, rowCount: number, colCount: number
     let runColour = ''
     // Merge runs of same-coloured cells in a row into one range
     for (let col = 0; col <= colCount; col++) {
-      const colour = col < colCount ? sheet.getCell(row, col).backColor() : undefined
+      const colour = col < colCount ? ownBackColor(sheet, row, col) : undefined
       const own = colour && colour !== SPREADJS_COLORS.STRIPE ? colour : ''
       if (own === runColour) continue
       if (runColour) {
@@ -308,10 +318,11 @@ export function setQuarterlySumFormula(
     sheet.getRange(quarterlyRow, q4Col, 1, 1)
   );
 
+  // Empty unless all 4 quarters have a figure
   sheet.setFormula(
     annualRow,
     annualCol,
-    `${q1Addr} + ${q2Addr} + ${q3Addr} + ${q4Addr}`
+    `IF(COUNT(${q1Addr}, ${q2Addr}, ${q3Addr}, ${q4Addr})=4, ${q1Addr} + ${q2Addr} + ${q3Addr} + ${q4Addr}, "")`
   );
   sheet.setFormatter(annualRow, annualCol, format);
 }
@@ -353,6 +364,21 @@ export function applyGrowthHighlightRange(
   const pinkStyle = new GC.Spread.Sheets.Style()
   pinkStyle.backColor = '#FFC7CE'
   cfs.addFormulaRule(`=AND(ISNUMBER(${cell}), ${cell}<0)`, pinkStyle, range)
+}
+
+/**
+ * Typing into a percent cell, SpreadJS appends "%" itself, so a user typing
+ * "5%" ends with "5%%", stored as text ("-5%%" even as -0.0005), and a
+ * decimal comma ("7,5" → "7,5%") is not read as a number either. The
+ * fraction meant (0.05, 0.075), or null for text SpreadJS reads correctly.
+ */
+export function typedPercent(editingText: unknown): number | null {
+  const text = String(editingText ?? '')
+  const match = /^\s*([+-]?\d+(?:[.,]\d+)?)\s*((?:%\s*)+)$/.exec(text)
+  if (!match) return null
+  const doubled = match[2]!.replaceAll(/\s/g, '').length > 1
+  if (!doubled && !match[1]!.includes(',')) return null
+  return Number(match[1]!.replace(',', '.')) / 100
 }
 
 /** Column letters, e.g. 0 → "A", 26 → "AA" */

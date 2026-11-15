@@ -2,6 +2,7 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import ImageResize from 'tiptap-extension-resize-image';
+import { formatPercent } from '~/utils/format';
 
 // Props
 const props = defineProps<{
@@ -70,29 +71,20 @@ watch(
 );
 
 // Calculator helpers
+// Reward ÷ risk; only meaningful with the target above and the stop below the entry
 const riskRewardRatio = computed(() => {
   if (!entryPrice.value || !targetPrice.value || !stopLoss.value) return null;
   const reward = targetPrice.value - entryPrice.value;
   const risk = entryPrice.value - stopLoss.value;
-  if (risk <= 0) return null;
+  if (risk <= 0 || reward <= 0) return null;
   return (reward / risk).toFixed(2);
 });
 
-const potentialGain = computed(() => {
-  if (!entryPrice.value || !targetPrice.value) return null;
-  return (
-    ((targetPrice.value - entryPrice.value) / entryPrice.value) *
-    100
-  ).toFixed(1);
-});
-
-const potentialLoss = computed(() => {
-  if (!entryPrice.value || !stopLoss.value) return null;
-  return (
-    ((entryPrice.value - stopLoss.value) / entryPrice.value) *
-    100
-  ).toFixed(1);
-});
+/** Signed change from the entry price, e.g. 0.1 = +10% */
+const changeFromEntry = (price: number | null) =>
+  entryPrice.value && price ? (price - entryPrice.value) / entryPrice.value : null;
+const targetChange = computed(() => changeFromEntry(targetPrice.value));
+const stopChange = computed(() => changeFromEntry(stopLoss.value));
 
 // Set values from parent
 const setValues = (data: {
@@ -180,8 +172,13 @@ onBeforeUnmount(() => {
                 <span class="text-gray-500 text-sm">đ</span>
               </template>
             </UInput>
-            <span v-if="potentialGain" class="input-hint positive">
-              +{{ potentialGain }}%
+            <span
+              v-if="targetChange !== null"
+              class="input-hint"
+              :class="targetChange >= 0 ? 'positive' : 'negative'"
+              title="So với giá vào lệnh"
+            >
+              {{ formatPercent(targetChange, 1, true) }}
             </span>
           </div>
 
@@ -200,8 +197,13 @@ onBeforeUnmount(() => {
                 <span class="text-gray-500 text-sm">đ</span>
               </template>
             </UInput>
-            <span v-if="potentialLoss" class="input-hint negative">
-              -{{ potentialLoss }}%
+            <span
+              v-if="stopChange !== null"
+              class="input-hint"
+              :class="stopChange >= 0 ? 'positive' : 'negative'"
+              title="So với giá vào lệnh"
+            >
+              {{ formatPercent(stopChange, 1, true) }}
             </span>
           </div>
         </div>

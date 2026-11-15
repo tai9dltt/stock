@@ -25,7 +25,24 @@ export function derivedShares(data: QuarterlyData, year: string, quarter: string
   return shares > 0 ? Math.round(shares / 1000) * 1000 : undefined
 }
 
-/** Derived shares for reported quarters, else the current outstanding shares */
+/**
+ * Derived shares for reported quarters. A quarter without them uses the next
+ * quarter that has them (a late Q4 before reported Q1/Q2 is closer to those
+ * than to today), else the current outstanding shares (forecast quarters).
+ */
 export function defaultShares(data: QuarterlyData, year: string, quarter: string, current: number): number {
-  return derivedShares(data, year, quarter) ?? current
+  return derivedShares(data, year, quarter) ?? laterDerivedShares(data, `${year}_${quarter}`) ?? current
+}
+
+function laterDerivedShares(data: QuarterlyData, after: string): number | undefined {
+  const later = Object.entries(data['equity'] ?? {})
+    .flatMap(([y, quarters]) => Object.keys(quarters ?? {}).map(q => `${y}_${q}`))
+    .filter(key => key > after)
+    .sort()
+  for (const key of later) {
+    const [y, q] = key.split('_') as [string, string]
+    const shares = derivedShares(data, y, q)
+    if (shares !== undefined) return shares
+  }
+  return undefined
 }

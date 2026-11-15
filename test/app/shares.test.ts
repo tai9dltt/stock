@@ -21,6 +21,13 @@ describe('derivedShares', () => {
     expect(derivedShares({ ...data, bvps: { 2026: { Q2: 0 } } }, '2026', 'Q2')).toBeUndefined()
   })
 
+  it('uses the next reported quarter for a quarter without its own figures', () => {
+    // Q1/2026 not reported yet (late) while Q2 is: Q2's count, not today's
+    expect(defaultShares(data, '2026', 'Q1', 250_000_000)).toBe(221_165_000)
+    // After the last reported quarter: today's count
+    expect(defaultShares(data, '2026', 'Q3', 250_000_000)).toBe(250_000_000)
+  })
+
   it('falls back to the current share count', () => {
     expect(defaultShares(data, '2026', 'Q2', 221_161_000)).toBe(221_165_000)
     expect(defaultShares(data, '2026', 'Q3', 221_161_000)).toBe(221_161_000)

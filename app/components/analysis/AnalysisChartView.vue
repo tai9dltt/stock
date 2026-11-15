@@ -10,6 +10,7 @@ import {
   type GrowthBreakdown,
   type MarginPoint,
 } from "~/utils/marginAnalysis";
+import { QUARTERS } from "~/spreadsheet/years";
 
 // Props
 const props = defineProps<{
@@ -45,7 +46,7 @@ const extractQuarterlyChartData = (metricKey: string) => {
     const quarters = data[year];
     if (!quarters) return;
 
-    ["Q1", "Q2", "Q3", "Q4"].forEach((q) => {
+    QUARTERS.forEach((q) => {
       const value = quarters[q];
       if (value === null || value === undefined) return;
 
@@ -97,6 +98,13 @@ const extractAnnualChartData = (metricKey: string) => {
   return result.slice(-8);
 };
 
+/**
+ * YoY growth (already in %) as a chart cell: a gap when there is no
+ * year-ago figure, instead of a misleading 0%; the tooltip shows "%".
+ */
+const growthCell = (growth: number | null) =>
+  growth === null ? null : { v: growth, f: `${growth > 0 ? "+" : ""}${growth.toFixed(1)}%` };
+
 // Quarterly Revenue Chart Data
 const quarterlyRevenueChartData = computed(() => {
   const chartData = extractQuarterlyChartData(getRevenueKey());
@@ -106,7 +114,7 @@ const quarterlyRevenueChartData = computed(() => {
   const rows = chartData.map((item) => [
     item.label,
     item.value / 1000,
-    item.yoyGrowth ?? 0,
+    growthCell(item.yoyGrowth),
   ]);
   return [header, ...rows];
 });
@@ -120,7 +128,7 @@ const quarterlyProfitChartData = computed(() => {
   const rows = chartData.map((item) => [
     item.label,
     item.value / 1000,
-    item.yoyGrowth ?? 0,
+    growthCell(item.yoyGrowth),
   ]);
   return [header, ...rows];
 });
@@ -134,7 +142,7 @@ const annualRevenueChartData = computed(() => {
   const rows = chartData.map((item) => [
     item.label,
     item.value / 1000,
-    item.yoyGrowth ?? 0,
+    growthCell(item.yoyGrowth),
   ]);
   return [header, ...rows];
 });
@@ -148,17 +156,22 @@ const annualProfitChartData = computed(() => {
   const rows = chartData.map((item) => [
     item.label,
     item.value / 1000,
-    item.yoyGrowth ?? 0,
+    growthCell(item.yoyGrowth),
   ]);
   return [header, ...rows];
 });
 
 // Chart options
+
+// Fixed side margins: amount labels like "200,000" and the growth axis need
+// the room, which a percentage width gives up on narrow screens
+const COMBO_AREA = { left: 80, right: 70, height: "65%" };
+
 const quarterlyRevenueOptions = {
   title: "Doanh thu theo quý",
   titleTextStyle: { fontSize: 16, bold: true },
   vAxes: {
-    0: { title: "Tỷ VND", format: "#,##0" },
+    0: { title: "Tỷ VND", format: "#,##0", minValue: 0 },
     1: { title: "Tăng trưởng YoY (%)", format: "0'%'" },
   },
   hAxis: { title: "Quý" },
@@ -168,14 +181,14 @@ const quarterlyRevenueOptions = {
     1: { targetAxisIndex: 1, type: "line", color: "#EA4335", lineWidth: 3 },
   },
   legend: { position: "top" },
-  chartArea: { width: "80%", height: "65%" },
+  chartArea: COMBO_AREA,
 };
 
 const quarterlyProfitOptions = {
   title: "LNST theo quý",
   titleTextStyle: { fontSize: 16, bold: true },
   vAxes: {
-    0: { title: "Tỷ VND", format: "#,##0" },
+    0: { title: "Tỷ VND", format: "#,##0", minValue: 0 },
     1: { title: "Tăng trưởng YoY (%)", format: "0'%'" },
   },
   hAxis: { title: "Quý" },
@@ -185,14 +198,14 @@ const quarterlyProfitOptions = {
     1: { targetAxisIndex: 1, type: "line", color: "#FBBC04", lineWidth: 3 },
   },
   legend: { position: "top" },
-  chartArea: { width: "80%", height: "65%" },
+  chartArea: COMBO_AREA,
 };
 
 const annualRevenueOptions = {
   title: "Doanh thu theo năm",
   titleTextStyle: { fontSize: 16, bold: true },
   vAxes: {
-    0: { title: "Tỷ VND", format: "#,##0" },
+    0: { title: "Tỷ VND", format: "#,##0", minValue: 0 },
     1: { title: "Tăng trưởng YoY (%)", format: "0'%'" },
   },
   hAxis: { title: "Năm" },
@@ -202,14 +215,14 @@ const annualRevenueOptions = {
     1: { targetAxisIndex: 1, type: "line", color: "#FF5722", lineWidth: 3 },
   },
   legend: { position: "top" },
-  chartArea: { width: "80%", height: "65%" },
+  chartArea: COMBO_AREA,
 };
 
 const annualProfitOptions = {
   title: "LNST theo năm",
   titleTextStyle: { fontSize: 16, bold: true },
   vAxes: {
-    0: { title: "Tỷ VND", format: "#,##0" },
+    0: { title: "Tỷ VND", format: "#,##0", minValue: 0 },
     1: { title: "Tăng trưởng YoY (%)", format: "0'%'" },
   },
   hAxis: { title: "Năm" },
@@ -219,7 +232,7 @@ const annualProfitOptions = {
     1: { targetAxisIndex: 1, type: "line", color: "#E91E63", lineWidth: 3 },
   },
   legend: { position: "top" },
-  chartArea: { width: "80%", height: "65%" },
+  chartArea: COMBO_AREA,
 };
 
 const hasData = computed(() => {

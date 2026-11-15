@@ -15,6 +15,13 @@ const PERCENT = '0.00%'
 
 const isPresent = (v: unknown) => v !== undefined && v !== null
 
+/** Shown where a ratio has no meaning, e.g. P/E or a price target from a loss */
+export const NOT_MEANINGFUL = '-'
+
+/** Price ÷ EPS, "-" for a loss or no EPS */
+export const priceToEarnings = (price: string, eps: string) =>
+  `IF(AND(ISNUMBER(${eps}), ${eps}>0), ${price} / ${eps}, "${NOT_MEANINGFUL}")`
+
 function rowOf(cell: CellContext, key: RowKey): number {
   const row = cell.rows[key]
   if (row === undefined) throw new Error(`Row "${key}" is not part of this table`)
@@ -57,7 +64,8 @@ export function projectedAmount(
     if (cell.isForecast && cell.prevYearCol) {
       const rate = growthRow ? addrOf(cell, growthRow) : cell.refs[growthRef]
       const prev = addrOf(cell, key, cell.prevYearCol)
-      setFormula(cell, key, `${prev} + ABS(${prev}) * ${rate}`, AMOUNT)
+      // Empty without last year's figure (new listing, missing quarter), not 0
+      setFormula(cell, key, `IF(ISNUMBER(${prev}), ${prev} + ABS(${prev}) * ${rate}, "")`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, cell.value(indicator), { format: AMOUNT, border: true })
     }
@@ -73,7 +81,8 @@ export function forecastGrossProfit(marginRow?: RowKey): Renderer {
   return (cell) => {
     if (cell.isForecast) {
       const margin = marginRow ? addrOf(cell, marginRow) : cell.refs.grossMargin
-      setFormula(cell, 'grossProfit', `${addrOf(cell, 'revenue')} * ${margin}`, AMOUNT)
+      const revenue = addrOf(cell, 'revenue')
+      setFormula(cell, 'grossProfit', `IF(ISNUMBER(${revenue}), ${revenue} * ${margin}, "")`, AMOUNT)
     } else {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'grossProfit'), cell.col, cell.value('grossProfit'), {
         format: AMOUNT,
@@ -91,6 +100,8 @@ interface ReportedOptions {
   historicalOnly?: boolean
   /** Don't touch the cell when there is no value */
   skipEmpty?: boolean
+  /** Only meaningful above 0, e.g. P/E of a loss: shown as "-" */
+  positive?: boolean
 }
 
 /** Reported ratio or per-share figure (EPS, P/E, ROE, ...) */
@@ -101,7 +112,11 @@ export function reported(key: RowKey, indicator: string, format: string, options
 
     if (!skip) {
       const value = options.fromPercent ? (isPresent(raw) ? Number(raw) / 100 : null) : raw
-      setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, value, { format, border: true })
+      if (options.positive && isPresent(value) && !(Number(value) > 0)) {
+        setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, NOT_MEANINGFUL, { border: true, align: 'right' })
+      } else {
+        setCell(cell.GC, cell.sheet, rowOf(cell, key), cell.col, value, { format, border: true })
+      }
     }
     border(cell, key)
   }
@@ -121,22 +136,6 @@ export function ratio(key: RowKey, numerator: RowKey, denominator: RowKey): Rend
   }
 }
 
-/** Bank return on assets: net profit / total assets, else reported ROA */
-export function assetReturn(): Renderer {
-  return (cell) => {
-    const netProfit = cell.value('netProfit')
-    const totalAssets = cell.value('totalAssets')
-    const roa = cell.value('roa')
-
-    let value: number | null = null
-    if (totalAssets && totalAssets > 0 && netProfit) value = netProfit / totalAssets
-    else if (roa) value = roa / 100
-
-    setCell(cell.GC, cell.sheet, rowOf(cell, 'assetReturn'), cell.col, value, { format: PERCENT, border: true })
-    border(cell, 'assetReturn')
-  }
-}
-
 /** Outstanding shares of the quarter (editable) */
 export function shares(): Renderer {
   return (cell) => {
@@ -151,7 +150,8 @@ export function shares(): Renderer {
 export function quarterlyEps(): Renderer {
   return (cell) => {
     const sharesAddr = addrOf(cell, 'shares')
-    setFormula(cell, 'eps', `IF(${sharesAddr}<>0, (${addrOf(cell, 'netProfit')} * 1000000) / ${sharesAddr}, 0)`, AMOUNT)
+    const profit = addrOf(cell, 'netProfit')
+    setFormula(cell, 'eps', `IF(AND(ISNUMBER(${profit}), N(${sharesAddr})<>0), ${profit} * 1000000 / ${sharesAddr}, "")`, AMOUNT)
     border(cell, 'eps')
   }
 }
@@ -170,16 +170,18 @@ function lastFourQuarters(cell: CellContext, key: RowKey): string {
  */
 export function trailingEps(): Renderer {
   return (cell) => {
-    // Vietstock reports TTM EPS under both 'epsTtm' and 'eps'
-    const reportedTtm = [cell.value('epsTtm'), cell.value('eps')].find(isPresent)
+    // 'eps' is Vietstock's "EPS 4 quý" (see QUARTERLY_INDICATOR_SOURCES)
+    const reportedTtm = cell.value('eps')
 
-    if (!cell.isForecast && reportedTtm !== undefined) {
+    if (!cell.isForecast && isPresent(reportedTtm)) {
       setCell(cell.GC, cell.sheet, rowOf(cell, 'epsTtm'), cell.col, reportedTtm, { format: AMOUNT, border: true })
     } else if (cell.col >= 4) {
       const sharesAddr = addrOf(cell, 'shares')
+      const profits = lastFourQuarters(cell, 'netProfit')
+      // All 4 quarters, or the EPS of 2-3 quarters would pass for a year's
       setFormula(
         cell, 'epsTtm',
-        `IF(${sharesAddr}<>0, SUM(${lastFourQuarters(cell, 'netProfit')}) * 1000000 / ${sharesAddr}, 0)`,
+        `IF(AND(COUNT(${profits})=4, N(${sharesAddr})<>0), SUM(${profits}) * 1000000 / ${sharesAddr}, "")`,
         AMOUNT
       )
     }
@@ -194,12 +196,14 @@ export function trailingEps(): Renderer {
 export function quarterlyPe(reportedInForecast: boolean): Renderer {
   return (cell) => {
     const pe = cell.value('pe')
+    const row = rowOf(cell, 'pe')
 
     if (isPresent(pe) && (reportedInForecast || !cell.isForecast)) {
-      setCell(cell.GC, cell.sheet, rowOf(cell, 'pe'), cell.col, pe, { format: '0.00', border: true })
+      if (Number(pe) > 0) setCell(cell.GC, cell.sheet, row, cell.col, pe, { format: '0.00', border: true })
+      else setCell(cell.GC, cell.sheet, row, cell.col, NOT_MEANINGFUL, { border: true, align: 'right' })
     } else if (cell.isForecast && cell.col >= 4) {
-      const epsTtm = addrOf(cell, 'epsTtm')
-      setFormula(cell, 'pe', `IF(${epsTtm}<>0, ${cell.refs.currentPrice} / ${epsTtm}, 0)`, '0.00')
+      setFormula(cell, 'pe', priceToEarnings(cell.refs.currentPrice, addrOf(cell, 'epsTtm')), '0.00')
+      cell.sheet.getCell(row, cell.col).hAlign(cell.GC.Spread.Sheets.HorizontalAlign.right)
     }
     border(cell, 'pe')
   }

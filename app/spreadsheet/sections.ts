@@ -8,15 +8,16 @@ import type {
   SheetContext, StockProfile,
 } from './types'
 import {
-  ANNUAL_TABLE, INPUT_AREA, inputRow, QUARTER_DATE_RANGES, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
+  ANNUAL_TABLE, INPUT_AREA, inputRow, QUARTERLY_TABLE, SPREADJS_COLORS, VALUATION_TABLE,
 } from '~/constants/spreadJsConstants'
 import {
   applyBorder, applyGrowthHighlightRange, applyRowHighlightOnSelect, applyYoyChangeHighlight, getCellAddr, getSeparatorBorder,
-  getThinBorder, setCell, setQuarterlySumFormula,
+  getThinBorder, ownBackColor, setCell, setQuarterlySumFormula,
 } from '~/utils/spreadjs'
+import { NOT_MEANINGFUL, priceToEarnings } from './cells'
 import { currentPe, distinctPe, peFormat, peLadder } from './peLadder'
 import { defaultShares } from './shares'
-import { extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
+import { continuousYears, extractYearsFromData, isForecastYear, QUARTERS, resolveDisplayYears } from './years'
 
 const HEADER_STYLE = { bold: true, align: 'center' as const, border: true }
 
@@ -49,8 +50,7 @@ function writeRowLabels(ctx: SheetContext, specs: RowSpec[], rows: RowMap) {
 export function stripeRows(ctx: SheetContext, firstRow: number, lastRow: number, lastCol: number): void {
   for (let row = firstRow + 1; row <= lastRow; row += 2) {
     for (let col = 0; col <= lastCol; col++) {
-      const cell = ctx.sheet.getCell(row, col)
-      if (!cell.backColor()) cell.backColor(SPREADJS_COLORS.STRIPE)
+      if (!ownBackColor(ctx.sheet, row, col)) ctx.sheet.getCell(row, col).backColor(SPREADJS_COLORS.STRIPE)
     }
   }
 }
@@ -73,16 +73,16 @@ export function buildTitleSection(ctx: SheetContext, profile: StockProfile, symb
 }
 
 /**
- * Input area at K4: price, shares, 52-week range and the growth assumptions
- * the forecast formulas reference.
+ * Input area at row 4 from column `col` (see inputAreaCol): price, shares,
+ * 52-week range and the growth assumptions the forecast formulas reference.
  */
 export function buildInputSection(
   ctx: SheetContext,
   profile: StockProfile,
-  data: AnalysisSheetData
+  data: AnalysisSheetData,
+  col: number
 ): InputCellReferences {
   const { GC, sheet } = ctx
-  const col = INPUT_AREA.COL
   const startRow = INPUT_AREA.ROW_START
   const valueCol = col + INPUT_AREA.VALUE_COL_OFFSET
   const noteCol = valueCol + 1
@@ -143,6 +143,15 @@ export function buildInputSection(
 
 // ─── Annual table ───────────────────────────────────────────────────
 
+/**
+ * Years of the annual table, one column each from column B: every year with
+ * annual figures, also those before the quarterly table starts (its first
+ * years are hidden while their quarters are incomplete).
+ */
+export function annualYears(data: AnalysisSheetData): string[] {
+  return continuousYears([...extractYearsFromData(data.annualData), ...data.forecastYears])
+}
+
 export function buildAnnualTable(
   ctx: SheetContext,
   profile: StockProfile,
@@ -154,13 +163,9 @@ export function buildAnnualTable(
   const startRow = ANNUAL_TABLE.START_ROW
   const rows = layoutRows(profile.annualRows, startRow + 1)
 
-  const years = resolveDisplayYears(
-    [...extractYearsFromData(data.annualData), ...data.forecastYears],
-    data.quarterlyData,
-    currentYear
-  )
+  const years = annualYears(data)
   const colMap: Record<string, number> = Object.fromEntries(years.map((year, i) => [year, 1 + i]))
-  const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
+  const isForecast = (year: string) => isForecastYear(year, currentYear, data.quarterlyData, profile.actualDataIndicators)
 
   // Header
   sheet.setRowHeight(startRow, 60)
@@ -170,7 +175,7 @@ export function buildAnnualTable(
     const col = colMap[year]!
     const forecast = isForecast(year)
     sheet.setColumnWidth(col, ANNUAL_TABLE.COLUMN_WIDTH)
-    setCell(GC, sheet, startRow, col, `${year}${forecast ? ' (F)' : ''}\n01/01-31/12`, {
+    setCell(GC, sheet, startRow, col, `${year}${forecast ? ' (F)' : ''}\n${data.annualRange}`, {
       ...HEADER_STYLE,
       ...periodStyle(forecast),
     })
@@ -234,19 +239,23 @@ export function buildQuarterlyTable(
   let nextCol = 1
 
   for (const year of years) {
-    const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, data.forecastYears, profile.actualDataIndicators)
+    const isYearForecast = isForecastYear(year, currentYear, data.quarterlyData, profile.actualDataIndicators)
 
     setCell(GC, sheet, startRow, nextCol, year, { ...HEADER_STYLE, ...periodStyle(isYearForecast) })
     sheet.addSpan(startRow, nextCol, 1, 4)
     sheet.getRange(startRow, nextCol, 1, 4).setBorder(getThinBorder(GC), { all: true })
 
+    // Before last year a quarter without figures is missing, not a forecast
+    // (the crawler flags any year without Q4); its reported annual figures stay
+    const isPastYear = parseInt(year) < currentYear - 1
+
     QUARTERS.forEach((quarter, i) => {
-      const isForecast = !hasActualData(year, quarter) && (
-        data.forecastQuarters.includes(`${year}_${quarter}`) || data.forecastYears.includes(year) || isYearForecast
-      )
+      const isForecast = !hasActualData(year, quarter) && (isYearForecast || (!isPastYear && (
+        data.forecastQuarters.includes(`${year}_${quarter}`) || data.forecastYears.includes(year)
+      )))
 
       sheet.setColumnWidth(nextCol, QUARTERLY_TABLE.COLUMN_WIDTH)
-      setCell(GC, sheet, startRow + 1, nextCol, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[i]}`, {
+      setCell(GC, sheet, startRow + 1, nextCol, `${quarter}${isForecast ? ' (F)' : ''}\n${data.quarterRanges[i]}`, {
         ...HEADER_STYLE,
         ...periodStyle(isForecast),
       })
@@ -324,7 +333,14 @@ export function linkAnnualToQuarterly(
     const sumOfQuarters = (key: keyof RowMap) =>
       setQuarterlySumFormula(GC, sheet, quarterlyRows[key]!, annualRows[key]!, annualCol, quarterCols as number[])
 
-    profile.annualSumOfQuarters.forEach(sumOfQuarters)
+    // Only with a figure (reported or forecast) in all 4 quarters: a year in
+    // progress whose row is never forecast (bank opex, securities gross
+    // profit) stays empty instead of showing half a year; an old year with a
+    // missing quarter keeps its reported figure
+    const hasFigure = (row: number, col: number) => !!sheet.getFormula(row, col) || typeof sheet.getValue(row, col) === 'number'
+    profile.annualSumOfQuarters
+      .filter(key => quarterCols.every(col => hasFigure(quarterlyRows[key]!, col!)))
+      .forEach(sumOfQuarters)
 
     // Historical years keep the reported figures
     if (!yearQuarters.some(q => q.isForecast)) continue
@@ -337,19 +353,22 @@ export function linkAnnualToQuarterly(
       sheet.getRange(quarterlyRows.shares!, quarterCols[0]!, 1, 4)
     )
     const profit = getCellAddr(GC, sheet, annualRows.netProfit!, annualCol)
-    sheet.setFormula(annualRows.eps!, annualCol, `IF(AVERAGE(${shares})<>0, ${profit} * 1000000 / AVERAGE(${shares}), 0)`)
+    sheet.setFormula(annualRows.eps!, annualCol,
+      `IF(AND(ISNUMBER(${profit}), N(AVERAGE(${shares}))<>0), ${profit} * 1000000 / AVERAGE(${shares}), "")`)
     sheet.setFormatter(annualRows.eps!, annualCol, '#,##0')
     applyBorder(GC, sheet, annualRows.eps!, annualCol)
 
     const epsAddr = getCellAddr(GC, sheet, annualRows.eps!, annualCol)
-    sheet.setFormula(annualRows.pe!, annualCol, `IF(${epsAddr}<>0, ${refs.currentPrice} / ${epsAddr}, 0)`)
+    sheet.setFormula(annualRows.pe!, annualCol, priceToEarnings(refs.currentPrice, epsAddr))
     sheet.setFormatter(annualRows.pe!, annualCol, '0.00')
+    sheet.getCell(annualRows.pe!, annualCol).hAlign(GC.Spread.Sheets.HorizontalAlign.right)
     applyBorder(GC, sheet, annualRows.pe!, annualCol)
 
     if (annualRows.ros !== undefined) {
       const profitAddr = getCellAddr(GC, sheet, annualRows.netProfit!, annualCol)
       const revAddr = getCellAddr(GC, sheet, annualRows.revenue!, annualCol)
-      sheet.setFormula(annualRows.ros, annualCol, `IF(${revAddr}<>0, ${profitAddr} / ${revAddr}, 0)`)
+      sheet.setFormula(annualRows.ros, annualCol,
+        `IF(AND(ISNUMBER(${profitAddr}), ISNUMBER(${revAddr}), ${revAddr}<>0), ${profitAddr} / ${revAddr}, "")`)
       sheet.setFormatter(annualRows.ros, annualCol, '0.00%')
       applyBorder(GC, sheet, annualRows.ros, annualCol)
     }
@@ -370,10 +389,6 @@ function resolvePeScenarios(data: AnalysisSheetData): { values: number[]; labels
 }
 
 /**
- * Price targets: each row is a P/E scenario × trailing EPS of every quarter.
- * Returns the first row of the table.
- */
-/**
  * Year and quarter headers over the quarterly columns, as in the quarterly
  * table, for the tables below it. Labels go in column A.
  */
@@ -382,7 +397,8 @@ export function writePeriodHeaders(
   quarterlyCols: QuarterlyColumnInfo[],
   startRow: number,
   yearLabel: string,
-  quarterLabel: string
+  quarterLabel: string,
+  quarterRanges: string[]
 ): void {
   const { GC, sheet } = ctx
 
@@ -399,7 +415,7 @@ export function writePeriodHeaders(
 
   for (const { quarter, col, isForecast } of quarterlyCols) {
     const qIdx = parseInt(quarter.replace('Q', '')) - 1
-    setCell(GC, sheet, startRow + 1, col, `${quarter}${isForecast ? ' (F)' : ''}\n${QUARTER_DATE_RANGES[qIdx]}`, {
+    setCell(GC, sheet, startRow + 1, col, `${quarter}${isForecast ? ' (F)' : ''}\n${quarterRanges[qIdx]}`, {
       ...HEADER_STYLE,
       ...periodStyle(isForecast),
     })
@@ -413,6 +429,10 @@ export function writePeriodHeaders(
   sheet.getCell(startRow + 1, 0).wordWrap(true)
 }
 
+/**
+ * Price targets: each row is a P/E scenario × trailing EPS of every quarter.
+ * Returns the first row of the table.
+ */
 export function buildValuationTable(
   ctx: SheetContext,
   quarterlyCols: QuarterlyColumnInfo[],
@@ -428,7 +448,7 @@ export function buildValuationTable(
   const current = currentPe(data)
 
   // Ladder levels come from the reported P/E of the last 5 years
-  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Niên độ:', 'Giả sử P/E\n(lịch sử 5 năm)')
+  writePeriodHeaders(ctx, quarterlyCols, startRow, 'Niên độ:', 'Giả sử P/E\n(lịch sử 5 năm)', data.quarterRanges)
 
   // Scenario rows
   const endCol = quarterlyCols.length > 0 ? quarterlyCols[quarterlyCols.length - 1]!.col + 1 : 1
@@ -448,7 +468,9 @@ export function buildValuationTable(
     const peAddr = `$A${row + 1}`
     for (const { col } of quarterlyCols) {
       const epsAddr = getCellAddr(GC, sheet, quarterlyRows.epsTtm!, col)
-      sheet.setFormula(row, col, `IF(AND(ISNUMBER(${peAddr}), ISNUMBER(${epsAddr})), ${peAddr} * ${epsAddr}, "-")`)
+      // "-" without a P/E, or from a loss (no price target)
+      sheet.setFormula(row, col,
+        `IF(AND(ISNUMBER(${peAddr}), ISNUMBER(${epsAddr}), ${epsAddr}>0), ${peAddr} * ${epsAddr}, "${NOT_MEANINGFUL}")`)
       sheet.setFormatter(row, col, '#,##0')
       sheet.getCell(row, col).hAlign(GC.Spread.Sheets.HorizontalAlign.right)
       applyBorder(GC, sheet, row, col)

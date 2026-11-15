@@ -2,7 +2,7 @@
  * Which years / quarters the sheet shows and which of them are forecasts.
  */
 
-import { QUARTER_DATE_RANGES, YEAR_DETECTION_METRICS } from '~/constants/spreadJsConstants'
+import { YEAR_DETECTION_METRICS } from '~/constants/spreadJsConstants'
 
 export const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'] as const
 
@@ -35,30 +35,21 @@ export function hasQuarterData(
 }
 
 /**
- * Current and future years are forecasts; last year is one until its Q4 is
- * reported. `indicators` are the figures that make a quarter reported (the
- * profile's actualDataIndicators), so a Q4 with only a P/E or BVPS doesn't
- * end the forecast and leave an empty "reported" quarter.
+ * Last year and later are forecasts until their Q4 is reported; older years
+ * are reported. A fiscal year that ends before December (HSG: September) has
+ * its Q4 reported within the calendar year, and is then no forecast.
+ * `indicators` are the figures that make a quarter reported (the profile's
+ * actualDataIndicators), so a Q4 with only a P/E or BVPS doesn't end the
+ * forecast and leave an empty "reported" quarter.
  */
 export function isForecastYear(
   year: string,
   currentYear: number,
   quarterlyData: Record<string, any>,
-  forecastYears: string[],
   indicators?: readonly string[]
 ): boolean {
-  const yearInt = parseInt(year)
-
-  if (yearInt >= currentYear) return true
-  if (yearInt < currentYear - 1) return false
-  if (yearInt === currentYear - 1) return !hasQuarterData(quarterlyData, year, 'Q4', indicators)
-
-  return forecastYears.includes(year)
-}
-
-export function getQuarterDateRange(quarter: string): string {
-  const qIdx = parseInt(quarter.replace('Q', '')) - 1
-  return QUARTER_DATE_RANGES[qIdx] || ''
+  if (parseInt(year) < currentYear - 1) return false
+  return !hasQuarterData(quarterlyData, year, 'Q4', indicators)
 }
 
 /**
@@ -78,8 +69,13 @@ export function fillYearGaps(years: string[]): string[] {
   return result
 }
 
+/** Sorted, gap-free list of the years given */
+export function continuousYears(years: string[]): string[] {
+  return fillYearGaps([...new Set(years)].sort())
+}
+
 /**
- * Sorted, gap-free list of years to show. Old years (before last year)
+ * Sorted, gap-free list of years the quarterly table shows. Old years (before last year)
  * without all 4 quarters are hidden at the start only: a gap in the middle
  * would shift every "same quarter last year" reference (col - 4) by a year,
  * so an incomplete year in between is shown with its missing quarters empty.
@@ -89,7 +85,7 @@ export function resolveDisplayYears(
   quarterlyData: Record<string, any>,
   currentYear: number
 ): string[] {
-  const all = fillYearGaps([...new Set(years)].sort())
+  const all = continuousYears(years)
   const isComplete = (year: string) =>
     parseInt(year) >= currentYear - 1 || QUARTERS.every(q => hasQuarterData(quarterlyData, year, q))
   const first = all.findIndex(isComplete)

@@ -4,9 +4,9 @@ import { useRoute } from 'vue-router';
 import type { ComponentPublicInstance } from 'vue';
 import { detectStockType, STOCK_PROFILES } from '~/spreadsheet/profiles';
 import type { InputFieldName } from '~/constants/spreadJsConstants';
-import { sharesOverrides, withForecastYearQuarters } from '~/composables/useStockDataTransform';
+import { sharesOverrides, withForecastYearQuarters, type TradingPlan } from '~/composables/useStockDataTransform';
 import { useAnalysisSheet } from '~/composables/useAnalysisSheet';
-import { useStockAnalysis, type TradingPlan } from '~/composables/useStockAnalysis';
+import { useStockAnalysis } from '~/composables/useStockAnalysis';
 import { preloadGoogleCharts } from '~/utils/googleCharts';
 import { stockSummary } from '~/utils/stockSummary';
 
@@ -149,8 +149,10 @@ const resetOverrides = (field: string) => {
 
 const applyInput = (field: InputFieldName, value: number) => {
   state.value[field] = value;
-  // Quarters without their own share count use this one, so they need a rebuild
-  if (field === 'outstandingShares') scheduleRender();
+  // Rebuild for the inputs not read by formulas alone: quarters without their
+  // own share count use this one; the current P/E (its label and highlighted
+  // row in the P/E table) follows the price
+  if (field === 'outstandingShares' || field === 'currentPrice') scheduleRender();
 };
 
 /** "Áp dụng" in the form: update the state and the input cells (formulas recalculate) */
@@ -182,10 +184,11 @@ sheet.onGrowthEdited((kind, period, value) => {
   state.value.growthOverrides[kind] = value === null ? others : { ...others, [period]: value };
 });
 
-/** From the sheet: P/E scenarios or shares per quarter typed, kept over re-renders */
-sheet.onTableEdited(({ peValues, sharesPerQuarter }) => syncFromSheet(() => {
+/** From the sheet: P/E scenarios, shares per quarter or sensitivity growths typed, kept over re-renders */
+sheet.onTableEdited(({ peValues, sharesPerQuarter, sensitivityGrowths }) => syncFromSheet(() => {
   const s = state.value;
   if (peValues) s.peScenarios = peValues;
+  if (sensitivityGrowths) s.sensitivityGrowths = sensitivityGrowths;
   // Only the counts the user typed; the others keep following their defaults
   if (sharesPerQuarter) s.quarterlyData['outstandingShares'] = sharesOverrides(sharesPerQuarter, s.quarterlyData, s.outstandingShares) ?? {};
 }));

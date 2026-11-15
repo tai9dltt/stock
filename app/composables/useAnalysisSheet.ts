@@ -9,7 +9,8 @@ import type { ForecastFigures } from '~/types';
 import { buildAnalysisSheet, samePeriodLastYear } from '~/spreadsheet/buildAnalysisSheet';
 import { styleGrowthInput } from '~/spreadsheet/cells';
 import { peFormat, peLadder } from '~/spreadsheet/peLadder';
-import { getCellAddr } from '~/utils/spreadjs';
+import { SENSITIVITY_TABLE } from '~/spreadsheet/sensitivity';
+import { getCellAddr, typedPercent } from '~/utils/spreadjs';
 import {
   INPUT_AREA, INPUT_FIELDS, inputRow, SPREADJS_COLORS, VALUATION_TABLE, type InputFieldName,
 } from '~/constants/spreadJsConstants';
@@ -26,14 +27,21 @@ export interface SheetEdits {
 /** A forecast quarter's growth was typed (value) or cleared (null) */
 type GrowthEditedCallback = (kind: GrowthKind, period: string, value: number | null) => void;
 
-/** P/E scenarios or shares per quarter were typed: their current values */
-type TableEditedCallback = (edits: Pick<SheetEdits, 'peValues' | 'sharesPerQuarter'>) => void;
+/** Values typed into the sheet's tables, as they now are */
+export interface TableEdits {
+  peValues?: number[];
+  sharesPerQuarter?: Record<string, Record<string, number>>;
+  /** Growth rows of the sensitivity table */
+  sensitivityGrowths?: number[];
+}
+type TableEditedCallback = (edits: TableEdits) => void;
 
 export function useAnalysisSheet() {
   let GC: any = null;
   const spread = shallowRef<any>(null);
   const layout = shallowRef<AnalysisSheetLayout | null>(null);
-  const INPUT_COL = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
+  // Column of the input values: K + 2, further right when there are many years
+  const inputCol = () => layout.value?.inputValueCol ?? INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET;
   let onInputEdited: ((field: InputFieldName, value: number) => void) | null = null;
   let onGrowthEdited: GrowthEditedCallback | null = null;
   let onTableEdited: TableEditedCallback | null = null;
@@ -51,15 +59,36 @@ export function useAnalysisSheet() {
     if (!current) return;
     const kind = (Object.keys(current.growthRows) as GrowthKind[]).find(k => current.growthRows[k] === row);
     const period = kind && current.quarterlyCols.find(c => c.col === col && c.isForecast);
-    if (!kind || !period || sheet.getFormula(row, col)) return;
+    if (!kind || !period) return;
+    const periodKey = `${period.year}_${period.quarter}`;
+    const inputRef = getCellAddr(GC, sheet, inputRow(GROWTH_INPUT[kind]), inputCol());
 
+    // The input reference put back, e.g. by undo: no own value any more
+    const formula = sheet.getFormula(row, col);
+    const bare = (f: string) => f.replace(/^=/, '').replaceAll('$', '').toUpperCase();
+    if (formula && bare(formula) === bare(inputRef)) {
+      styleGrowthInput(GC, sheet, row, col, false);
+      onGrowthEdited?.(kind, periodKey, null);
+      return;
+    }
+
+    // A number, also when typed as a formula: "-5" in a percent cell becomes =-5%
     const value = sheet.getValue(row, col);
     const typed = typeof value === 'number' && Number.isFinite(value);
-    if (!typed) {
-      sheet.setFormula(row, col, getCellAddr(GC, sheet, inputRow(GROWTH_INPUT[kind]), INPUT_COL));
+    if (typed && formula) {
+      sheet.setFormula(row, col, null);
+      sheet.setValue(row, col, value);
     }
+    if (!typed) sheet.setFormula(row, col, inputRef);
     styleGrowthInput(GC, sheet, row, col, typed);
-    onGrowthEdited?.(kind, `${period.year}_${period.quarter}`, typed ? value : null);
+    onGrowthEdited?.(kind, periodKey, typed ? value : null);
+  }
+
+  /** An input cell (price, shares, an assumption) was typed, cleared or pasted into */
+  function syncInputCell(sheet: any, row: number, col: number) {
+    if (col !== inputCol() || !onInputEdited) return;
+    const field = INPUT_FIELDS.find(f => inputRow(f) === row);
+    if (field) onInputEdited(field, Number(sheet.getValue(row, col)) || 0);
   }
 
   async function init(spreadInstance: any) {
@@ -116,21 +145,35 @@ export function useAnalysisSheet() {
     sheet.setFormatter(row, col, peFormat(typeof value === 'number' ? value : undefined, peLabels));
   }
 
+  const isSensitivityGrowthCell = (current: AnalysisSheetLayout, row: number, col: number) => {
+    const rows = current.sensitivityGrowthRows;
+    return col === 0 && !!rows && row >= rows.first && row <= rows.last;
+  };
+
   /**
-   * P/E scenarios and shares typed into the sheet go to the page state right
-   * away, so a re-render (add a year, apply an input, ...) keeps them.
+   * P/E scenarios, shares and sensitivity growths typed into the sheet go to
+   * the page state right away, so a re-render (add a year, apply an input,
+   * save...) keeps them.
    */
   function reportTableEdits(sheet: any, cells: Array<[row: number, col: number]>) {
     const current = layout.value;
     if (!current || !onTableEdited) return;
-    const edits: Pick<SheetEdits, 'peValues' | 'sharesPerQuarter'> = {};
+    const edits: TableEdits = {};
     if (cells.some(([r, c]) => isPeCell(current, r, c))) {
       edits.peValues = extractPeValues(sheet, current.valuationStartRow + 2, VALUATION_TABLE.TOTAL_ROWS);
     }
     if (cells.some(([r, c]) => isSharesCell(current, r, c))) {
       edits.sharesPerQuarter = extractSharesPerQuarter(sheet, current.sharesRow, current.quarterlyCols);
     }
-    if (edits.peValues || edits.sharesPerQuarter) onTableEdited(edits);
+    const growthRows = current.sensitivityGrowthRows;
+    if (growthRows && cells.some(([r, c]) => isSensitivityGrowthCell(current, r, c))) {
+      // A cleared cell goes back to its default growth on the next render
+      edits.sensitivityGrowths = Array.from({ length: growthRows.last - growthRows.first + 1 }, (_, i) => {
+        const value = sheet.getValue(growthRows.first + i, 0);
+        return typeof value === 'number' && Number.isFinite(value) ? value : SENSITIVITY_TABLE.GROWTHS[i]!;
+      });
+    }
+    if (edits.peValues || edits.sharesPerQuarter || edits.sensitivityGrowths) onTableEdited(edits);
   }
 
   function render(data: AnalysisSheetData) {
@@ -146,6 +189,13 @@ export function useAnalysisSheet() {
       sheet = workbook.getSheet(0);
     }
     sheet.name('Analysis');
+    // A rebuild (save, add a year, new price...) keeps the user's place
+    const view = layout.value && {
+      top: sheet.getViewportTopRow(1),
+      left: sheet.getViewportLeftColumn(1),
+      row: sheet.getActiveRowIndex(),
+      col: sheet.getActiveColumnIndex(),
+    };
     sheet.reset();
 
     // Don't recalculate formulas while building
@@ -159,14 +209,10 @@ export function useAnalysisSheet() {
 
     layout.value = buildAnalysisSheet({ GC, spread: workbook, sheet }, data);
 
-    // Report edits the user makes directly in the input cells
+    // Report edits the user makes directly in the sheet
     sheet.unbind(GC.Spread.Sheets.Events.ValueChanged);
-    sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number; newValue: unknown }) => {
-      if (info.col !== INPUT_COL || !onInputEdited) return;
-      const field = INPUT_FIELDS.find(f => inputRow(f) === info.row);
-      if (field) onInputEdited(field, Number(info.newValue) || 0);
-    });
     sheet.bind(GC.Spread.Sheets.Events.ValueChanged, (_event: unknown, info: { row: number; col: number }) => {
+      syncInputCell(sheet, info.row, info.col);
       syncGrowthCell(sheet, info.row, info.col);
       relabelPeCell(sheet, info.row, info.col);
       reportTableEdits(sheet, [[info.row, info.col]]);
@@ -177,6 +223,7 @@ export function useAnalysisSheet() {
       const cells: Array<[number, number]> = [];
       for (let r = info.row; r < info.row + info.rowCount; r++) {
         for (let c = info.col; c < info.col + info.colCount; c++) {
+          syncInputCell(sheet, r, c);
           syncGrowthCell(sheet, r, c);
           relabelPeCell(sheet, r, c);
           cells.push([r, c]);
@@ -185,10 +232,32 @@ export function useAnalysisSheet() {
       reportTableEdits(sheet, cells);
     });
 
+    // "5%" typed into a percent cell arrives as "5%%" (SpreadJS adds a "%"):
+    // store the percentage meant, then sync it like any edit
+    sheet.unbind(GC.Spread.Sheets.Events.EditEnded);
+    sheet.bind(GC.Spread.Sheets.Events.EditEnded, (_event: unknown, info: { row: number; col: number; editingText: unknown; committed: boolean }) => {
+      const percent = typedPercent(info.editingText);
+      if (!info.committed || percent === null) return;
+      // "-5%%" even became a formula (a leading "-" starts one)
+      sheet.setFormula(info.row, info.col, null);
+      sheet.setValue(info.row, info.col, percent);
+      syncInputCell(sheet, info.row, info.col);
+      syncGrowthCell(sheet, info.row, info.col);
+      reportTableEdits(sheet, [[info.row, info.col]]);
+    });
+
     // Selecting a period cell outlines the same period a year earlier
     comparisonRule = null;
     sheet.unbind(GC.Spread.Sheets.Events.SelectionChanged);
     sheet.bind(GC.Spread.Sheets.Events.SelectionChanged, () => showComparisonCell(sheet));
+
+    if (view) {
+      const lastRow = sheet.getRowCount() - 1;
+      const lastCol = sheet.getColumnCount() - 1;
+      sheet.setActiveCell(Math.min(view.row, lastRow), Math.min(view.col, lastCol));
+      sheet.showRow(Math.min(view.top, lastRow), GC.Spread.Sheets.VerticalPosition.top);
+      sheet.showColumn(Math.min(view.left, lastCol), GC.Spread.Sheets.HorizontalPosition.left);
+    }
 
     sheet.resumeCalcService(false);
     workbook.resumePaint();
@@ -197,7 +266,7 @@ export function useAnalysisSheet() {
   /** Write an input value into its cell; formulas that use it recalculate */
   function setInput(field: InputFieldName, value: number) {
     if (!isReady()) return;
-    spread.value.getSheet(0)?.setValue(inputRow(field), INPUT_COL, value);
+    spread.value.getSheet(0)?.setValue(inputRow(field), inputCol(), value);
   }
 
   /**
@@ -248,7 +317,7 @@ export function useAnalysisSheet() {
     const sheet = spread.value.getActiveSheet();
 
     const edits: SheetEdits = {
-      inputs: extractInputValues(sheet, INPUT_AREA.ROW_START, INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET),
+      inputs: extractInputValues(sheet, inputCol()),
     };
 
     const current = layout.value;

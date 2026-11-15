@@ -30,12 +30,20 @@ describe('isForecastYear', () => {
   it('keeps last year a forecast while its Q4 has no reported figure', () => {
     // Q4 has a P/E but no revenue yet
     const data = { ...quarters(['2025'], ['2025_Q4']), pe: { 2025: { Q4: 12 } } }
-    expect(isForecastYear('2025', 2026, data, [], ['netRevenue'])).toBe(true)
-    expect(isForecastYear('2025', 2026, quarters(['2025']), [], ['netRevenue'])).toBe(false)
+    expect(isForecastYear('2025', 2026, data, ['netRevenue'])).toBe(true)
+    expect(isForecastYear('2025', 2026, quarters(['2025']), ['netRevenue'])).toBe(false)
   })
 
   it('treats the current and later years as forecasts, older ones as reported', () => {
-    expect(isForecastYear('2026', 2026, {}, [], ['netRevenue'])).toBe(true)
-    expect(isForecastYear('2024', 2026, {}, [], ['netRevenue'])).toBe(false)
+    expect(isForecastYear('2026', 2026, {}, ['netRevenue'])).toBe(true)
+    expect(isForecastYear('2027', 2026, {}, ['netRevenue'])).toBe(true)
+    expect(isForecastYear('2024', 2026, {}, ['netRevenue'])).toBe(false)
+    // An old year stays reported even with a quarter missing
+    expect(isForecastYear('2024', 2026, quarters(['2024'], ['2024_Q4']), ['netRevenue'])).toBe(false)
+  })
+
+  it('ends the forecast of the current year once its Q4 is reported (fiscal year ending before December)', () => {
+    expect(isForecastYear('2026', 2026, quarters(['2026']), ['netRevenue'])).toBe(false)
+    expect(isForecastYear('2026', 2026, quarters(['2026'], ['2026_Q4']), ['netRevenue'])).toBe(true)
   })
 })

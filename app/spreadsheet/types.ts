@@ -42,7 +42,6 @@ export type RowKey =
   | 'grossMargin'
   | 'netMargin'
   | 'netProfitMargin'
-  | 'assetReturn'
   | 'eps'
   | 'epsTtm'
   | 'pe'
@@ -126,6 +125,11 @@ export interface AnalysisSheetData {
   peScenarios: number[]
   /** Per-quarter growth that replaces the growth assumption in forecast quarters */
   growthOverrides: GrowthOverrides
+  /** Growth rows typed into the sensitivity table (empty: the defaults); kept for the session, not saved */
+  sensitivityGrowths: number[]
+  /** "dd/mm-dd/mm" of Q1..Q4 and of the year, as the company reports them (its fiscal year) */
+  quarterRanges: string[]
+  annualRange: string
   tradingDate: string
   currentPrice: number
   outstandingShares: number
@@ -139,6 +143,8 @@ export interface AnalysisSheetData {
 /** Positions the page needs to read user edits back from the sheet */
 export interface AnalysisSheetLayout {
   stockType: StockType
+  /** Column of the input values (price, shares, assumptions); rows from inputRow() */
+  inputValueCol: number
   quarterlyCols: QuarterlyColumnInfo[]
   sharesRow: number
   valuationStartRow: number
@@ -146,6 +152,8 @@ export interface AnalysisSheetLayout {
   quarterlyRows: RowMap
   /** Quarterly rows whose forecast cells take a per-quarter assumption */
   growthRows: Partial<Record<GrowthKind, number>>
+  /** Rows of the sensitivity table's growth cells (column A), if it is shown */
+  sensitivityGrowthRows: { first: number; last: number } | null
   /** Data area of the annual and quarterly tables, for same-period comparisons */
   periodTables: PeriodTable[]
 }

@@ -4,12 +4,12 @@
 
 import type { AnalysisSheetData, AnalysisSheetLayout, PeriodTable, SheetContext } from './types'
 import {
-  ANNUAL_TABLE, INPUT_AREA, INPUT_FIELDS, inputRow, QUARTERLY_TABLE, VALUATION_TABLE,
+  ANNUAL_TABLE, INPUT_AREA, INPUT_FIELDS, inputAreaCol, inputRow, QUARTERLY_TABLE, VALUATION_TABLE,
 } from '~/constants/spreadJsConstants'
 import { getSeparatorBorder, outlineRange } from '~/utils/spreadjs'
 import { detectStockType, STOCK_PROFILES } from './profiles'
 import {
-  applyFinalStyling, buildAnnualTable, buildInputSection, buildQuarterlyTable, buildTitleSection,
+  annualYears, applyFinalStyling, buildAnnualTable, buildInputSection, buildQuarterlyTable, buildTitleSection,
   buildValuationTable, linkAnnualToQuarterly, stripeRows,
 } from './sections'
 import { buildSensitivityTable } from './sensitivity'
@@ -20,7 +20,10 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   const profile = STOCK_PROFILES[stockType]
 
   buildTitleSection(ctx, profile, data.symbol)
-  const refs = buildInputSection(ctx, profile, data)
+  // Right of the annual table, which gains a column per year
+  const inputCol = inputAreaCol(annualYears(data).length)
+  const inputValueCol = inputCol + INPUT_AREA.VALUE_COL_OFFSET
+  const refs = buildInputSection(ctx, profile, data, inputCol)
 
   const annual = buildAnnualTable(ctx, profile, data, refs)
   const quarterly = buildQuarterlyTable(ctx, profile, data, refs, annual.lastRow + QUARTERLY_TABLE.GAP_FROM_ANNUAL)
@@ -33,7 +36,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   const sensitivity = buildSensitivityTable(ctx, data, refs, quarterly.cols, quarterly.rows, valuationLastRow)
 
   const maxCol = Math.max(
-    INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET + 1 + INPUT_AREA.NOTE_SPAN,
+    inputValueCol + 1 + INPUT_AREA.NOTE_SPAN,
     quarterly.nextCol + 1,
     Math.max(0, ...Object.values(annual.colMap)) + 1,
     30
@@ -86,15 +89,16 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
   outlineRange(GC, sheet, valuationStartRow, 0, valuationLastRow - valuationStartRow + 1, quarterlyTable.lastCol + 1)
 
   const inputLastRow = inputRow(INPUT_FIELDS[INPUT_FIELDS.length - 1]!)
-  const inputLastCol = INPUT_AREA.COL + INPUT_AREA.VALUE_COL_OFFSET + INPUT_AREA.NOTE_SPAN
-  sheet.getRange(INPUT_AREA.ROW_START, INPUT_AREA.COL, 1, inputLastCol - INPUT_AREA.COL + 1)
+  const inputLastCol = inputValueCol + INPUT_AREA.NOTE_SPAN
+  sheet.getRange(INPUT_AREA.ROW_START, inputCol, 1, inputLastCol - inputCol + 1)
     .setBorder(getSeparatorBorder(GC), { bottom: true })
-  outlineRange(GC, sheet, INPUT_AREA.ROW_START, INPUT_AREA.COL, inputLastRow - INPUT_AREA.ROW_START + 1, inputLastCol - INPUT_AREA.COL + 1)
+  outlineRange(GC, sheet, INPUT_AREA.ROW_START, inputCol, inputLastRow - INPUT_AREA.ROW_START + 1, inputLastCol - inputCol + 1)
 
   applyFinalStyling(ctx, maxCol, sensitivity?.lastRow ?? valuationLastRow)
 
   return {
     stockType,
+    inputValueCol,
     quarterlyCols: quarterly.cols,
     sharesRow: quarterly.rows.shares!,
     valuationStartRow,
@@ -102,6 +106,7 @@ export function buildAnalysisSheet(ctx: SheetContext, data: AnalysisSheetData): 
     growthRows: Object.fromEntries(profile.quarterlyRows
       .filter(spec => spec.forecastInput)
       .map(spec => [spec.forecastInput!, quarterly.rows[spec.key]!])),
+    sensitivityGrowthRows: sensitivity && { first: sensitivity.firstDataRow, last: sensitivity.lastRow },
     periodTables: healthTable ? [annualTable, quarterlyTable, healthTable] : [annualTable, quarterlyTable],
   }
 }

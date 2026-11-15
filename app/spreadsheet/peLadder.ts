@@ -9,6 +9,8 @@ export interface PeLevel {
   value: number
   /** Short meaning shown next to the value, e.g. "trung vị" */
   label: string
+  /** Price ÷ trailing EPS today (rounded here; live in the sensitivity table) */
+  current?: boolean
 }
 
 const HISTORY_YEARS = 5
@@ -61,7 +63,7 @@ export function peLadder(data: Pick<AnalysisSheetData, 'currentPrice' | 'quarter
   const current = currentPe(data)
 
   const candidates: PeLevel[] = []
-  if (current !== null) candidates.push({ value: current, label: 'hiện tại' })
+  if (current !== null) candidates.push({ value: current, label: 'hiện tại', current: true })
   if (history.length >= 4) {
     candidates.push(
       { value: percentile(history, 0.5), label: 'trung vị' },
@@ -74,12 +76,12 @@ export function peLadder(data: Pick<AnalysisSheetData, 'currentPrice' | 'quarter
   candidates.push(...FALLBACK.map(value => ({ value, label: '' })))
 
   const levels: PeLevel[] = []
-  for (const { value, label } of candidates) {
-    const v = round2(value)
+  for (const level of candidates) {
+    const v = round2(level.value)
     // Fallback levels only fill in when the history gives too few
-    if (!label && levels.length >= 3) break
+    if (!level.label && levels.length >= 3) break
     if (levels.some(l => Math.abs(l.value - v) <= MIN_GAP * Math.max(l.value, v))) continue
-    levels.push({ value: v, label })
+    levels.push({ ...level, value: v })
   }
 
   return levels.sort((a, b) => a.value - b.value)
